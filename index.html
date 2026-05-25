@@ -1,267 +1,175 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+export default function CelsoTradeAI() {
+  const marketStatus = 'Analyzing Market';
+  const aiMode = 'Personal Mode';
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  function startAI(){
+    const pairs = ['EUR/USD','GBP/USD','AUD/USD','USD/JPY','EUR/JPY'];
+    const actions = ['CALL','PUT'];
 
-<title>Celso Trade AI</title>
+    const pair = pairs[Math.floor(Math.random()*pairs.length)];
+    const action = actions[Math.floor(Math.random()*actions.length)];
 
-<style>
+    alert(`AI Analysis Complete
 
-body{
-margin:0;
-background:#050505;
-font-family:Arial;
-color:white;
+Pair: ${pair}
+Direction: ${action}
+Confidence: ${Math.floor(Math.random()*15)+80}%`);
+  }
+  const signals = [
+    { pair: 'GBP/USD', action: 'PUT', result: 'WIN' },
+    { pair: 'EUR/JPY', action: 'CALL', result: 'WIN' },
+    { pair: 'USD/CAD', action: 'CALL', result: 'LOSS' },
+    { pair: 'AUD/USD', action: 'PUT', result: 'WIN' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-black text-white font-sans">
+      <div className="max-w-md mx-auto p-4 space-y-6 pb-10">
+        <div className="flex items-center justify-between pt-4">
+          <div>
+            <h1 className="text-3xl font-bold text-emerald-400">Celso Trade AI</h1>
+            <p className="text-zinc-400 text-sm">Intelligent Trading Signal System</p>
+          </div>
+
+          <div className="bg-emerald-500/20 border border-emerald-500 rounded-2xl px-4 py-2 text-emerald-400 text-sm font-semibold">
+            LIVE
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-3xl p-6 shadow-2xl border border-zinc-700">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <p className="text-zinc-400 text-sm">AI Probability</p>
+              <h2 className="text-5xl font-bold">84%</h2>
+            </div>
+
+            <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center text-black font-bold text-xl shadow-lg">
+              AI
+            </div>
+          </div>
+
+          <div className="bg-black/40 rounded-2xl p-5 border border-zinc-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-zinc-400 text-sm">Suggested Entry</p>
+                <h3 className="text-3xl font-bold mt-1">EUR/USD</h3>
+              </div>
+
+              <div className="text-right">
+                <p className="text-emerald-400 text-2xl font-bold">CALL</p>
+                <p className="text-zinc-500 text-sm">M5</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 mt-5">
+            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-700">
+              <p className="text-zinc-400 text-xs">Trend</p>
+              <h4 className="text-lg font-bold text-emerald-400">UP</h4>
+            </div>
+
+            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-700">
+              <p className="text-zinc-400 text-xs">Strength</p>
+              <h4 className="text-lg font-bold">92%</h4>
+            </div>
+
+            <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-700">
+              <p className="text-zinc-400 text-xs">Risk</p>
+              <h4 className="text-lg font-bold text-yellow-400">LOW</h4>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-zinc-900 rounded-3xl p-5 border border-zinc-800">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-xl font-bold">Personal AI Analysis</h3>
+            <span className="text-emerald-400 text-sm">Private Session</span>
+          </div>
+
+          <div className="space-y-5">
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-zinc-400">Trend Force</span>
+                <span className="text-emerald-400">Strong Buy</span>
+              </div>
+
+              <div className="w-full h-3 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-full w-[88%] bg-emerald-500 rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-zinc-400">Volatility</span>
+                <span className="text-yellow-400">Medium</span>
+              </div>
+
+              <div className="w-full h-3 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-full w-[60%] bg-yellow-400 rounded-full"></div>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-zinc-400">AI Confidence</span>
+                <span className="text-cyan-400">94%</span>
+              </div>
+
+              <div className="w-full h-3 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="h-full w-[94%] bg-cyan-400 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-zinc-900 rounded-3xl p-5 border border-zinc-800">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-bold">Recent Signals</h3>
+            <span className="text-zinc-400 text-sm">Today</span>
+          </div>
+
+          <div className="space-y-3">
+            {signals.map((item, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between bg-black/30 rounded-2xl p-4 border border-zinc-800"
+              >
+                <div>
+                  <h4 className="font-bold">{item.pair}</h4>
+                  <p className="text-zinc-500 text-sm">AI Signal</p>
+                </div>
+
+                <div className="text-center">
+                  <p className={`font-bold ${item.action === 'CALL' ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {item.action}
+                  </p>
+                </div>
+
+                <div>
+                  <span
+                    className={`px-3 py-1 rounded-xl text-sm font-bold ${
+                      item.result === 'WIN'
+                        ? 'bg-emerald-500/20 text-emerald-400'
+                        : 'bg-red-500/20 text-red-400'
+                    }`}
+                  >
+                    {item.result}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-3xl p-6 text-black shadow-2xl">
+          <h3 className="text-2xl font-bold mb-2">Celso Trade AI Engine</h3>
+          <p className="text-sm font-medium opacity-80">
+            Private AI assistant focused on market reading, signal probability and intelligent analysis for personal use.
+          </p>
+
+          <button className="mt-5 w-full bg-black text-white py-4 rounded-2xl font-bold text-lg shadow-lg" onClick={startAI}>Start Personal Analysis</button>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-.container{
-max-width:420px;
-margin:auto;
-padding:20px;
-}
-
-.logo{
-font-size:32px;
-font-weight:bold;
-color:#00ff99;
-margin-top:20px;
-}
-
-.subtitle{
-color:#888;
-margin-bottom:30px;
-}
-
-.card{
-background:#111;
-border-radius:25px;
-padding:20px;
-margin-bottom:20px;
-border:1px solid #222;
-}
-
-.accuracy{
-font-size:55px;
-font-weight:bold;
-margin:15px 0;
-}
-
-.signal{
-background:#0b0b0b;
-padding:20px;
-border-radius:20px;
-margin-top:20px;
-}
-
-.call{
-font-size:30px;
-font-weight:bold;
-color:#00ff99;
-}
-
-.status{
-display:flex;
-justify-content:space-between;
-margin-top:20px;
-gap:10px;
-}
-
-.mini{
-background:#0a0a0a;
-padding:15px;
-border-radius:15px;
-width:100%;
-text-align:center;
-}
-
-.green{
-color:#00ff99;
-}
-
-.yellow{
-color:gold;
-}
-
-.history{
-display:flex;
-justify-content:space-between;
-background:#0b0b0b;
-padding:15px;
-border-radius:15px;
-margin-top:10px;
-}
-
-.win{
-color:#00ff99;
-font-weight:bold;
-}
-
-button{
-width:100%;
-padding:18px;
-border:none;
-border-radius:18px;
-background:#00ff99;
-font-size:18px;
-font-weight:bold;
-margin-top:20px;
-cursor:pointer;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<div class="logo">
-Celso Trade AI
-</div>
-
-<div class="subtitle">
-Assistente pessoal de sinais com IA
-</div>
-
-<div class="card">
-
-<div>Probabilidade da IA</div>
-
-<div class="accuracy" id="accuracy">
-84%
-</div>
-
-<div class="signal">
-
-<div>Sinal sugerido</div>
-
-<h1 id="pair">
-EUR/USD
-</h1>
-
-<div class="call" id="direction">
-CALL
-</div>
-
-</div>
-
-<div class="status">
-
-<div class="mini">
-<div>Tendência</div>
-<h3 class="green" id="trend">
-ALTA
-</h3>
-</div>
-
-<div class="mini">
-<div>Força</div>
-<h3 id="strength">
-92%
-</h3>
-</div>
-
-<div class="mini">
-<div>Risco</div>
-<h3 class="yellow">
-BAIXO
-</h3>
-</div>
-
-</div>
-
-</div>
-
-<div class="card">
-
-<h2>Histórico</h2>
-
-<div class="history">
-<div>GBP/USD</div>
-<div class="win">WIN</div>
-</div>
-
-<div class="history">
-<div>EUR/JPY</div>
-<div class="win">WIN</div>
-</div>
-
-<div class="history">
-<div>AUD/USD</div>
-<div class="win">WIN</div>
-</div>
-
-<button onclick="startAI()">
-Iniciar análise IA
-</button>
-
-</div>
-
-</div>
-
-<script>
-
-function startAI(){
-
-const pairs = [
-'EUR/USD',
-'GBP/USD',
-'USD/JPY',
-'AUD/USD',
-'EUR/JPY'
-];
-
-const actions = [
-'CALL',
-'PUT'
-];
-
-const trends = [
-'ALTA',
-'BAIXA'
-];
-
-const pair =
-pairs[Math.floor(Math.random()*pairs.length)];
-
-const action =
-actions[Math.floor(Math.random()*actions.length)];
-
-const trend =
-trends[Math.floor(Math.random()*trends.length)];
-
-const probability =
-Math.floor(Math.random()*15)+80;
-
-const strength =
-Math.floor(Math.random()*10)+90;
-
-document.getElementById('pair').innerText = pair;
-
-document.getElementById('direction').innerText = action;
-
-document.getElementById('accuracy').innerText =
-probability + '%';
-
-document.getElementById('trend').innerText = trend;
-
-document.getElementById('strength').innerText =
-strength + '%';
-
-if(action === 'CALL'){
-document.getElementById('direction').style.color =
-'#00ff99';
-}
-else{
-document.getElementById('direction').style.color =
-'#ff4444';
-}
-
-}
-
-</script>
-
-</body>
-</html>
