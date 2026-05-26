@@ -57,9 +57,22 @@ margin-top:20px;
 }
 
 .call{
-font-size:30px;
+font-size:34px;
 font-weight:bold;
 color:#00ff99;
+margin-top:10px;
+}
+
+.signal-time{
+margin-top:15px;
+font-size:18px;
+color:#00ff99;
+}
+
+.expiration{
+margin-top:8px;
+font-size:15px;
+color:#888;
 }
 
 .status{
@@ -219,6 +232,14 @@ EUR/USD
 CALL
 </div>
 
+<div class="signal-time" id="entryTime">
+Entrada: 04:01
+</div>
+
+<div class="expiration">
+Expiração: M1
+</div>
+
 </div>
 
 <div class="status">
@@ -282,7 +303,7 @@ Iniciar análise IA
 </button>
 
 <div class="loading" id="loading">
-🤖 IA analisando mercado...
+🤖 IA analisando próxima vela...
 </div>
 
 </div>
@@ -319,6 +340,19 @@ rate + '%';
 
 }
 
+function getNextMinute(){
+
+const now = new Date();
+
+now.setMinutes(now.getMinutes() + 1);
+
+return now.toLocaleTimeString('pt-BR',{
+hour:'2-digit',
+minute:'2-digit'
+});
+
+}
+
 function startAI(){
 
 document.getElementById('loading').style.display =
@@ -326,10 +360,7 @@ document.getElementById('loading').style.display =
 
 setTimeout(() => {
 
-const now = new Date();
-
-const currentTime =
-now.toLocaleTimeString('pt-BR');
+const currentTime = getNextMinute();
 
 const pairs = [
 'EUR/USD',
@@ -405,6 +436,9 @@ strength + '%';
 document.getElementById('risk').innerText =
 risk;
 
+document.getElementById('entryTime').innerText =
+'Entrada: ' + currentTime;
+
 let result;
 
 if(probability >= 88){
@@ -452,7 +486,9 @@ item.className = 'history';
 item.innerHTML = `
 <div class="history-left">
 <div>${pair} - ${action}</div>
-<div class="history-time">${currentTime}</div>
+<div class="history-time">
+Entrada ${currentTime}
+</div>
 </div>
 
 <div class="${result === 'WIN' ? 'win' : 'loss'}">
