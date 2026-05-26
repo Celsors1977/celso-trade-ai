@@ -161,6 +161,14 @@ border-radius:15px;
 text-align:center;
 }
 
+.filter-box{
+margin-top:20px;
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
 @keyframes blink{
 0%{opacity:0.2;}
 50%{opacity:1;}
@@ -186,7 +194,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente M5 EMA + RSI
+Scanner Inteligente M5 PRO
 </div>
 
 <div class="center">
@@ -269,6 +277,16 @@ Entrada: --
 
 </div>
 
+<div class="filter-box">
+
+<div>Filtro de Mercado</div>
+
+<h2 id="marketFilter">
+--
+</h2>
+
+</div>
+
 <div class="market">
 🟢 Mercado conectado em tempo real
 </div>
@@ -278,7 +296,7 @@ GERAR SINAL REAL
 </button>
 
 <div class="loading" id="loading">
-🤖 IA analisando EMA + RSI...
+🤖 IA analisando mercado...
 </div>
 
 </div>
@@ -468,7 +486,7 @@ const url =
 +
 encodeURIComponent(pair)
 +
-"&interval=5min&outputsize=50&apikey="
+"&interval=5min&outputsize=60&apikey="
 +
 apiKey;
 
@@ -507,6 +525,9 @@ closes[closes.length-2];
 const movement =
 Math.abs(last - previous);
 
+const force =
+Math.abs(ema9 - ema21);
+
 let direction;
 let trend;
 
@@ -514,6 +535,10 @@ if(
 ema9 > ema21
 &&
 rsi < 70
+&&
+force > 0.0003
+&&
+movement > 0.0002
 ){
 
 direction = "CALL";
@@ -524,6 +549,10 @@ trend = "ALTA";
 ema9 < ema21
 &&
 rsi > 30
+&&
+force > 0.0003
+&&
+movement > 0.0002
 ){
 
 direction = "PUT";
@@ -536,8 +565,24 @@ return null;
 
 }
 
-const force =
-Math.abs(ema9 - ema21);
+let marketCondition;
+
+if(force > 0.001){
+
+marketCondition =
+"TENDÊNCIA FORTE";
+
+}else if(force > 0.0005){
+
+marketCondition =
+"MERCADO BOM";
+
+}else{
+
+marketCondition =
+"LATERAL";
+
+}
 
 return{
 
@@ -551,7 +596,9 @@ trend: trend,
 
 force: force,
 
-rsi: Math.floor(rsi)
+rsi: Math.floor(rsi),
+
+marketCondition: marketCondition
 
 };
 
@@ -587,7 +634,7 @@ results.push(result);
 
 if(results.length === 0){
 
-alert("Nenhum sinal forte encontrado");
+alert("⚠️ Mercado lateral ou sem força");
 
 document.getElementById("loading")
 .style.display = "none";
@@ -616,11 +663,11 @@ Math.floor(best.force * 120000)
 
 let risk;
 
-if(best.force > 0.0008){
+if(best.force > 0.001){
 
 risk = "BAIXO";
 
-}else if(best.force > 0.0004){
+}else if(best.force > 0.0005){
 
 risk = "MÉDIO";
 
@@ -685,6 +732,18 @@ best.rsi > 70
 : best.rsi < 30
 ? "green"
 : "yellow";
+
+document.getElementById("marketFilter")
+.innerText =
+best.marketCondition;
+
+document.getElementById("marketFilter")
+.className =
+best.marketCondition === "TENDÊNCIA FORTE"
+? "green"
+: best.marketCondition === "MERCADO BOM"
+? "yellow"
+: "red";
 
 const next =
 nextM5();
