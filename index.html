@@ -27,6 +27,8 @@ now.toLocaleTimeString("pt-BR");
 
 setInterval(updateClock,1000);
 
+updateClock();
+
 function updateWinRate(){
 
 const total = wins + losses;
@@ -115,9 +117,16 @@ async function analyzePair(pair){
 
 try{
 
-const response = await fetch(
-`https://api.twelvedata.com/time_series?symbol=${pair}&interval=5min&outputsize=2&apikey=${apiKey}`
-);
+const encodedPair =
+encodeURIComponent(pair);
+
+const url =
+"https://api.twelvedata.com/time_series?symbol="
++ encodedPair +
+"&interval=5min&outputsize=2&apikey="
++ apiKey;
+
+const response = await fetch(url);
 
 const data = await response.json();
 
@@ -154,10 +163,10 @@ trend = "BAIXA";
 }
 
 return{
-pair,
-movement,
-action,
-trend
+pair: pair,
+movement: movement,
+action: action,
+trend: trend
 };
 
 }catch(error){
@@ -178,12 +187,14 @@ document.getElementById("loading").style.display =
 document.getElementById("analyzeBtn").disabled =
 true;
 
+try{
+
 let results = [];
 
-for(const pair of pairs){
+for(let i = 0; i < pairs.length; i++){
 
 const result =
-await analyzePair(pair);
+await analyzePair(pairs[i]);
 
 if(result){
 
@@ -193,9 +204,19 @@ results.push(result);
 
 }
 
-results.sort((a,b) =>
-b.movement - a.movement
-);
+if(results.length === 0){
+
+alert("Erro ao analisar pares");
+
+return;
+
+}
+
+results.sort(function(a,b){
+
+return b.movement - a.movement;
+
+});
 
 const best = results[0];
 
@@ -276,6 +297,14 @@ losses;
 updateWinRate();
 
 startCountdown(entryDate);
+
+}catch(error){
+
+console.log(error);
+
+alert("Erro geral");
+
+}
 
 document.getElementById("loading").style.display =
 "none";
