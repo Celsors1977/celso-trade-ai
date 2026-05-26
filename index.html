@@ -1,10 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Celso Ricardi Trader AI</title>
+
+<style>
+
+body{
+background:#050505;
+color:white;
+font-family:Arial;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:420px;
+margin:auto;
+}
+
+.card{
+background:#111;
+padding:20px;
+border-radius:20px;
+border:1px solid #222;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+color:#00ff99;
+margin-bottom:10px;
+}
+
+.subtitle{
+color:#888;
+margin-bottom:20px;
+}
+
+.center{
+text-align:center;
+}
+
+.big{
+font-size:60px;
+font-weight:bold;
+margin:20px 0;
+}
+
+.signal{
+background:#0a0a0a;
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+text-align:center;
+}
+
+.call{
+color:#00ff99;
+font-size:40px;
+font-weight:bold;
+}
+
+.put{
+color:#ff4444;
+font-size:40px;
+font-weight:bold;
+}
+
+.status{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.box{
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+button{
+width:100%;
+padding:18px;
+border:none;
+border-radius:15px;
+background:#00ff99;
+font-size:18px;
+font-weight:bold;
+margin-top:20px;
+cursor:pointer;
+}
+
+.loading{
+display:none;
+text-align:center;
+margin-top:15px;
+color:#00ff99;
+}
+
+.countdown{
+font-size:34px;
+font-weight:bold;
+margin-top:15px;
+color:#00ff99;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<div class="logo">
+Celso Ricardi Trader AI
+</div>
+
+<div class="subtitle">
+Scanner Inteligente M5
+</div>
+
+<div class="center">
+
+<div>
+Probabilidade IA
+</div>
+
+<div class="big" id="accuracy">
+--%
+</div>
+
+</div>
+
+<div class="signal">
+
+<div id="pair">
+EUR/USD
+</div>
+
+<div id="direction" class="call">
+--
+</div>
+
+<div id="entry">
+Entrada: --
+</div>
+
+<div class="countdown" id="countdown">
+00:00
+</div>
+
+</div>
+
+<div class="status">
+
+<div class="box">
+
+<div>Tendência</div>
+
+<h3 id="trend">
+--
+</h3>
+
+</div>
+
+<div class="box">
+
+<div>Força</div>
+
+<h3 id="strength">
+--
+</h3>
+
+</div>
+
+<div class="box">
+
+<div>Risco</div>
+
+<h3 id="risk">
+--
+</h3>
+
+</div>
+
+</div>
+
+<button onclick="analyzeMarket()">
+GERAR SINAL REAL
+</button>
+
+<div class="loading" id="loading">
+Analisando mercado...
+</div>
+
+</div>
+
+</div>
+
 <script>
 
-const apiKey = "65b715a09bc44070a1d6947b293281a9";
-
-let wins = 18;
-let losses = 4;
-let countdownInterval;
+const apiKey =
+"65b715a09bc44070a1d6947b293281a9";
 
 const pairs = [
 "EUR/USD",
@@ -16,98 +223,67 @@ const pairs = [
 "USD/CAD"
 ];
 
-function updateClock(){
+let timer;
 
-const now = new Date();
-
-document.getElementById("clock").innerText =
-now.toLocaleTimeString("pt-BR");
-
-}
-
-setInterval(updateClock,1000);
-
-updateClock();
-
-function updateWinRate(){
-
-const total = wins + losses;
-
-const rate =
-Math.floor((wins / total) * 100);
-
-document.getElementById("winrate").innerText =
-rate + "%";
-
-}
-
-function getNextM5Date(){
+function nextM5(){
 
 const now = new Date();
 
 let minutes = now.getMinutes();
 
-let nextBlock =
+let next =
 Math.ceil((minutes + 1) / 5) * 5;
 
-if(nextBlock >= 60){
+if(next >= 60){
 
 now.setHours(now.getHours()+1);
 
-nextBlock = 0;
+next = 0;
 
 }
 
-now.setMinutes(nextBlock);
+now.setMinutes(next);
 now.setSeconds(0);
 
 return now;
 
 }
 
-function startCountdown(targetDate){
+function startCountdown(target){
 
-clearInterval(countdownInterval);
+clearInterval(timer);
 
-countdownInterval = setInterval(() => {
+timer = setInterval(()=>{
 
 const now = new Date();
 
-const diff = targetDate - now;
+const diff = target - now;
 
 if(diff <= 0){
 
-document.getElementById("countdown").innerText =
-"🚀 ENTRAR AGORA";
+document.getElementById("countdown")
+.innerText =
+"🚀 ENTRAR";
 
-clearInterval(countdownInterval);
+clearInterval(timer);
 
 return;
 
 }
 
-const minutes =
+const m =
 Math.floor(diff / 1000 / 60);
 
-const seconds =
+const s =
 Math.floor((diff / 1000) % 60);
 
-document.getElementById("countdown").innerText =
-String(minutes).padStart(2,"0")
-+ ":" +
-String(seconds).padStart(2,"0");
-
-if(diff <= 10000){
-
-document.getElementById("alertText").style.display =
-"block";
-
-}else{
-
-document.getElementById("alertText").style.display =
-"none";
-
-}
+document.getElementById("countdown")
+.innerText =
+String(m).padStart(2,"0")
++
+":"
++
+String(s).padStart(2,"0");
 
 },1000);
 
@@ -117,18 +293,20 @@ async function analyzePair(pair){
 
 try{
 
-const encodedPair =
-encodeURIComponent(pair);
-
 const url =
 "https://api.twelvedata.com/time_series?symbol="
-+ encodedPair +
++
+encodeURIComponent(pair)
++
 "&interval=5min&outputsize=2&apikey="
-+ apiKey;
++
+apiKey;
 
-const response = await fetch(url);
+const response =
+await fetch(url);
 
-const data = await response.json();
+const data =
+await response.json();
 
 if(!data.values){
 
@@ -136,42 +314,32 @@ return null;
 
 }
 
-const candles = data.values;
-
 const last =
-parseFloat(candles[0].close);
+parseFloat(data.values[0].close);
 
-const previous =
-parseFloat(candles[1].close);
+const prev =
+parseFloat(data.values[1].close);
 
-const movement =
-Math.abs(last - previous);
-
-let action;
-let trend;
-
-if(last > previous){
-
-action = "CALL";
-trend = "ALTA";
-
-}else{
-
-action = "PUT";
-trend = "BAIXA";
-
-}
+const move =
+Math.abs(last - prev);
 
 return{
+
 pair: pair,
-movement: movement,
-action: action,
-trend: trend
+
+movement: move,
+
+direction:
+last > prev ? "CALL" : "PUT",
+
+trend:
+last > prev ? "ALTA" : "BAIXA"
+
 };
 
-}catch(error){
+}catch(e){
 
-console.log(error);
+console.log(e);
 
 return null;
 
@@ -181,17 +349,12 @@ return null;
 
 async function analyzeMarket(){
 
-document.getElementById("loading").style.display =
-"block";
-
-document.getElementById("analyzeBtn").disabled =
-true;
-
-try{
+document.getElementById("loading")
+.style.display = "block";
 
 let results = [];
 
-for(let i = 0; i < pairs.length; i++){
+for(let i=0;i<pairs.length;i++){
 
 const result =
 await analyzePair(pairs[i]);
@@ -206,115 +369,82 @@ results.push(result);
 
 if(results.length === 0){
 
-alert("Erro ao analisar pares");
+alert("Erro API");
 
 return;
 
 }
 
-results.sort(function(a,b){
-
-return b.movement - a.movement;
-
-});
+results.sort((a,b)=>
+b.movement - a.movement
+);
 
 const best = results[0];
 
-let probability =
+const probability =
 Math.floor(Math.random()*5)+91;
 
-let strength =
+const strength =
 Math.floor(Math.random()*5)+95;
 
-let risk =
-best.movement > 0.001 ?
-"BAIXO" :
-"MÉDIO";
+const risk =
+best.movement > 0.001
+? "BAIXO"
+: "MÉDIO";
 
-const entryDate = getNextM5Date();
-
-const entryTime =
-entryDate.toLocaleTimeString("pt-BR",{
-hour:"2-digit",
-minute:"2-digit"
-});
-
-document.getElementById("pair").innerText =
+document.getElementById("pair")
+.innerText =
 best.pair;
 
-document.getElementById("direction").innerText =
-best.action;
+document.getElementById("direction")
+.innerText =
+best.direction;
 
-document.getElementById("accuracy").innerText =
+document.getElementById("direction")
+.className =
+best.direction === "CALL"
+? "call"
+: "put";
+
+document.getElementById("accuracy")
+.innerText =
 probability + "%";
 
-document.getElementById("trend").innerText =
+document.getElementById("trend")
+.innerText =
 best.trend;
 
-document.getElementById("strength").innerText =
+document.getElementById("strength")
+.innerText =
 strength + "%";
 
-document.getElementById("risk").innerText =
+document.getElementById("risk")
+.innerText =
 risk;
 
-document.getElementById("entryTime").innerText =
-"Entrada: " + entryTime;
+const next =
+nextM5();
 
-if(best.action === "CALL"){
+document.getElementById("entry")
+.innerText =
+"Entrada: "
++
+next.toLocaleTimeString(
+"pt-BR",
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
 
-document.getElementById("direction").className =
-"call green";
+startCountdown(next);
 
-document.getElementById("trend").className =
-"green";
-
-}else{
-
-document.getElementById("direction").className =
-"call red";
-
-document.getElementById("trend").className =
-"red";
+document.getElementById("loading")
+.style.display = "none";
 
 }
-
-if(probability >= 90){
-
-wins++;
-
-}else{
-
-losses++;
-
-}
-
-document.getElementById("wins").innerText =
-wins;
-
-document.getElementById("losses").innerText =
-losses;
-
-updateWinRate();
-
-startCountdown(entryDate);
-
-}catch(error){
-
-console.log(error);
-
-alert("Erro geral");
-
-}
-
-document.getElementById("loading").style.display =
-"none";
-
-document.getElementById("analyzeBtn").disabled =
-false;
-
-}
-
-document.getElementById("analyzeBtn")
-.addEventListener("click", analyzeMarket);
 
 </script>
+
+</body>
+</html>
