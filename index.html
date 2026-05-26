@@ -2,7 +2,6 @@
 <html lang="pt-br">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -28,7 +27,7 @@ background:#111;
 padding:20px;
 border-radius:20px;
 border:1px solid #222;
-box-shadow:0 0 20px rgba(0,255,153,0.05);
+box-shadow:0 0 20px rgba(0,255,153,0.08);
 }
 
 .logo{
@@ -71,6 +70,10 @@ font-weight:bold;
 color:#ff4444;
 font-size:40px;
 font-weight:bold;
+}
+
+.yellow{
+color:gold;
 }
 
 .status{
@@ -140,10 +143,6 @@ color:#00ff99;
 color:#ff4444;
 }
 
-.yellow{
-color:gold;
-}
-
 .alert{
 margin-top:15px;
 font-size:18px;
@@ -153,7 +152,10 @@ display:none;
 animation:blink 1s infinite;
 }
 
-.rsi-box{
+.rsi-box,
+.filter-box,
+.volatility-box,
+.ranking-box{
 margin-top:20px;
 background:#0a0a0a;
 padding:15px;
@@ -161,12 +163,12 @@ border-radius:15px;
 text-align:center;
 }
 
-.filter-box{
-margin-top:20px;
-background:#0a0a0a;
-padding:15px;
-border-radius:15px;
-text-align:center;
+.rank-item{
+background:#111;
+padding:12px;
+border-radius:12px;
+margin-top:10px;
+font-size:16px;
 }
 
 @keyframes blink{
@@ -194,7 +196,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente M5 PRO
+Scanner Inteligente M5 ULTRA PRO
 </div>
 
 <div class="center">
@@ -236,54 +238,58 @@ Entrada: --
 <div class="status">
 
 <div class="box">
-
 <div>Tendência</div>
-
-<h3 id="trend">
---
-</h3>
-
+<h3 id="trend">--</h3>
 </div>
 
 <div class="box">
-
 <div>Força</div>
-
-<h3 id="strength">
---
-</h3>
-
+<h3 id="strength">--</h3>
 </div>
 
 <div class="box">
-
 <div>Risco</div>
-
-<h3 id="risk">
---
-</h3>
-
+<h3 id="risk">--</h3>
 </div>
 
 </div>
 
 <div class="rsi-box">
-
 <div>RSI</div>
-
-<h2 id="rsiValue">
---
-</h2>
-
+<h2 id="rsiValue">--</h2>
 </div>
 
 <div class="filter-box">
+<div>Mercado</div>
+<h2 id="marketFilter">--</h2>
+</div>
 
-<div>Filtro de Mercado</div>
+<div class="volatility-box">
+<div>Volatilidade</div>
+<h2 id="volatility">--</h2>
+</div>
 
-<h2 id="marketFilter">
---
-</h2>
+<div class="ranking-box">
+
+<div>
+🏆 Ranking dos Pares
+</div>
+
+<div id="ranking">
+
+<div class="rank-item">
+🥇 aguardando...
+</div>
+
+<div class="rank-item">
+🥈 aguardando...
+</div>
+
+<div class="rank-item">
+🥉 aguardando...
+</div>
+
+</div>
 
 </div>
 
@@ -477,6 +483,22 @@ return 100 - (100 / (1 + rs));
 
 }
 
+function calculateVolatility(data){
+
+let total = 0;
+
+for(let i=1;i<data.length;i++){
+
+total += Math.abs(
+data[i] - data[i-1]
+);
+
+}
+
+return total / data.length;
+
+}
+
 async function analyzePair(pair){
 
 try{
@@ -486,7 +508,7 @@ const url =
 +
 encodeURIComponent(pair)
 +
-"&interval=5min&outputsize=60&apikey="
+"&interval=5min&outputsize=80&apikey="
 +
 apiKey;
 
@@ -516,6 +538,9 @@ calculateEMA(21,closes);
 const rsi =
 calculateRSI(closes);
 
+const volatility =
+calculateVolatility(closes);
+
 const last =
 closes[closes.length-1];
 
@@ -539,10 +564,11 @@ rsi < 70
 force > 0.0003
 &&
 movement > 0.0002
+&&
+volatility > 0.0004
 ){
 
 direction = "CALL";
-
 trend = "ALTA";
 
 }else if(
@@ -553,10 +579,11 @@ rsi > 30
 force > 0.0003
 &&
 movement > 0.0002
+&&
+volatility > 0.0004
 ){
 
 direction = "PUT";
-
 trend = "BAIXA";
 
 }else{
@@ -565,47 +592,26 @@ return null;
 
 }
 
-let marketCondition;
-
-if(force > 0.001){
-
-marketCondition =
-"TENDÊNCIA FORTE";
-
-}else if(force > 0.0005){
-
-marketCondition =
-"MERCADO BOM";
-
-}else{
-
-marketCondition =
-"LATERAL";
-
-}
+let score =
+(force * 100000)
++
+(volatility * 100000);
 
 return{
 
 pair: pair,
-
-movement: movement,
-
 direction: direction,
-
 trend: trend,
-
 force: force,
-
 rsi: Math.floor(rsi),
-
-marketCondition: marketCondition
+volatility: volatility,
+score: score
 
 };
 
 }catch(e){
 
 console.log(e);
-
 return null;
 
 }
@@ -646,29 +652,13 @@ document.getElementById("direction")
 .className =
 "yellow";
 
-document.getElementById("accuracy")
-.innerText =
-"--%";
-
-document.getElementById("trend")
-.innerText =
-"LATERAL";
-
-document.getElementById("strength")
-.innerText =
-"--";
-
-document.getElementById("risk")
-.innerText =
-"ALTO";
-
-document.getElementById("marketFilter")
-.innerText =
-"MERCADO RUIM";
-
-document.getElementById("rsiValue")
-.innerText =
-"--";
+document.getElementById("ranking")
+.innerHTML =
+`
+<div class="rank-item">🥇 sem sinal</div>
+<div class="rank-item">🥈 sem sinal</div>
+<div class="rank-item">🥉 sem sinal</div>
+`;
 
 document.getElementById("loading")
 .style.display = "none";
@@ -678,30 +668,57 @@ return;
 }
 
 results.sort((a,b)=>
-b.force - a.force
+b.score - a.score
 );
 
 const best = results[0];
 
+let rankingHTML = "";
+
+results.slice(0,3).forEach((item,index)=>{
+
+let medal = "🥇";
+
+if(index === 1) medal = "🥈";
+if(index === 2) medal = "🥉";
+
+rankingHTML +=
+`
+<div class="rank-item">
+${medal}
+${item.pair}
+-
+${item.direction}
+-
+${Math.floor(item.score)}%
+</div>
+`;
+
+});
+
+document.getElementById("ranking")
+.innerHTML =
+rankingHTML;
+
 const probability =
 Math.min(
 99,
-Math.floor(best.force * 100000)
+Math.floor(best.score)
 );
 
 const strength =
 Math.min(
 99,
-Math.floor(best.force * 120000)
+Math.floor(best.score)
 );
 
 let risk;
 
-if(best.force > 0.001){
+if(best.force > 0.0015){
 
 risk = "BAIXO";
 
-}else if(best.force > 0.0005){
+}else if(best.force > 0.0008){
 
 risk = "MÉDIO";
 
@@ -761,7 +778,11 @@ best.rsi;
 
 document.getElementById("marketFilter")
 .innerText =
-best.marketCondition;
+best.trend;
+
+document.getElementById("volatility")
+.innerText =
+best.volatility.toFixed(5);
 
 const next =
 nextM5();
