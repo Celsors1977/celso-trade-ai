@@ -1,8 +1,587 @@
-<!-- SUBSTITUA APENAS ESTA PARTE NO FINAL DO SCRIPT -->
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Celso Ricardi Trader AI</title>
+
+<style>
+
+body{
+background:#050505;
+color:white;
+font-family:Arial;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:420px;
+margin:auto;
+}
+
+.card{
+background:#111;
+padding:20px;
+border-radius:20px;
+border:1px solid #222;
+box-shadow:0 0 20px rgba(0,255,153,0.08);
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+color:#00ff99;
+margin-bottom:10px;
+}
+
+.subtitle{
+color:#888;
+margin-bottom:20px;
+}
+
+.center{
+text-align:center;
+}
+
+.big{
+font-size:60px;
+font-weight:bold;
+margin:20px 0;
+}
+
+.signal{
+background:#0a0a0a;
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+text-align:center;
+}
+
+.call{
+color:#00ff99;
+font-size:40px;
+font-weight:bold;
+}
+
+.put{
+color:#ff4444;
+font-size:40px;
+font-weight:bold;
+}
+
+.yellow{
+color:gold;
+}
+
+.status{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.box{
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+button{
+width:100%;
+padding:18px;
+border:none;
+border-radius:15px;
+background:#00ff99;
+font-size:18px;
+font-weight:bold;
+margin-top:20px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+.loading{
+display:none;
+text-align:center;
+margin-top:15px;
+color:#00ff99;
+font-weight:bold;
+}
+
+.countdown{
+font-size:34px;
+font-weight:bold;
+margin-top:15px;
+color:#00ff99;
+}
+
+.market{
+margin-top:20px;
+text-align:center;
+color:#00ff99;
+}
+
+.clock{
+text-align:right;
+font-size:14px;
+color:#00ff99;
+margin-bottom:15px;
+}
+
+.green{
+color:#00ff99;
+}
+
+.red{
+color:#ff4444;
+}
+
+.alert{
+margin-top:15px;
+font-size:18px;
+font-weight:bold;
+color:gold;
+display:none;
+animation:blink 1s infinite;
+}
+
+.rsi-box,
+.filter-box,
+.volatility-box,
+.ranking-box,
+.auto-box{
+margin-top:20px;
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+.rank-item{
+background:#111;
+padding:12px;
+border-radius:12px;
+margin-top:10px;
+font-size:16px;
+}
+
+.auto-status{
+font-size:20px;
+font-weight:bold;
+color:#00ff99;
+margin-top:10px;
+}
+
+@keyframes blink{
+0%{opacity:0.2;}
+50%{opacity:1;}
+100%{opacity:0.2;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="clock" id="clock">
+00:00:00
+</div>
+
+<div class="card">
+
+<div class="logo">
+Celso Ricardi Trader AI
+</div>
+
+<div class="subtitle">
+Scanner Inteligente AUTO M5
+</div>
+
+<div class="center">
+
+<div>
+Probabilidade IA
+</div>
+
+<div class="big" id="accuracy">
+--%
+</div>
+
+</div>
+
+<div class="signal">
+
+<div id="pair">
+AGUARDANDO
+</div>
+
+<div id="direction" class="yellow">
+SEM SINAL
+</div>
+
+<div id="entry">
+Entrada: --
+</div>
+
+<div class="countdown" id="countdown">
+00:00
+</div>
+
+<div class="alert" id="alertText">
+⚠️ PREPARE A ENTRADA
+</div>
+
+</div>
+
+<div class="status">
+
+<div class="box">
+<div>Tendência</div>
+<h3 id="trend">--</h3>
+</div>
+
+<div class="box">
+<div>Força</div>
+<h3 id="strength">--</h3>
+</div>
+
+<div class="box">
+<div>Risco</div>
+<h3 id="risk">--</h3>
+</div>
+
+</div>
+
+<div class="rsi-box">
+<div>RSI</div>
+<h2 id="rsiValue">--</h2>
+</div>
+
+<div class="filter-box">
+<div>Mercado</div>
+<h2 id="marketFilter">--</h2>
+</div>
+
+<div class="volatility-box">
+<div>Volatilidade</div>
+<h2 id="volatility">--</h2>
+</div>
+
+<div class="auto-box">
+
+<div>
+🤖 Scanner Automático
+</div>
+
+<div class="auto-status">
+ATIVADO
+</div>
+
+</div>
+
+<div class="ranking-box">
+
+<div>
+🏆 Ranking dos Pares
+</div>
+
+<div id="ranking">
+
+<div class="rank-item">
+🥇 aguardando...
+</div>
+
+<div class="rank-item">
+🥈 aguardando...
+</div>
+
+<div class="rank-item">
+🥉 aguardando...
+</div>
+
+</div>
+
+</div>
+
+<div class="market">
+🟢 Mercado conectado em tempo real
+</div>
+
+<button onclick="analyzeMarket()">
+ATUALIZAR AGORA
+</button>
+
+<div class="loading" id="loading">
+🤖 IA analisando mercado...
+</div>
+
+</div>
+
+</div>
 
 <script>
 
+const apiKey =
+"65b715a09bc44070a1d6947b293281a9";
+
+const pairs = [
+"EUR/USD",
+"GBP/USD",
+"USD/JPY",
+"AUD/USD",
+"EUR/JPY",
+"GBP/JPY",
+"USD/CAD"
+];
+
+let timer;
 let signalLocked = false;
+
+function updateClock(){
+
+const now = new Date();
+
+document.getElementById("clock")
+.innerText =
+now.toLocaleTimeString("pt-BR");
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+function nextM5(){
+
+const now = new Date();
+
+let minutes = now.getMinutes();
+
+let next =
+Math.ceil((minutes + 1) / 5) * 5;
+
+if(next >= 60){
+
+now.setHours(now.getHours()+1);
+
+next = 0;
+
+}
+
+now.setMinutes(next);
+now.setSeconds(0);
+
+return now;
+
+}
+
+function calculateEMA(period,data){
+
+const k = 2 / (period + 1);
+
+let ema = data[0];
+
+for(let i=1;i<data.length;i++){
+
+ema =
+data[i] * k
++
+ema * (1-k);
+
+}
+
+return ema;
+
+}
+
+function calculateRSI(data,period=14){
+
+let gains = 0;
+let losses = 0;
+
+for(let i=1;i<=period;i++){
+
+const diff =
+data[data.length-i]
+-
+data[data.length-i-1];
+
+if(diff >= 0){
+
+gains += diff;
+
+}else{
+
+losses += Math.abs(diff);
+
+}
+
+}
+
+const avgGain =
+gains / period;
+
+const avgLoss =
+losses / period;
+
+if(avgLoss === 0){
+
+return 100;
+
+}
+
+const rs =
+avgGain / avgLoss;
+
+return 100 - (100 / (1 + rs));
+
+}
+
+function calculateVolatility(data){
+
+let total = 0;
+
+for(let i=1;i<data.length;i++){
+
+total += Math.abs(
+data[i] - data[i-1]
+);
+
+}
+
+return total / data.length;
+
+}
+
+async function analyzePair(pair){
+
+try{
+
+const url =
+"https://api.twelvedata.com/time_series?symbol="
++
+encodeURIComponent(pair)
++
+"&interval=5min&outputsize=80&apikey="
++
+apiKey;
+
+const response =
+await fetch(url);
+
+const data =
+await response.json();
+
+if(!data.values){
+
+return null;
+
+}
+
+const closes =
+data.values.map(c =>
+parseFloat(c.close)
+).reverse();
+
+const ema9 =
+calculateEMA(9,closes);
+
+const ema21 =
+calculateEMA(21,closes);
+
+const rsi =
+calculateRSI(closes);
+
+const volatility =
+calculateVolatility(closes);
+
+const last =
+closes[closes.length-1];
+
+const previous =
+closes[closes.length-2];
+
+const movement =
+Math.abs(last - previous);
+
+const force =
+Math.abs(ema9 - ema21);
+
+let direction;
+let trend;
+
+if(
+ema9 > ema21
+&&
+rsi < 70
+&&
+force > 0.0003
+&&
+movement > 0.0002
+&&
+volatility > 0.0004
+){
+
+direction = "CALL";
+trend = "ALTA";
+
+}else if(
+ema9 < ema21
+&&
+rsi > 30
+&&
+force > 0.0003
+&&
+movement > 0.0002
+&&
+volatility > 0.0004
+){
+
+direction = "PUT";
+trend = "BAIXA";
+
+}else{
+
+return null;
+
+}
+
+let score =
+(force * 100000)
++
+(volatility * 100000);
+
+return{
+
+pair: pair,
+direction: direction,
+trend: trend,
+force: force,
+rsi: Math.floor(rsi),
+volatility: volatility,
+score: score
+
+};
+
+}catch(e){
+
+console.log(e);
+
+return null;
+
+}
+
+}
 
 async function analyzeMarket(){
 
@@ -290,8 +869,15 @@ analyzeMarket();
 
 setInterval(()=>{
 
+if(!signalLocked){
+
 analyzeMarket();
+
+}
 
 },15000);
 
 </script>
+
+</body>
+</html>
