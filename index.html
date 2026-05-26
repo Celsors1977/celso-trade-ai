@@ -153,6 +153,14 @@ display:none;
 animation:blink 1s infinite;
 }
 
+.rsi-box{
+margin-top:20px;
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
 @keyframes blink{
 0%{opacity:0.2;}
 50%{opacity:1;}
@@ -178,7 +186,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente M5 com EMA
+Scanner Inteligente M5 EMA + RSI
 </div>
 
 <div class="center">
@@ -251,6 +259,16 @@ Entrada: --
 
 </div>
 
+<div class="rsi-box">
+
+<div>RSI</div>
+
+<h2 id="rsiValue">
+--
+</h2>
+
+</div>
+
 <div class="market">
 🟢 Mercado conectado em tempo real
 </div>
@@ -260,7 +278,7 @@ GERAR SINAL REAL
 </button>
 
 <div class="loading" id="loading">
-🤖 Analisando mercado com EMA...
+🤖 IA analisando EMA + RSI...
 </div>
 
 </div>
@@ -398,6 +416,49 @@ return ema;
 
 }
 
+function calculateRSI(data,period=14){
+
+let gains = 0;
+let losses = 0;
+
+for(let i=1;i<=period;i++){
+
+const diff =
+data[data.length-i]
+-
+data[data.length-i-1];
+
+if(diff >= 0){
+
+gains += diff;
+
+}else{
+
+losses += Math.abs(diff);
+
+}
+
+}
+
+const avgGain =
+gains / period;
+
+const avgLoss =
+losses / period;
+
+if(avgLoss === 0){
+
+return 100;
+
+}
+
+const rs =
+avgGain / avgLoss;
+
+return 100 - (100 / (1 + rs));
+
+}
+
 async function analyzePair(pair){
 
 try{
@@ -407,7 +468,7 @@ const url =
 +
 encodeURIComponent(pair)
 +
-"&interval=5min&outputsize=30&apikey="
+"&interval=5min&outputsize=50&apikey="
 +
 apiKey;
 
@@ -434,6 +495,9 @@ calculateEMA(9,closes);
 const ema21 =
 calculateEMA(21,closes);
 
+const rsi =
+calculateRSI(closes);
+
 const last =
 closes[closes.length-1];
 
@@ -446,15 +510,29 @@ Math.abs(last - previous);
 let direction;
 let trend;
 
-if(ema9 > ema21){
+if(
+ema9 > ema21
+&&
+rsi < 70
+){
 
 direction = "CALL";
+
 trend = "ALTA";
+
+}else if(
+ema9 < ema21
+&&
+rsi > 30
+){
+
+direction = "PUT";
+
+trend = "BAIXA";
 
 }else{
 
-direction = "PUT";
-trend = "BAIXA";
+return null;
 
 }
 
@@ -471,7 +549,9 @@ direction: direction,
 
 trend: trend,
 
-force: force
+force: force,
+
+rsi: Math.floor(rsi)
 
 };
 
@@ -507,7 +587,7 @@ results.push(result);
 
 if(results.length === 0){
 
-alert("Erro API");
+alert("Nenhum sinal forte encontrado");
 
 document.getElementById("loading")
 .style.display = "none";
@@ -593,6 +673,18 @@ risk === "BAIXO"
 : risk === "MÉDIO"
 ? "yellow"
 : "red";
+
+document.getElementById("rsiValue")
+.innerText =
+best.rsi;
+
+document.getElementById("rsiValue")
+.className =
+best.rsi > 70
+? "red"
+: best.rsi < 30
+? "green"
+: "yellow";
 
 const next =
 nextM5();
