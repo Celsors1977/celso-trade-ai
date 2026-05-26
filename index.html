@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trader AI</title>
+<title>Trader AI Multi-Pares</title>
 
 <style>
 body{
@@ -33,7 +33,7 @@ color:#00ff99;
 }
 
 .operation{
-font-size:40px;
+font-size:38px;
 font-weight:bold;
 margin:20px 0;
 }
@@ -66,10 +66,10 @@ color:#00ff99;
 <div class="container">
 <div class="card">
 
-<h1>EUR/USD</h1>
+<h1 id="pair">AGUARDANDO...</h1>
 
 <div class="operation gray" id="operation">
-AGUARDANDO
+ANALISANDO MERCADO
 </div>
 
 <div id="info">
@@ -79,11 +79,11 @@ Tendência: --
 </div>
 
 <button onclick="startAI()" id="btn">
-GERAR SINAL
+ANALISAR TODOS OS PARES
 </button>
 
 <div class="loading" id="loading">
-Analisando mercado...
+Analisando múltiplos pares...
 </div>
 
 </div>
@@ -91,30 +91,17 @@ Analisando mercado...
 
 <script>
 
-async function startAI(){
-
-document.getElementById("loading").style.display="block";
-document.getElementById("btn").disabled=true;
-
 const apiKey="65b715a09bc44070a1d6947b293281a9";
 
-try{
-
-const response=await fetch(
-`https://api.twelvedata.com/time_series?symbol=EUR/USD&interval=5min&outputsize=60&apikey=${apiKey}`
-);
-
-const data=await response.json();
-
-if(!data.values){
-alert("Erro ao buscar dados");
-return;
-}
-
-const closes=data.values.map(v=>parseFloat(v.close)).reverse();
-
-const maPeriod=20;
-let ma=closes.slice(-maPeriod).reduce((a,b)=>a+b,0)/maPeriod;
+const pairs=[
+"EUR/USD",
+"GBP/USD",
+"USD/JPY",
+"AUD/USD",
+"USD/CAD",
+"EUR/JPY",
+"GBP/JPY"
+];
 
 function calculateRSI(data,period=14){
 let gains=0;
@@ -131,46 +118,88 @@ let rs=avgGain/avgLoss;
 return 100-(100/(1+rs));
 }
 
-let rsi=calculateRSI(closes);
-let lastPrice=closes[closes.length-1];
+async function analyzePair(symbol){
+
+const response=await fetch(
+`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=5min&outputsize=60&apikey=${apiKey}`
+);
+
+const data=await response.json();
+
+if(!data.values) return null;
+
+const closes=data.values.map(v=>parseFloat(v.close)).reverse();
+
+const ma=closes.slice(-20).reduce((a,b)=>a+b,0)/20;
+const rsi=calculateRSI(closes);
+const lastPrice=closes[closes.length-1];
 
 let operation="NÃO OPERAR";
-let probability=75;
+let probability=0;
 let trend="LATERAL";
-let color="gray";
+let score=0;
 
 if(rsi<30 && lastPrice>ma){
 operation="COMPRA";
 probability=92;
 trend="ALTA";
-color="green";
+score=92;
 }
 else if(rsi>70 && lastPrice<ma){
 operation="VENDA";
 probability=91;
 trend="BAIXA";
-color="red";
+score=91;
 }
+
+return{
+symbol,
+operation,
+probability,
+trend,
+rsi,
+score
+};
+
+}
+
+async function startAI(){
+
+document.getElementById("loading").style.display="block";
+document.getElementById("btn").disabled=true;
+
+let bestSignal=null;
+
+for(let pair of pairs){
+
+try{
+let result=await analyzePair(pair);
+
+if(result && result.score>0){
+if(!bestSignal || result.score>bestSignal.score){
+bestSignal=result;
+}
+}
+}catch(e){
+console.log("Erro em",pair);
+}
+
+}
+
+if(bestSignal){
+
+document.getElementById("pair").innerText=bestSignal.symbol;
 
 let op=document.getElementById("operation");
-op.innerText=operation;
-op.className="operation "+color;
+op.innerText=bestSignal.operation;
+
+if(bestSignal.operation==="COMPRA"){
+op.className="operation green";
+}
+else{
+op.className="operation red";
+}
 
 document.getElementById("info").innerHTML=
-"Probabilidade: "+probability+"%<br>"+
-"RSI: "+Math.floor(rsi)+"<br>"+
-"Tendência: "+trend;
-
-document.getElementById("loading").style.display="none";
-document.getElementById("btn").disabled=false;
-
-}catch(error){
-alert("Erro na conexão");
-}
-
-}
-
-</script>
-
-</body>
-</html>
+"Probabilidade: "+bestSignal.probability+"%<br>"+
+"RSI: 
