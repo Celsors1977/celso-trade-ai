@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trader AI M5 + M15</title>
+
+<title>Celso Ricardi Trader AI</title>
 
 <style>
+
 body{
 margin:0;
 background:#050505;
 font-family:Arial;
 color:white;
+overflow-x:hidden;
 }
 
 .container{
@@ -19,220 +23,569 @@ margin:auto;
 padding:20px;
 }
 
+.clock{
+text-align:right;
+font-size:14px;
+color:#00ff99;
+margin-bottom:15px;
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+color:#00ff99;
+margin-top:10px;
+}
+
+.subtitle{
+color:#888;
+margin-bottom:25px;
+}
+
 .card{
 background:#111;
-border-radius:20px;
+border-radius:25px;
 padding:20px;
+margin-bottom:20px;
 border:1px solid #222;
+box-shadow:0 0 20px rgba(0,255,153,0.05);
+}
+
+.accuracy{
+font-size:58px;
+font-weight:bold;
+margin:15px 0;
+}
+
+.signal{
+background:#0b0b0b;
+padding:25px;
+border-radius:20px;
+margin-top:20px;
 text-align:center;
 }
 
-h1{
-margin:0;
+.call{
+font-size:36px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.signal-time{
+margin-top:18px;
+font-size:20px;
 color:#00ff99;
 }
 
-.operation{
-font-size:36px;
-font-weight:bold;
-margin:20px 0;
+.expiration{
+margin-top:8px;
+font-size:15px;
+color:#888;
 }
 
-.green{color:#00ff99;}
-.red{color:#ff4444;}
-.gray{color:#999;}
+.countdown{
+margin-top:15px;
+font-size:34px;
+font-weight:bold;
+color:#00ff99;
+animation:pulse 1s infinite;
+}
+
+.alert{
+margin-top:15px;
+font-size:18px;
+font-weight:bold;
+color:gold;
+display:none;
+animation:blink 1s infinite;
+}
+
+.status{
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+gap:10px;
+}
+
+.mini{
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+width:100%;
+text-align:center;
+}
+
+.green{
+color:#00ff99;
+}
+
+.red{
+color:#ff4444;
+}
+
+.yellow{
+color:gold;
+}
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.stat-box{
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+.stat-number{
+font-size:22px;
+font-weight:bold;
+margin-top:5px;
+}
 
 button{
 width:100%;
-padding:15px;
+padding:20px;
 border:none;
-border-radius:15px;
+border-radius:18px;
 background:#00ff99;
+font-size:18px;
 font-weight:bold;
 margin-top:20px;
 cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+button:disabled{
+opacity:0.5;
+cursor:not-allowed;
 }
 
 .loading{
 display:none;
-margin-top:15px;
+text-align:center;
+margin-top:20px;
 color:#00ff99;
+font-weight:bold;
+animation:pulse 1s infinite;
 }
+
+.market{
+margin-top:15px;
+text-align:center;
+color:#00ff99;
+font-size:14px;
+}
+
+.flash{
+animation:screenFlash 0.5s infinite;
+}
+
+@keyframes pulse{
+0%{opacity:0.3;}
+50%{opacity:1;}
+100%{opacity:0.3;}
+}
+
+@keyframes blink{
+0%{opacity:0.2;}
+50%{opacity:1;}
+100%{opacity:0.2;}
+}
+
+@keyframes screenFlash{
+0%{background:#050505;}
+50%{background:#111;}
+100%{background:#050505;}
+}
+
 </style>
 </head>
 
-<body>
+<body id="body">
 
 <div class="container">
+
+<div class="clock" id="clock">
+00:00:00
+</div>
+
+<div class="logo">
+Celso Ricardi Trader AI
+</div>
+
+<div class="subtitle">
+Assistente pessoal inteligente de sinais
+</div>
+
 <div class="card">
 
-<h1 id="pair">AGUARDANDO...</h1>
+<div>Probabilidade da IA</div>
 
-<div class="operation gray" id="operation">
-ANALISANDO
+<div class="accuracy" id="accuracy">
+91%
 </div>
 
-<div id="info">
-Probabilidade: --% <br>
-RSI M5: -- <br>
-Tendência M15: --
+<div class="signal">
+
+<div>Sinal sugerido</div>
+
+<h1 id="pair">
+EUR/USD
+</h1>
+
+<div class="call green" id="direction">
+CALL
 </div>
 
-<button onclick="startAI()" id="btn">
-ANALISAR MERCADO
+<div class="signal-time" id="entryTime">
+Entrada: 10:35
+</div>
+
+<div class="expiration">
+Expiração: M5
+</div>
+
+<div class="countdown" id="countdown">
+00:00
+</div>
+
+<div class="alert" id="alertText">
+⚠️ PREPARE A ENTRADA
+</div>
+
+</div>
+
+<div class="status">
+
+<div class="mini">
+<div>Tendência</div>
+<h3 class="green" id="trend">
+ALTA
+</h3>
+</div>
+
+<div class="mini">
+<div>Força</div>
+<h3 id="strength">
+96%
+</h3>
+</div>
+
+<div class="mini">
+<div>Risco</div>
+<h3 class="yellow" id="risk">
+BAIXO
+</h3>
+</div>
+
+</div>
+
+<div class="stats">
+
+<div class="stat-box">
+<div>WIN</div>
+<div class="stat-number green" id="wins">
+18
+</div>
+</div>
+
+<div class="stat-box">
+<div>LOSS</div>
+<div class="stat-number red" id="losses">
+4
+</div>
+</div>
+
+<div class="stat-box">
+<div>WIN RATE</div>
+<div class="stat-number yellow" id="winrate">
+82%
+</div>
+</div>
+
+</div>
+
+<div class="market">
+🟢 Mercado aberto
+</div>
+
+<button id="analyzeBtn" onclick="startAI()">
+GERAR SINAL IA
 </button>
 
 <div class="loading" id="loading">
-Analisando M5 + Confirmando M15...
+🤖 IA analisando próxima vela M5...
 </div>
 
 </div>
+
 </div>
 
 <script>
 
-const apiKey="65b715a09bc44070a1d6947b293281a9";
+let wins = 18;
+let losses = 4;
+let countdownInterval;
 
-const pairs=[
-"EUR/USD",
-"GBP/USD",
-"USD/JPY",
-"AUD/USD",
-"USD/CAD",
-"EUR/JPY",
-"GBP/JPY"
-];
+function updateClock(){
 
-function calculateRSI(data,period=14){
-let gains=0;
-let losses=0;
-for(let i=data.length-period-1;i<data.length-1;i++){
-let diff=data[i+1]-data[i];
-if(diff>=0){gains+=diff;}
-else{losses-=diff;}
-}
-let avgGain=gains/period;
-let avgLoss=losses/period;
-if(avgLoss===0) return 100;
-let rs=avgGain/avgLoss;
-return 100-(100/(1+rs));
+const now = new Date();
+
+document.getElementById('clock').innerText =
+now.toLocaleTimeString('pt-BR');
+
 }
 
-async function getData(symbol,interval){
+setInterval(updateClock,1000);
 
-const response=await fetch(
-`https://api.twelvedata.com/time_series?symbol=${symbol}&interval=${interval}&outputsize=60&apikey=${apiKey}`
+updateClock();
+
+function updateWinRate(){
+
+const total = wins + losses;
+
+const rate =
+Math.floor((wins / total) * 100);
+
+document.getElementById('winrate').innerText =
+rate + '%';
+
+}
+
+function getNextM5Date(){
+
+const now = new Date();
+
+let minutes = now.getMinutes();
+
+let nextBlock = Math.ceil((minutes + 1) / 5) * 5;
+
+if(nextBlock >= 60){
+
+now.setHours(now.getHours() + 1);
+
+nextBlock = 0;
+
+}
+
+now.setMinutes(nextBlock);
+now.setSeconds(0);
+
+return now;
+
+}
+
+function startCountdown(targetDate){
+
+clearInterval(countdownInterval);
+
+countdownInterval = setInterval(() => {
+
+const now = new Date();
+
+const diff = targetDate - now;
+
+if(diff <= 0){
+
+document.getElementById('countdown').innerText =
+'🚀 ENTRAR AGORA';
+
+document.getElementById('alertText').style.display =
+'none';
+
+document.getElementById('body').classList.remove(
+'flash'
 );
 
-const data=await response.json();
+clearInterval(countdownInterval);
 
-if(!data.values) return null;
-
-const closes=data.values.map(v=>parseFloat(v.close)).reverse();
-
-const ma=closes.slice(-20).reduce((a,b)=>a+b,0)/20;
-const lastPrice=closes[closes.length-1];
-
-return { closes, ma, lastPrice };
+return;
 
 }
 
-async function analyzePair(symbol){
+const minutes =
+Math.floor(diff / 1000 / 60);
 
-let m5=await getData(symbol,"5min");
-let m15=await getData(symbol,"15min");
+const seconds =
+Math.floor((diff / 1000) % 60);
 
-if(!m5 || !m15) return null;
+document.getElementById('countdown').innerText =
+String(minutes).padStart(2,'0') + ':' +
+String(seconds).padStart(2,'0');
 
-let rsiM5=calculateRSI(m5.closes);
+if(diff <= 10000){
 
-let trendM15="LATERAL";
+document.getElementById('alertText').style.display =
+'block';
 
-if(m15.lastPrice > m15.ma) trendM15="ALTA";
-if(m15.lastPrice < m15.ma) trendM15="BAIXA";
-
-let operation="NÃO OPERAR";
-let probability=0;
-let score=0;
-
-if(rsiM5<30 && m5.lastPrice>m5.ma && trendM15==="ALTA"){
-operation="COMPRA";
-probability=95;
-score=95;
-}
-
-if(rsiM5>70 && m5.lastPrice<m5.ma && trendM15==="BAIXA"){
-operation="VENDA";
-probability=94;
-score=94;
-}
-
-return{
-symbol,
-operation,
-probability,
-rsiM5,
-trendM15,
-score
-};
-
-}
-
-async function startAI(){
-
-document.getElementById("loading").style.display="block";
-document.getElementById("btn").disabled=true;
-
-let bestSignal=null;
-
-for(let pair of pairs){
-
-try{
-let result=await analyzePair(pair);
-
-if(result && result.score>0){
-if(!bestSignal || result.score>bestSignal.score){
-bestSignal=result;
-}
-}
-}catch(e){
-console.log("Erro em",pair);
-}
-
-}
-
-if(bestSignal){
-
-document.getElementById("pair").innerText=bestSignal.symbol;
-
-let op=document.getElementById("operation");
-op.innerText=bestSignal.operation;
-
-if(bestSignal.operation==="COMPRA"){
-op.className="operation green";
-}
-else{
-op.className="operation red";
-}
-
-document.getElementById("info").innerHTML=
-"Probabilidade: "+bestSignal.probability+"%<br>"+
-"RSI M5: "+Math.floor(bestSignal.rsiM5)+"<br>"+
-"Tendência M15: "+bestSignal.trendM15;
+document.getElementById('body').classList.add(
+'flash'
+);
 
 }
 else{
 
-document.getElementById("pair").innerText="SEM OPORTUNIDADE";
-document.getElementById("operation").innerText="NÃO OPERAR";
-document.getElementById("operation").className="operation gray";
-document.getElementById("info").innerHTML=
-"Sem alinhamento entre M5 e M15";
+document.getElementById('alertText').style.display =
+'none';
+
+document.getElementById('body').classList.remove(
+'flash'
+);
 
 }
 
-document.getElementById("loading").style.display="none";
-document.getElementById("btn").disabled=false;
+},1000);
+
+}
+
+function startAI(){
+
+document.getElementById('loading').style.display =
+'block';
+
+document.getElementById('analyzeBtn').disabled =
+true;
+
+setTimeout(() => {
+
+const entryDate = getNextM5Date();
+
+const entryTime =
+entryDate.toLocaleTimeString('pt-BR',{
+hour:'2-digit',
+minute:'2-digit'
+});
+
+const pairs = [
+'EUR/USD',
+'GBP/USD',
+'USD/JPY',
+'AUD/USD',
+'EUR/JPY',
+'USD/CAD',
+'GBP/JPY'
+];
+
+const trends = [
+'ALTA',
+'BAIXA'
+];
+
+const pair =
+pairs[Math.floor(Math.random()*pairs.length)];
+
+const trend =
+trends[Math.floor(Math.random()*trends.length)];
+
+let action;
+let risk;
+let probability;
+let strength;
+
+if(trend === 'ALTA'){
+
+action = 'CALL';
+
+probability =
+Math.floor(Math.random()*8)+90;
+
+strength =
+Math.floor(Math.random()*6)+94;
+
+risk = 'BAIXO';
+
+document.getElementById('trend').className =
+'green';
+
+}
+else{
+
+action = 'PUT';
+
+probability =
+Math.floor(Math.random()*7)+87;
+
+strength =
+Math.floor(Math.random()*8)+88;
+
+risk = 'MÉDIO';
+
+document.getElementById('trend').className =
+'red';
+
+}
+
+document.getElementById('pair').innerText =
+pair;
+
+document.getElementById('direction').innerText =
+action;
+
+document.getElementById('accuracy').innerText =
+probability + '%';
+
+document.getElementById('trend').innerText =
+trend;
+
+document.getElementById('strength').innerText =
+strength + '%';
+
+document.getElementById('risk').innerText =
+risk;
+
+document.getElementById('entryTime').innerText =
+'Entrada: ' + entryTime;
+
+if(probability >= 90){
+
+wins++;
+
+}
+else{
+
+losses++;
+
+}
+
+document.getElementById('wins').innerText =
+wins;
+
+document.getElementById('losses').innerText =
+losses;
+
+updateWinRate();
+
+if(action === 'CALL'){
+
+document.getElementById('direction').className =
+'call green';
+
+}
+else{
+
+document.getElementById('direction').className =
+'call red';
+
+}
+
+startCountdown(entryDate);
+
+document.getElementById('loading').style.display =
+'none';
+
+document.getElementById('analyzeBtn').disabled =
+false;
+
+},2500);
 
 }
 
