@@ -62,25 +62,11 @@ height:140px;
 background:#0b0b0b;
 border-radius:20px;
 margin-top:20px;
-padding:15px;
+padding:10px;
 display:flex;
-align-items:flex-end;
-justify-content:space-between;
+align-items:center;
+justify-content:center;
 overflow:hidden;
-}
-
-.candle{
-width:14px;
-border-radius:5px;
-animation:float 1.5s infinite alternate;
-}
-
-.green-candle{
-background:#00ff99;
-}
-
-.red-candle{
-background:#ff4444;
 }
 
 .signal{
@@ -215,6 +201,15 @@ font-size:14px;
 animation:screenFlash 0.5s infinite;
 }
 
+svg{
+width:100%;
+height:120px;
+}
+
+#chartLine{
+transition:all 0.8s ease;
+}
+
 @keyframes pulse{
 0%{opacity:0.3;}
 50%{opacity:1;}
@@ -231,11 +226,6 @@ animation:screenFlash 0.5s infinite;
 0%{background:#050505;}
 50%{background:#111;}
 100%{background:#050505;}
-}
-
-@keyframes float{
-0%{transform:translateY(0px);}
-100%{transform:translateY(-5px);}
 }
 
 </style>
@@ -265,18 +255,23 @@ Assistente pessoal inteligente de sinais
 91%
 </div>
 
-<div class="chart" id="chart">
+<div class="chart">
 
-<div class="candle green-candle" style="height:40px"></div>
-<div class="candle green-candle" style="height:65px"></div>
-<div class="candle red-candle" style="height:35px"></div>
-<div class="candle green-candle" style="height:80px"></div>
-<div class="candle green-candle" style="height:90px"></div>
-<div class="candle red-candle" style="height:50px"></div>
-<div class="candle green-candle" style="height:110px"></div>
-<div class="candle green-candle" style="height:120px"></div>
-<div class="candle red-candle" style="height:60px"></div>
-<div class="candle green-candle" style="height:130px"></div>
+<svg viewBox="0 0 300 120">
+
+<path
+id="chartLine"
+d="M0 90
+C40 85, 60 80, 90 75
+S140 60, 170 55
+S220 35, 300 20"
+stroke="#00ff99"
+stroke-width="4"
+fill="none"
+stroke-linecap="round"
+/>
+
+</svg>
 
 </div>
 
@@ -432,71 +427,33 @@ return now;
 
 function generateChart(action){
 
-const chart =
-document.getElementById('chart');
-
-chart.innerHTML = '';
-
-for(let i=0; i<10; i++){
-
-const candle =
-document.createElement('div');
-
-const height =
-Math.floor(Math.random()*80)+30;
-
-candle.classList.add('candle');
+const line =
+document.getElementById('chartLine');
 
 if(action === 'CALL'){
 
-if(i > 4){
-
-candle.classList.add('green-candle');
-
-candle.style.height =
-(height + 40) + 'px';
-
-}
-else{
-
-candle.classList.add(
-Math.random() > 0.3 ?
-'green-candle' :
-'red-candle'
+line.setAttribute(
+'d',
+'M0 90 C40 85, 60 80, 90 75 S140 60, 170 55 S220 35, 300 20'
 );
 
-candle.style.height =
-height + 'px';
-
-}
-
-}
-else{
-
-if(i > 4){
-
-candle.classList.add('red-candle');
-
-candle.style.height =
-(height + 40) + 'px';
-
-}
-else{
-
-candle.classList.add(
-Math.random() > 0.3 ?
-'red-candle' :
-'green-candle'
+line.setAttribute(
+'stroke',
+'#00ff99'
 );
 
-candle.style.height =
-height + 'px';
-
 }
+else{
 
-}
+line.setAttribute(
+'d',
+'M0 20 C40 25, 60 35, 90 45 S140 60, 170 75 S220 90, 300 100'
+);
 
-chart.appendChild(candle);
+line.setAttribute(
+'stroke',
+'#ff4444'
+);
 
 }
 
