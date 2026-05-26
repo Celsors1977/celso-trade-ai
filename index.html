@@ -57,6 +57,32 @@ font-weight:bold;
 margin:15px 0;
 }
 
+.chart{
+height:140px;
+background:#0b0b0b;
+border-radius:20px;
+margin-top:20px;
+padding:15px;
+display:flex;
+align-items:flex-end;
+justify-content:space-between;
+overflow:hidden;
+}
+
+.candle{
+width:14px;
+border-radius:5px;
+animation:float 1.5s infinite alternate;
+}
+
+.green-candle{
+background:#00ff99;
+}
+
+.red-candle{
+background:#ff4444;
+}
+
 .signal{
 background:#0b0b0b;
 padding:25px;
@@ -207,6 +233,11 @@ animation:screenFlash 0.5s infinite;
 100%{background:#050505;}
 }
 
+@keyframes float{
+0%{transform:translateY(0px);}
+100%{transform:translateY(-5px);}
+}
+
 </style>
 </head>
 
@@ -232,6 +263,21 @@ Assistente pessoal inteligente de sinais
 
 <div class="accuracy" id="accuracy">
 91%
+</div>
+
+<div class="chart" id="chart">
+
+<div class="candle green-candle" style="height:40px"></div>
+<div class="candle green-candle" style="height:65px"></div>
+<div class="candle red-candle" style="height:35px"></div>
+<div class="candle green-candle" style="height:80px"></div>
+<div class="candle green-candle" style="height:90px"></div>
+<div class="candle red-candle" style="height:50px"></div>
+<div class="candle green-candle" style="height:110px"></div>
+<div class="candle green-candle" style="height:120px"></div>
+<div class="candle red-candle" style="height:60px"></div>
+<div class="candle green-candle" style="height:130px"></div>
+
 </div>
 
 <div class="signal">
@@ -384,6 +430,78 @@ return now;
 
 }
 
+function generateChart(action){
+
+const chart =
+document.getElementById('chart');
+
+chart.innerHTML = '';
+
+for(let i=0; i<10; i++){
+
+const candle =
+document.createElement('div');
+
+const height =
+Math.floor(Math.random()*80)+30;
+
+candle.classList.add('candle');
+
+if(action === 'CALL'){
+
+if(i > 4){
+
+candle.classList.add('green-candle');
+
+candle.style.height =
+(height + 40) + 'px';
+
+}
+else{
+
+candle.classList.add(
+Math.random() > 0.3 ?
+'green-candle' :
+'red-candle'
+);
+
+candle.style.height =
+height + 'px';
+
+}
+
+}
+else{
+
+if(i > 4){
+
+candle.classList.add('red-candle');
+
+candle.style.height =
+(height + 40) + 'px';
+
+}
+else{
+
+candle.classList.add(
+Math.random() > 0.3 ?
+'red-candle' :
+'green-candle'
+);
+
+candle.style.height =
+height + 'px';
+
+}
+
+}
+
+chart.appendChild(candle);
+
+}
+
+}
+
 function startCountdown(targetDate){
 
 clearInterval(countdownInterval);
@@ -523,6 +641,8 @@ document.getElementById('trend').className =
 'red';
 
 }
+
+generateChart(action);
 
 document.getElementById('pair').innerText =
 pair;
