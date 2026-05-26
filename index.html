@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Celso Ricardi Trader AI</title>
+<title>Trader AI</title>
 
 <style>
 body{
@@ -19,74 +19,28 @@ margin:auto;
 padding:20px;
 }
 
-.logo{
-font-size:24px;
-font-weight:bold;
-color:#00ff99;
-}
-
-.subtitle{
-color:#888;
-margin-bottom:20px;
-}
-
 .card{
 background:#111;
 border-radius:20px;
 padding:20px;
 border:1px solid #222;
-}
-
-.accuracy{
-font-size:42px;
-font-weight:bold;
-margin:10px 0;
-}
-
-.signal{
-background:#0b0b0b;
-padding:20px;
-border-radius:15px;
-margin-top:15px;
 text-align:center;
 }
 
-.direction{
-font-size:24px;
-font-weight:bold;
-margin-top:10px;
+h1{
+margin:0;
+color:#00ff99;
 }
 
-.big{
-font-size:34px;
+.operation{
+font-size:40px;
 font-weight:bold;
-margin-top:10px;
+margin:20px 0;
 }
 
 .green{color:#00ff99;}
 .red{color:#ff4444;}
-.gray{color:#aaa;}
-
-.countdown{
-margin-top:15px;
-font-size:22px;
-font-weight:bold;
-}
-
-.status{
-display:flex;
-justify-content:space-between;
-margin-top:20px;
-gap:10px;
-}
-
-.mini{
-background:#0a0a0a;
-padding:10px;
-border-radius:10px;
-width:100%;
-text-align:center;
-}
+.gray{color:#999;}
 
 button{
 width:100%;
@@ -101,10 +55,8 @@ cursor:pointer;
 
 .loading{
 display:none;
-text-align:center;
 margin-top:15px;
 color:#00ff99;
-font-weight:bold;
 }
 </style>
 </head>
@@ -112,47 +64,22 @@ font-weight:bold;
 <body>
 
 <div class="container">
-
-<div class="logo">Celso Ricardi Trader AI</div>
-<div class="subtitle">Sistema Real de Análise Forex M5</div>
-
 <div class="card">
 
-<div>Probabilidade</div>
-<div class="accuracy" id="accuracy">--%</div>
+<h1>EUR/USD</h1>
 
-<div class="signal">
-<div><strong>EUR/USD</strong></div>
-
-<div class="big gray" id="operation">
-⛔ NÃO OPERAR
+<div class="operation gray" id="operation">
+AGUARDANDO
 </div>
 
-<div id="entryTime">Entrada: --:--</div>
-
-<div class="countdown" id="countdown">
-🚀 ENTRAR AGORA
+<div id="info">
+Probabilidade: --% <br>
+RSI: -- <br>
+Tendência: --
 </div>
 
-</div>
-
-<div class="status">
-<div class="mini">
-<div>Tendência</div>
-<div id="trend">--</div>
-</div>
-<div class="mini">
-<div>RSI</div>
-<div id="rsi">--</div>
-</div>
-<div class="mini">
-<div>Risco</div>
-<div id="risk">--</div>
-</div>
-</div>
-
-<button onclick="startAI()" id="analyzeBtn">
-GERAR ANÁLISE
+<button onclick="startAI()" id="btn">
+GERAR SINAL
 </button>
 
 <div class="loading" id="loading">
@@ -164,48 +91,10 @@ Analisando mercado...
 
 <script>
 
-let countdownInterval;
-
-function getNextM5Date(){
-const now=new Date();
-let minutes=now.getMinutes();
-let nextBlock=Math.ceil((minutes+1)/5)*5;
-if(nextBlock>=60){
-now.setHours(now.getHours()+1);
-nextBlock=0;
-}
-now.setMinutes(nextBlock);
-now.setSeconds(0);
-return now;
-}
-
-function startCountdown(targetDate){
-clearInterval(countdownInterval);
-
-countdownInterval=setInterval(()=>{
-const now=new Date();
-const diff=targetDate-now;
-
-if(diff<=0){
-document.getElementById("countdown").innerText="🚀 EXECUTAR ENTRADA";
-clearInterval(countdownInterval);
-return;
-}
-
-const minutes=Math.floor(diff/1000/60);
-const seconds=Math.floor((diff/1000)%60);
-
-document.getElementById("countdown").innerText=
-"⏳ "+String(minutes).padStart(2,'0')+":"+
-String(seconds).padStart(2,'0');
-
-},1000);
-}
-
 async function startAI(){
 
 document.getElementById("loading").style.display="block";
-document.getElementById("analyzeBtn").disabled=true;
+document.getElementById("btn").disabled=true;
 
 const apiKey="65b715a09bc44070a1d6947b293281a9";
 
@@ -219,7 +108,6 @@ const data=await response.json();
 
 if(!data.values){
 alert("Erro ao buscar dados");
-console.log(data);
 return;
 }
 
@@ -246,48 +134,38 @@ return 100-(100/(1+rs));
 let rsi=calculateRSI(closes);
 let lastPrice=closes[closes.length-1];
 
-let operation="⛔ NÃO OPERAR";
+let operation="NÃO OPERAR";
 let probability=75;
 let trend="LATERAL";
-let risk="MÉDIO";
 let color="gray";
 
 if(rsi<30 && lastPrice>ma){
-operation="📈 COMPRAR (ALTA)";
+operation="COMPRA";
 probability=92;
 trend="ALTA";
-risk="BAIXO";
 color="green";
 }
 else if(rsi>70 && lastPrice<ma){
-operation="📉 VENDER (BAIXA)";
+operation="VENDA";
 probability=91;
 trend="BAIXA";
-risk="BAIXO";
 color="red";
 }
 
-let opElement=document.getElementById("operation");
-opElement.innerText=operation;
-opElement.className="big "+color;
+let op=document.getElementById("operation");
+op.innerText=operation;
+op.className="operation "+color;
 
-document.getElementById("accuracy").innerText=probability+"%";
-document.getElementById("trend").innerText=trend;
-document.getElementById("rsi").innerText=Math.floor(rsi);
-document.getElementById("risk").innerText=risk;
-
-const entryDate=getNextM5Date();
-const entryTime=entryDate.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-document.getElementById("entryTime").innerText="Entrada: "+entryTime;
-
-startCountdown(entryDate);
+document.getElementById("info").innerHTML=
+"Probabilidade: "+probability+"%<br>"+
+"RSI: "+Math.floor(rsi)+"<br>"+
+"Tendência: "+trend;
 
 document.getElementById("loading").style.display="none";
-document.getElementById("analyzeBtn").disabled=false;
+document.getElementById("btn").disabled=false;
 
 }catch(error){
-alert("Erro de conexão");
-console.error(error);
+alert("Erro na conexão");
 }
 
 }
