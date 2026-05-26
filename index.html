@@ -23,7 +23,7 @@ padding:20px;
 }
 
 .logo{
-font-size:30px;
+font-size:28px;
 font-weight:bold;
 color:#00ff99;
 margin-top:20px;
@@ -79,6 +79,10 @@ text-align:center;
 
 .green{
 color:#00ff99;
+}
+
+.red{
+color:#ff4444;
 }
 
 .yellow{
@@ -143,7 +147,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Assistente pessoal de sinais com IA
+Assistente pessoal inteligente de sinais
 </div>
 
 <div class="card">
@@ -151,7 +155,7 @@ Assistente pessoal de sinais com IA
 <div>Probabilidade da IA</div>
 
 <div class="accuracy" id="accuracy">
-84%
+87%
 </div>
 
 <div class="signal">
@@ -180,13 +184,13 @@ ALTA
 <div class="mini">
 <div>Força</div>
 <h3 id="strength">
-92%
+94%
 </h3>
 </div>
 
 <div class="mini">
 <div>Risco</div>
-<h3 class="yellow">
+<h3 class="yellow" id="risk">
 BAIXO
 </h3>
 </div>
@@ -197,7 +201,7 @@ BAIXO
 
 <div class="card">
 
-<h2>Histórico</h2>
+<h2>Últimos sinais</h2>
 
 <div class="history">
 <div>GBP/USD</div>
@@ -242,11 +246,6 @@ const pairs = [
 'EUR/JPY'
 ];
 
-const actions = [
-'CALL',
-'PUT'
-];
-
 const trends = [
 'ALTA',
 'BAIXA'
@@ -255,17 +254,46 @@ const trends = [
 const pair =
 pairs[Math.floor(Math.random()*pairs.length)];
 
-const action =
-actions[Math.floor(Math.random()*actions.length)];
-
 const trend =
 trends[Math.floor(Math.random()*trends.length)];
 
-const probability =
-Math.floor(Math.random()*15)+80;
+let action;
+let risk;
+let probability;
+let strength;
 
-const strength =
-Math.floor(Math.random()*10)+90;
+if(trend === 'ALTA'){
+
+action = 'CALL';
+
+probability =
+Math.floor(Math.random()*10)+88;
+
+strength =
+Math.floor(Math.random()*8)+92;
+
+risk = 'BAIXO';
+
+document.getElementById('trend').className =
+'green';
+
+}
+else{
+
+action = 'PUT';
+
+probability =
+Math.floor(Math.random()*10)+82;
+
+strength =
+Math.floor(Math.random()*10)+80;
+
+risk = 'MÉDIO';
+
+document.getElementById('trend').className =
+'red';
+
+}
 
 document.getElementById('pair').innerText = pair;
 
@@ -279,16 +307,24 @@ document.getElementById('trend').innerText = trend;
 document.getElementById('strength').innerText =
 strength + '%';
 
+document.getElementById('risk').innerText =
+risk;
+
 if(action === 'CALL'){
+
 document.getElementById('direction').style.color =
 '#00ff99';
+
 }
 else{
+
 document.getElementById('direction').style.color =
 '#ff4444';
+
 }
 
-document.getElementById('loading').style.display = 'none';
+document.getElementById('loading').style.display =
+'none';
 
 },2000);
 
