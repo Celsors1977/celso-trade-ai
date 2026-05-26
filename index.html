@@ -22,11 +22,18 @@ margin:auto;
 padding:20px;
 }
 
+.clock{
+text-align:right;
+font-size:14px;
+color:#00ff99;
+margin-bottom:15px;
+}
+
 .logo{
 font-size:28px;
 font-weight:bold;
 color:#00ff99;
-margin-top:20px;
+margin-top:10px;
 }
 
 .subtitle{
@@ -44,28 +51,28 @@ box-shadow:0 0 20px rgba(0,255,153,0.05);
 }
 
 .accuracy{
-font-size:55px;
+font-size:58px;
 font-weight:bold;
 margin:15px 0;
 }
 
 .signal{
 background:#0b0b0b;
-padding:20px;
+padding:25px;
 border-radius:20px;
 margin-top:20px;
+text-align:center;
 }
 
 .call{
-font-size:34px;
+font-size:36px;
 font-weight:bold;
-color:#00ff99;
 margin-top:10px;
 }
 
 .signal-time{
-margin-top:15px;
-font-size:18px;
+margin-top:18px;
+font-size:20px;
 color:#00ff99;
 }
 
@@ -102,32 +109,6 @@ color:#ff4444;
 color:gold;
 }
 
-button{
-width:100%;
-padding:18px;
-border:none;
-border-radius:18px;
-background:#00ff99;
-font-size:18px;
-font-weight:bold;
-margin-top:20px;
-cursor:pointer;
-transition:0.3s;
-}
-
-button:hover{
-opacity:0.9;
-}
-
-.loading{
-display:none;
-text-align:center;
-margin-top:15px;
-color:#00ff99;
-font-weight:bold;
-animation:pulse 1s infinite;
-}
-
 .stats{
 display:grid;
 grid-template-columns:1fr 1fr 1fr;
@@ -148,43 +129,30 @@ font-weight:bold;
 margin-top:5px;
 }
 
-.history{
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:#0b0b0b;
-padding:15px;
-border-radius:15px;
-margin-top:10px;
-font-size:14px;
+button{
+width:100%;
+padding:20px;
+border:none;
+border-radius:18px;
+background:#00ff99;
+font-size:18px;
+font-weight:bold;
+margin-top:20px;
+cursor:pointer;
+transition:0.3s;
 }
 
-.history-left{
-display:flex;
-flex-direction:column;
+button:hover{
+opacity:0.9;
 }
 
-.history-time{
-font-size:12px;
-color:#777;
-margin-top:4px;
-}
-
-.win{
+.loading{
+display:none;
+text-align:center;
+margin-top:20px;
 color:#00ff99;
 font-weight:bold;
-}
-
-.loss{
-color:#ff4444;
-font-weight:bold;
-}
-
-.clock{
-text-align:right;
-font-size:14px;
-color:#00ff99;
-margin-bottom:15px;
+animation:pulse 1s infinite;
 }
 
 @keyframes pulse{
@@ -217,7 +185,7 @@ Assistente pessoal inteligente de sinais
 <div>Probabilidade da IA</div>
 
 <div class="accuracy" id="accuracy">
-87%
+91%
 </div>
 
 <div class="signal">
@@ -228,16 +196,16 @@ Assistente pessoal inteligente de sinais
 EUR/USD
 </h1>
 
-<div class="call" id="direction">
+<div class="call green" id="direction">
 CALL
 </div>
 
 <div class="signal-time" id="entryTime">
-Entrada: 04:01
+Entrada: 10:35
 </div>
 
 <div class="expiration">
-Expiração: M1
+Expiração: M5
 </div>
 
 </div>
@@ -254,7 +222,7 @@ ALTA
 <div class="mini">
 <div>Força</div>
 <h3 id="strength">
-94%
+96%
 </h3>
 </div>
 
@@ -272,38 +240,32 @@ BAIXO
 <div class="stat-box">
 <div>WIN</div>
 <div class="stat-number green" id="wins">
-12
+18
 </div>
 </div>
 
 <div class="stat-box">
 <div>LOSS</div>
 <div class="stat-number red" id="losses">
-3
+4
 </div>
 </div>
 
 <div class="stat-box">
 <div>WIN RATE</div>
 <div class="stat-number yellow" id="winrate">
-80%
+82%
 </div>
 </div>
 
 </div>
-
-</div>
-
-<div class="card">
-
-<div id="history-list"></div>
 
 <button onclick="startAI()">
-Iniciar análise IA
+GERAR SINAL IA
 </button>
 
 <div class="loading" id="loading">
-🤖 IA analisando próxima vela...
+🤖 IA analisando próxima vela M5...
 </div>
 
 </div>
@@ -312,8 +274,8 @@ Iniciar análise IA
 
 <script>
 
-let wins = 12;
-let losses = 3;
+let wins = 18;
+let losses = 4;
 
 function updateClock(){
 
@@ -340,11 +302,25 @@ rate + '%';
 
 }
 
-function getNextMinute(){
+function getNextM5Time(){
 
 const now = new Date();
 
-now.setMinutes(now.getMinutes() + 1);
+let minutes = now.getMinutes();
+
+let nextBlock = Math.ceil((minutes + 1) / 5) * 5;
+
+if(nextBlock >= 60){
+
+now.setHours(now.getHours() + 1);
+
+nextBlock = 0;
+
+}
+
+now.setMinutes(nextBlock);
+
+now.setSeconds(0);
 
 return now.toLocaleTimeString('pt-BR',{
 hour:'2-digit',
@@ -360,14 +336,16 @@ document.getElementById('loading').style.display =
 
 setTimeout(() => {
 
-const currentTime = getNextMinute();
+const entryTime = getNextM5Time();
 
 const pairs = [
 'EUR/USD',
 'GBP/USD',
 'USD/JPY',
 'AUD/USD',
-'EUR/JPY'
+'EUR/JPY',
+'USD/CAD',
+'GBP/JPY'
 ];
 
 const trends = [
@@ -391,10 +369,10 @@ if(trend === 'ALTA'){
 action = 'CALL';
 
 probability =
-Math.floor(Math.random()*10)+88;
+Math.floor(Math.random()*8)+90;
 
 strength =
-Math.floor(Math.random()*8)+92;
+Math.floor(Math.random()*6)+94;
 
 risk = 'BAIXO';
 
@@ -407,10 +385,10 @@ else{
 action = 'PUT';
 
 probability =
-Math.floor(Math.random()*10)+82;
+Math.floor(Math.random()*7)+87;
 
 strength =
-Math.floor(Math.random()*10)+80;
+Math.floor(Math.random()*8)+88;
 
 risk = 'MÉDIO';
 
@@ -419,7 +397,8 @@ document.getElementById('trend').className =
 
 }
 
-document.getElementById('pair').innerText = pair;
+document.getElementById('pair').innerText =
+pair;
 
 document.getElementById('direction').innerText =
 action;
@@ -437,19 +416,15 @@ document.getElementById('risk').innerText =
 risk;
 
 document.getElementById('entryTime').innerText =
-'Entrada: ' + currentTime;
+'Entrada: ' + entryTime;
 
-let result;
+if(probability >= 90){
 
-if(probability >= 88){
-
-result = 'WIN';
 wins++;
 
 }
 else{
 
-result = 'LOSS';
 losses++;
 
 }
@@ -464,44 +439,21 @@ updateWinRate();
 
 if(action === 'CALL'){
 
-document.getElementById('direction').style.color =
-'#00ff99';
+document.getElementById('direction').className =
+'call green';
 
 }
 else{
 
-document.getElementById('direction').style.color =
-'#ff4444';
+document.getElementById('direction').className =
+'call red';
 
 }
-
-const history =
-document.getElementById('history-list');
-
-const item =
-document.createElement('div');
-
-item.className = 'history';
-
-item.innerHTML = `
-<div class="history-left">
-<div>${pair} - ${action}</div>
-<div class="history-time">
-Entrada ${currentTime}
-</div>
-</div>
-
-<div class="${result === 'WIN' ? 'win' : 'loss'}">
-${result}
-</div>
-`;
-
-history.prepend(item);
 
 document.getElementById('loading').style.display =
 'none';
 
-},2000);
+},2500);
 
 }
 
