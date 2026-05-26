@@ -92,6 +92,7 @@ color:gold;
 .history{
 display:flex;
 justify-content:space-between;
+align-items:center;
 background:#0b0b0b;
 padding:15px;
 border-radius:15px;
@@ -100,6 +101,11 @@ margin-top:10px;
 
 .win{
 color:#00ff99;
+font-weight:bold;
+}
+
+.loss{
+color:#ff4444;
 font-weight:bold;
 }
 
@@ -127,6 +133,26 @@ margin-top:15px;
 color:#00ff99;
 font-weight:bold;
 animation:pulse 1s infinite;
+}
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.stat-box{
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+.stat-number{
+font-size:22px;
+font-weight:bold;
+margin-top:5px;
 }
 
 @keyframes pulse{
@@ -197,11 +223,38 @@ BAIXO
 
 </div>
 
+<div class="stats">
+
+<div class="stat-box">
+<div>WIN</div>
+<div class="stat-number green" id="wins">
+12
+</div>
+</div>
+
+<div class="stat-box">
+<div>LOSS</div>
+<div class="stat-number red" id="losses">
+3
+</div>
+</div>
+
+<div class="stat-box">
+<div>WIN RATE</div>
+<div class="stat-number yellow" id="winrate">
+80%
+</div>
+</div>
+
+</div>
+
 </div>
 
 <div class="card">
 
 <h2>Últimos sinais</h2>
+
+<div id="history-list">
 
 <div class="history">
 <div>GBP/USD</div>
@@ -215,7 +268,9 @@ BAIXO
 
 <div class="history">
 <div>AUD/USD</div>
-<div class="win">WIN</div>
+<div class="loss">LOSS</div>
+</div>
+
 </div>
 
 <button onclick="startAI()">
@@ -232,9 +287,25 @@ Iniciar análise IA
 
 <script>
 
+let wins = 12;
+let losses = 3;
+
+function updateWinRate(){
+
+const total = wins + losses;
+
+const rate =
+Math.floor((wins / total) * 100);
+
+document.getElementById('winrate').innerText =
+rate + '%';
+
+}
+
 function startAI(){
 
-document.getElementById('loading').style.display = 'block';
+document.getElementById('loading').style.display =
+'block';
 
 setTimeout(() => {
 
@@ -297,18 +368,43 @@ document.getElementById('trend').className =
 
 document.getElementById('pair').innerText = pair;
 
-document.getElementById('direction').innerText = action;
+document.getElementById('direction').innerText =
+action;
 
 document.getElementById('accuracy').innerText =
 probability + '%';
 
-document.getElementById('trend').innerText = trend;
+document.getElementById('trend').innerText =
+trend;
 
 document.getElementById('strength').innerText =
 strength + '%';
 
 document.getElementById('risk').innerText =
 risk;
+
+let result;
+
+if(probability >= 88){
+
+result = 'WIN';
+wins++;
+
+}
+else{
+
+result = 'LOSS';
+losses++;
+
+}
+
+document.getElementById('wins').innerText =
+wins;
+
+document.getElementById('losses').innerText =
+losses;
+
+updateWinRate();
 
 if(action === 'CALL'){
 
@@ -322,6 +418,23 @@ document.getElementById('direction').style.color =
 '#ff4444';
 
 }
+
+const history =
+document.getElementById('history-list');
+
+const item =
+document.createElement('div');
+
+item.className = 'history';
+
+item.innerHTML = `
+<div>${pair}</div>
+<div class="${result === 'WIN' ? 'win' : 'loss'}">
+${result}
+</div>
+`;
+
+history.prepend(item);
 
 document.getElementById('loading').style.display =
 'none';
