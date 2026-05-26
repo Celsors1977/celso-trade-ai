@@ -146,6 +146,17 @@ margin-top:10px;
 font-size:14px;
 }
 
+.history-left{
+display:flex;
+flex-direction:column;
+}
+
+.history-time{
+font-size:12px;
+color:#777;
+margin-top:4px;
+}
+
 .win{
 color:#00ff99;
 font-weight:bold;
@@ -154,6 +165,13 @@ font-weight:bold;
 .loss{
 color:#ff4444;
 font-weight:bold;
+}
+
+.clock{
+text-align:right;
+font-size:14px;
+color:#00ff99;
+margin-bottom:15px;
 }
 
 @keyframes pulse{
@@ -168,6 +186,10 @@ font-weight:bold;
 <body>
 
 <div class="container">
+
+<div class="clock" id="clock">
+00:00:00
+</div>
 
 <div class="logo">
 Celso Ricardi Trader AI
@@ -272,6 +294,19 @@ Iniciar análise IA
 let wins = 12;
 let losses = 3;
 
+function updateClock(){
+
+const now = new Date();
+
+document.getElementById('clock').innerText =
+now.toLocaleTimeString('pt-BR');
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
 function updateWinRate(){
 
 const total = wins + losses;
@@ -290,6 +325,11 @@ document.getElementById('loading').style.display =
 'block';
 
 setTimeout(() => {
+
+const now = new Date();
+
+const currentTime =
+now.toLocaleTimeString('pt-BR');
 
 const pairs = [
 'EUR/USD',
@@ -410,7 +450,11 @@ document.createElement('div');
 item.className = 'history';
 
 item.innerHTML = `
-<div>${pair}</div>
+<div class="history-left">
+<div>${pair} - ${action}</div>
+<div class="history-time">${currentTime}</div>
+</div>
+
 <div class="${result === 'WIN' ? 'win' : 'loss'}">
 ${result}
 </div>
