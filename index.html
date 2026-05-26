@@ -155,7 +155,8 @@ animation:blink 1s infinite;
 .rsi-box,
 .filter-box,
 .volatility-box,
-.ranking-box{
+.ranking-box,
+.auto-box{
 margin-top:20px;
 background:#0a0a0a;
 padding:15px;
@@ -169,6 +170,13 @@ padding:12px;
 border-radius:12px;
 margin-top:10px;
 font-size:16px;
+}
+
+.auto-status{
+font-size:20px;
+font-weight:bold;
+color:#00ff99;
+margin-top:10px;
 }
 
 @keyframes blink{
@@ -196,7 +204,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente M5 ULTRA PRO
+Scanner Inteligente AUTO M5
 </div>
 
 <div class="center">
@@ -269,6 +277,18 @@ Entrada: --
 <h2 id="volatility">--</h2>
 </div>
 
+<div class="auto-box">
+
+<div>
+🤖 Scanner Automático
+</div>
+
+<div class="auto-status" id="autoStatus">
+ATIVADO
+</div>
+
+</div>
+
 <div class="ranking-box">
 
 <div>
@@ -298,7 +318,7 @@ Entrada: --
 </div>
 
 <button onclick="analyzeMarket()">
-GERAR SINAL REAL
+ATUALIZAR AGORA
 </button>
 
 <div class="loading" id="loading">
@@ -330,7 +350,8 @@ function updateClock(){
 
 const now = new Date();
 
-document.getElementById("clock").innerText =
+document.getElementById("clock")
+.innerText =
 now.toLocaleTimeString("pt-BR");
 
 }
@@ -652,6 +673,34 @@ document.getElementById("direction")
 .className =
 "yellow";
 
+document.getElementById("accuracy")
+.innerText =
+"--%";
+
+document.getElementById("trend")
+.innerText =
+"LATERAL";
+
+document.getElementById("strength")
+.innerText =
+"--";
+
+document.getElementById("risk")
+.innerText =
+"ALTO";
+
+document.getElementById("marketFilter")
+.innerText =
+"MERCADO RUIM";
+
+document.getElementById("rsiValue")
+.innerText =
+"--";
+
+document.getElementById("volatility")
+.innerText =
+"--";
+
 document.getElementById("ranking")
 .innerHTML =
 `
@@ -805,6 +854,14 @@ document.getElementById("loading")
 .style.display = "none";
 
 }
+
+analyzeMarket();
+
+setInterval(()=>{
+
+analyzeMarket();
+
+},15000);
 
 </script>
 
