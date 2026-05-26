@@ -23,7 +23,6 @@ padding:20px;
 font-size:24px;
 font-weight:bold;
 color:#00ff99;
-margin-bottom:5px;
 }
 
 .subtitle{
@@ -53,29 +52,25 @@ text-align:center;
 }
 
 .direction{
-font-size:26px;
+font-size:24px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.big{
+font-size:34px;
 font-weight:bold;
 margin-top:10px;
 }
 
 .green{color:#00ff99;}
 .red{color:#ff4444;}
-.yellow{color:gold;}
+.gray{color:#aaa;}
 
 .countdown{
 margin-top:15px;
-font-size:28px;
+font-size:22px;
 font-weight:bold;
-}
-
-.flash{
-animation:blink 1s infinite;
-}
-
-@keyframes blink{
-0%{opacity:0.4;}
-50%{opacity:1;}
-100%{opacity:0.4;}
 }
 
 .status{
@@ -127,10 +122,18 @@ font-weight:bold;
 <div class="accuracy" id="accuracy">--%</div>
 
 <div class="signal">
-<div>EUR/USD</div>
-<div class="direction yellow" id="direction">AGUARDANDO</div>
+<div><strong>EUR/USD</strong></div>
+
+<div class="big gray" id="operation">
+⛔ NÃO OPERAR
+</div>
+
 <div id="entryTime">Entrada: --:--</div>
-<div class="countdown" id="countdown">00:00</div>
+
+<div class="countdown" id="countdown">
+🚀 ENTRAR AGORA
+</div>
+
 </div>
 
 <div class="status">
@@ -184,8 +187,7 @@ const now=new Date();
 const diff=targetDate-now;
 
 if(diff<=0){
-document.getElementById("countdown").innerText="🚀 ENTRAR AGORA";
-document.getElementById("countdown").classList.add("flash");
+document.getElementById("countdown").innerText="🚀 EXECUTAR ENTRADA";
 clearInterval(countdownInterval);
 return;
 }
@@ -194,14 +196,8 @@ const minutes=Math.floor(diff/1000/60);
 const seconds=Math.floor((diff/1000)%60);
 
 document.getElementById("countdown").innerText=
-String(minutes).padStart(2,'0')+":"+
+"⏳ "+String(minutes).padStart(2,'0')+":"+
 String(seconds).padStart(2,'0');
-
-if(diff<=10000){
-document.getElementById("countdown").classList.add("flash");
-}else{
-document.getElementById("countdown").classList.remove("flash");
-}
 
 },1000);
 }
@@ -250,39 +246,30 @@ return 100-(100/(1+rs));
 let rsi=calculateRSI(closes);
 let lastPrice=closes[closes.length-1];
 
-let action="SEM ENTRADA";
+let operation="⛔ NÃO OPERAR";
 let probability=75;
 let trend="LATERAL";
 let risk="MÉDIO";
-let symbol="";
+let color="gray";
 
 if(rsi<30 && lastPrice>ma){
-action="ENTRAR COMPRADO";
-symbol="↑";
+operation="📈 COMPRAR (ALTA)";
 probability=92;
 trend="ALTA";
 risk="BAIXO";
+color="green";
 }
 else if(rsi>70 && lastPrice<ma){
-action="ENTRAR VENDIDO";
-symbol="↓";
+operation="📉 VENDER (BAIXA)";
 probability=91;
 trend="BAIXA";
 risk="BAIXO";
+color="red";
 }
 
-let directionElement=document.getElementById("direction");
-directionElement.innerText=symbol+" "+action;
-
-if(action==="ENTRAR COMPRADO"){
-directionElement.className="direction green";
-}
-else if(action==="ENTRAR VENDIDO"){
-directionElement.className="direction red";
-}
-else{
-directionElement.className="direction yellow";
-}
+let opElement=document.getElementById("operation");
+opElement.innerText=operation;
+opElement.className="big "+color;
 
 document.getElementById("accuracy").innerText=probability+"%";
 document.getElementById("trend").innerText=trend;
