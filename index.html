@@ -28,6 +28,7 @@ background:#111;
 padding:20px;
 border-radius:20px;
 border:1px solid #222;
+box-shadow:0 0 20px rgba(0,255,153,0.05);
 }
 
 .logo{
@@ -96,6 +97,11 @@ font-size:18px;
 font-weight:bold;
 margin-top:20px;
 cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+opacity:0.9;
 }
 
 .loading{
@@ -103,6 +109,7 @@ display:none;
 text-align:center;
 margin-top:15px;
 color:#00ff99;
+font-weight:bold;
 }
 
 .countdown{
@@ -110,6 +117,46 @@ font-size:34px;
 font-weight:bold;
 margin-top:15px;
 color:#00ff99;
+}
+
+.market{
+margin-top:20px;
+text-align:center;
+color:#00ff99;
+}
+
+.clock{
+text-align:right;
+font-size:14px;
+color:#00ff99;
+margin-bottom:15px;
+}
+
+.green{
+color:#00ff99;
+}
+
+.red{
+color:#ff4444;
+}
+
+.yellow{
+color:gold;
+}
+
+.alert{
+margin-top:15px;
+font-size:18px;
+font-weight:bold;
+color:gold;
+display:none;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{opacity:0.2;}
+50%{opacity:1;}
+100%{opacity:0.2;}
 }
 
 </style>
@@ -120,6 +167,10 @@ color:#00ff99;
 
 <div class="container">
 
+<div class="clock" id="clock">
+00:00:00
+</div>
+
 <div class="card">
 
 <div class="logo">
@@ -127,7 +178,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente M5
+Scanner Inteligente M5 com EMA
 </div>
 
 <div class="center">
@@ -158,6 +209,10 @@ Entrada: --
 
 <div class="countdown" id="countdown">
 00:00
+</div>
+
+<div class="alert" id="alertText">
+⚠️ PREPARE A ENTRADA
 </div>
 
 </div>
@@ -196,12 +251,16 @@ Entrada: --
 
 </div>
 
+<div class="market">
+🟢 Mercado conectado em tempo real
+</div>
+
 <button onclick="analyzeMarket()">
 GERAR SINAL REAL
 </button>
 
 <div class="loading" id="loading">
-Analisando mercado...
+🤖 Analisando mercado com EMA...
 </div>
 
 </div>
@@ -224,6 +283,19 @@ const pairs = [
 ];
 
 let timer;
+
+function updateClock(){
+
+const now = new Date();
+
+document.getElementById("clock").innerText =
+now.toLocaleTimeString("pt-BR");
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
 
 function nextM5(){
 
@@ -263,7 +335,11 @@ if(diff <= 0){
 
 document.getElementById("countdown")
 .innerText =
-"🚀 ENTRAR";
+"🚀 ENTRAR AGORA";
+
+document.getElementById("alertText")
+.style.display =
+"none";
 
 clearInterval(timer);
 
@@ -285,7 +361,40 @@ String(m).padStart(2,"0")
 +
 String(s).padStart(2,"0");
 
+if(diff <= 10000){
+
+document.getElementById("alertText")
+.style.display =
+"block";
+
+}else{
+
+document.getElementById("alertText")
+.style.display =
+"none";
+
+}
+
 },1000);
+
+}
+
+function calculateEMA(period,data){
+
+const k = 2 / (period + 1);
+
+let ema = data[0];
+
+for(let i=1;i<data.length;i++){
+
+ema =
+data[i] * k
++
+ema * (1-k);
+
+}
+
+return ema;
 
 }
 
@@ -298,7 +407,7 @@ const url =
 +
 encodeURIComponent(pair)
 +
-"&interval=5min&outputsize=2&apikey="
+"&interval=5min&outputsize=30&apikey="
 +
 apiKey;
 
@@ -314,26 +423,55 @@ return null;
 
 }
 
+const closes =
+data.values.map(c =>
+parseFloat(c.close)
+).reverse();
+
+const ema9 =
+calculateEMA(9,closes);
+
+const ema21 =
+calculateEMA(21,closes);
+
 const last =
-parseFloat(data.values[0].close);
+closes[closes.length-1];
 
-const prev =
-parseFloat(data.values[1].close);
+const previous =
+closes[closes.length-2];
 
-const move =
-Math.abs(last - prev);
+const movement =
+Math.abs(last - previous);
+
+let direction;
+let trend;
+
+if(ema9 > ema21){
+
+direction = "CALL";
+trend = "ALTA";
+
+}else{
+
+direction = "PUT";
+trend = "BAIXA";
+
+}
+
+const force =
+Math.abs(ema9 - ema21);
 
 return{
 
 pair: pair,
 
-movement: move,
+movement: movement,
 
-direction:
-last > prev ? "CALL" : "PUT",
+direction: direction,
 
-trend:
-last > prev ? "ALTA" : "BAIXA"
+trend: trend,
+
+force: force
 
 };
 
@@ -371,26 +509,46 @@ if(results.length === 0){
 
 alert("Erro API");
 
+document.getElementById("loading")
+.style.display = "none";
+
 return;
 
 }
 
 results.sort((a,b)=>
-b.movement - a.movement
+b.force - a.force
 );
 
 const best = results[0];
 
 const probability =
-Math.floor(Math.random()*5)+91;
+Math.min(
+99,
+Math.floor(best.force * 100000)
+);
 
 const strength =
-Math.floor(Math.random()*5)+95;
+Math.min(
+99,
+Math.floor(best.force * 120000)
+);
 
-const risk =
-best.movement > 0.001
-? "BAIXO"
-: "MÉDIO";
+let risk;
+
+if(best.force > 0.0008){
+
+risk = "BAIXO";
+
+}else if(best.force > 0.0004){
+
+risk = "MÉDIO";
+
+}else{
+
+risk = "ALTO";
+
+}
 
 document.getElementById("pair")
 .innerText =
@@ -414,6 +572,12 @@ document.getElementById("trend")
 .innerText =
 best.trend;
 
+document.getElementById("trend")
+.className =
+best.direction === "CALL"
+? "green"
+: "red";
+
 document.getElementById("strength")
 .innerText =
 strength + "%";
@@ -421,6 +585,14 @@ strength + "%";
 document.getElementById("risk")
 .innerText =
 risk;
+
+document.getElementById("risk")
+.className =
+risk === "BAIXO"
+? "green"
+: risk === "MÉDIO"
+? "yellow"
+: "red";
 
 const next =
 nextM5();
