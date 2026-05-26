@@ -212,11 +212,11 @@ Probabilidade IA
 <div class="signal">
 
 <div id="pair">
-EUR/USD
+AGUARDANDO
 </div>
 
-<div id="direction" class="call">
---
+<div id="direction" class="yellow">
+SEM SINAL
 </div>
 
 <div id="entry">
@@ -634,7 +634,41 @@ results.push(result);
 
 if(results.length === 0){
 
-alert("⚠️ Mercado lateral ou sem força");
+document.getElementById("pair")
+.innerText =
+"AGUARDANDO";
+
+document.getElementById("direction")
+.innerText =
+"SEM SINAL";
+
+document.getElementById("direction")
+.className =
+"yellow";
+
+document.getElementById("accuracy")
+.innerText =
+"--%";
+
+document.getElementById("trend")
+.innerText =
+"LATERAL";
+
+document.getElementById("strength")
+.innerText =
+"--";
+
+document.getElementById("risk")
+.innerText =
+"ALTO";
+
+document.getElementById("marketFilter")
+.innerText =
+"MERCADO RUIM";
+
+document.getElementById("rsiValue")
+.innerText =
+"--";
 
 document.getElementById("loading")
 .style.display = "none";
@@ -725,25 +759,9 @@ document.getElementById("rsiValue")
 .innerText =
 best.rsi;
 
-document.getElementById("rsiValue")
-.className =
-best.rsi > 70
-? "red"
-: best.rsi < 30
-? "green"
-: "yellow";
-
 document.getElementById("marketFilter")
 .innerText =
 best.marketCondition;
-
-document.getElementById("marketFilter")
-.className =
-best.marketCondition === "TENDÊNCIA FORTE"
-? "green"
-: best.marketCondition === "MERCADO BOM"
-? "yellow"
-: "red";
 
 const next =
 nextM5();
