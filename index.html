@@ -31,7 +31,7 @@ margin-top:20px;
 
 .subtitle{
 color:#888;
-margin-bottom:30px;
+margin-bottom:25px;
 }
 
 .card{
@@ -89,26 +89,6 @@ color:#ff4444;
 color:gold;
 }
 
-.history{
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:#0b0b0b;
-padding:15px;
-border-radius:15px;
-margin-top:10px;
-}
-
-.win{
-color:#00ff99;
-font-weight:bold;
-}
-
-.loss{
-color:#ff4444;
-font-weight:bold;
-}
-
 button{
 width:100%;
 padding:18px;
@@ -153,6 +133,27 @@ text-align:center;
 font-size:22px;
 font-weight:bold;
 margin-top:5px;
+}
+
+.history{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#0b0b0b;
+padding:15px;
+border-radius:15px;
+margin-top:10px;
+font-size:14px;
+}
+
+.win{
+color:#00ff99;
+font-weight:bold;
+}
+
+.loss{
+color:#ff4444;
+font-weight:bold;
 }
 
 @keyframes pulse{
@@ -252,26 +253,7 @@ BAIXO
 
 <div class="card">
 
-<h2>Últimos sinais</h2>
-
-<div id="history-list">
-
-<div class="history">
-<div>GBP/USD</div>
-<div class="win">WIN</div>
-</div>
-
-<div class="history">
-<div>EUR/JPY</div>
-<div class="win">WIN</div>
-</div>
-
-<div class="history">
-<div>AUD/USD</div>
-<div class="loss">LOSS</div>
-</div>
-
-</div>
+<div id="history-list"></div>
 
 <button onclick="startAI()">
 Iniciar análise IA
