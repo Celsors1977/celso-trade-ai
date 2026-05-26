@@ -55,18 +55,7 @@ box-shadow:0 0 20px rgba(0,255,153,0.05);
 font-size:58px;
 font-weight:bold;
 margin:15px 0;
-}
-
-.chart{
-height:140px;
-background:#0b0b0b;
-border-radius:20px;
-margin-top:20px;
-padding:10px;
-display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
+text-align:center;
 }
 
 .signal{
@@ -201,15 +190,6 @@ font-size:14px;
 animation:screenFlash 0.5s infinite;
 }
 
-svg{
-width:100%;
-height:120px;
-}
-
-#chartLine{
-transition:all 0.8s ease;
-}
-
 @keyframes pulse{
 0%{opacity:0.3;}
 50%{opacity:1;}
@@ -249,30 +229,12 @@ Assistente pessoal inteligente de sinais
 
 <div class="card">
 
-<div>Probabilidade da IA</div>
+<div style="text-align:center;">
+Probabilidade da IA
+</div>
 
 <div class="accuracy" id="accuracy">
 91%
-</div>
-
-<div class="chart">
-
-<svg viewBox="0 0 300 120">
-
-<path
-id="chartLine"
-d="M0 90
-C40 85, 60 80, 90 75
-S140 60, 170 55
-S220 35, 300 20"
-stroke="#00ff99"
-stroke-width="4"
-fill="none"
-stroke-linecap="round"
-/>
-
-</svg>
-
 </div>
 
 <div class="signal">
@@ -425,40 +387,6 @@ return now;
 
 }
 
-function generateChart(action){
-
-const line =
-document.getElementById('chartLine');
-
-if(action === 'CALL'){
-
-line.setAttribute(
-'d',
-'M0 90 C40 85, 60 80, 90 75 S140 60, 170 55 S220 35, 300 20'
-);
-
-line.setAttribute(
-'stroke',
-'#00ff99'
-);
-
-}
-else{
-
-line.setAttribute(
-'d',
-'M0 20 C40 25, 60 35, 90 45 S140 60, 170 75 S220 90, 300 100'
-);
-
-line.setAttribute(
-'stroke',
-'#ff4444'
-);
-
-}
-
-}
-
 function startCountdown(targetDate){
 
 clearInterval(countdownInterval);
@@ -598,8 +526,6 @@ document.getElementById('trend').className =
 'red';
 
 }
-
-generateChart(action);
 
 document.getElementById('pair').innerText =
 pair;
