@@ -220,16 +220,13 @@
 </div>
 
 <script>
-// Lista de pares convertidos para o padrão do Yahoo Finance
 const pairs = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "EUR/JPY", "GBP/JPY", "USD/CAD"];
 
-// --- RELÓGIO E CRONÔMETRO FLUIDO M5 AUTOMÁTICO ---
+// --- RELÓGIO E CRONÔMETRO AUTOMÁTICO ---
 function updateTimers() {
     const now = new Date();
-    // 1. Atualiza o relógio do topo
     document.getElementById("clock").innerText = now.toLocaleTimeString("pt-BR");
     
-    // 2. Calcula os minutos e segundos restantes para a próxima vela de 5 minutos
     const minutes = now.getMinutes();
     const seconds = now.getSeconds();
     
@@ -240,10 +237,8 @@ function updateTimers() {
     const m = Math.floor(totalSecondsRemaining / 60);
     const s = totalSecondsRemaining % 60;
     
-    // 3. Atualiza o texto do contador principal na tela
     document.getElementById("countdown").innerText = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
     
-    // 4. Alerta visual crítico faltando 15 segundos ou menos
     if (totalSecondsRemaining <= 15) {
         document.getElementById("countdown").className = "countdown red";
         document.getElementById("alertText").style.display = "block";
@@ -252,7 +247,6 @@ function updateTimers() {
         document.getElementById("alertText").style.display = "none";
     }
 }
-// Inicia o motor do relógio imediatamente e roda a cada 1 segundo
 setInterval(updateTimers, 1000);
 updateTimers();
 
@@ -287,19 +281,18 @@ function calculateRSI(data, period = 14) {
     }
     const avgGain = gains / period;
     const avgLoss = losses / period;
-    if (avgLoss === 0) return 100;
+    if (avgLoss === 0) return 50;
     const rs = avgGain / avgLoss;
     return 100 - (100 / (1 + rs));
 }
 
-// --- INTEGRAÇÃO DIRETA COM YAHOO FINANCE SEM CHAVE E SEM CORTES ---
+// --- LINK DO SERVIDOR CORRIGIDO (query1.finance.yahoo.com) ---
 async function analyzePair(pair) {
     try {
-        // Converte o formato (Ex: EUR/USD vira EURUSD=X)
         const yahooSymbol = pair.replace("/", "") + "=X";
         
-        // Uso do proxy de desvio estável para pular o bloqueio de segurança do navegador
-        const url = "https://corsproxy.io/?https://query1.financecharts.yahoo.com/v8/finance/chart/" + yahooSymbol + "?interval=5m&range=1d";
+        // CORREÇÃO AQUI: Endereço oficial do endpoint do Yahoo via proxy estável
+        const url = "https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/" + yahooSymbol + "?interval=5m&range=1d";
         
         const response = await fetch(url);
         const data = await response.json();
@@ -309,7 +302,7 @@ async function analyzePair(pair) {
         const result = data.chart.result[0];
         const rawCloses = result.indicators.quote[0].close;
         
-        // Limpeza drástica de valores nulos enviados pelo Yahoo Finance
+        // Limpa registros sem preço
         const closes = rawCloses.filter(v => v !== null && v !== undefined);
         if (closes.length < 22) return null;
 
@@ -318,17 +311,14 @@ async function analyzePair(pair) {
         const rsi = calculateRSI(closes);
         
         const last = closes[closes.length - 1];
-        
         const isJpy = pair.includes("JPY");
         const multiplier = isJpy ? 100 : 10000;
         
-        // Força medida pelo afastamento das médias
         const forceNormalized = (Math.abs(ema9 - ema21) / last) * multiplier;
 
         let direction = null;
         let trend = ema9 > ema21 ? "ALTA" : "BAIXA";
 
-        // Filtro operacional calibrado do RSI
         if (ema9 > ema21 && rsi > 40 && rsi < 68) {
             direction = "CALL";
         } else if (ema9 < ema21 && rsi < 60 && rsi > 32) {
@@ -360,7 +350,6 @@ async function analyzeMarket() {
     document.getElementById("loading").style.display = "block";
     let results = [];
 
-    // Loop assíncrono rápido puxando direto do servidor do Yahoo
     for (let i = 0; i < pairs.length; i++) {
         const result = await analyzePair(pairs[i]);
         if (result) { results.push(result); }
@@ -368,7 +357,6 @@ async function analyzeMarket() {
 
     let actionableResults = results.filter(r => r.direction !== null);
 
-    // Proteção de mercado parado: força a direção caso o RSI esteja muito neutro
     if (actionableResults.length === 0 && results.length > 0) {
         actionableResults = results; 
         actionableResults.forEach(r => r.direction = r.trend === "ALTA" ? "CALL" : "PUT");
@@ -388,7 +376,6 @@ async function analyzeMarket() {
         return;
     }
 
-    // Seleciona o melhor par com a tendência mais definida e limpa do momento
     actionableResults.sort((a, b) => b.forceNormalized - a.forceNormalized);
     const best = actionableResults[0];
 
@@ -400,7 +387,6 @@ async function analyzeMarket() {
     if (best.marketCondition === "TENDÊNCIA FORTE" && probability > 80) risk = "BAIXO";
     if (best.marketCondition === "LATERALIZADO") risk = "ALTO";
 
-    // Atualização completa da interface gráfica
     document.getElementById("pair").innerText = best.pair;
     document.getElementById("direction").innerText = best.direction;
     document.getElementById("direction").className = best.direction === "CALL" ? "call" : "put";
@@ -416,7 +402,6 @@ async function analyzeMarket() {
     document.getElementById("rsiValue").innerText = best.rsi + " ERP";
     document.getElementById("marketFilter").innerText = best.marketCondition;
 
-    // Registra o marcador da meta do horário
     const next = nextM5();
     document.getElementById("entry").innerText = "Próxima Entrada às: " + next.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
     
