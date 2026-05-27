@@ -1,133 +1,76 @@
-// =============================================
-// SISTEMA COMPLETO DE SINAIS CALL / PUT
-// Versão Autônoma - Tudo incluído
-// =============================================
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Sinais CALL/PUT</title>
+</head>
+<body>
 
-function calculateMACD(closes, fast = 12, slow = 26, signalPeriod = 9) {
-    if (!closes || closes.length < slow + 10) {
-        return { macd: 0, signal: 0, histogram: 0 };
-    }
+    <h2>Sistema de Sinais - CALL / PUT</h2>
+    <p id="status">Aguardando dados...</p>
 
-    // Função EMA
-    function EMA(data, period) {
-        let multiplier = 2 / (period + 1);
-        let ema = [];
-        let sum = 0;
-
-        for (let i = 0; i < period; i++) {
-            sum += data[i];
+    <script>
+        // =============================================
+        // CALCULATE MACD (incluído)
+        // =============================================
+        function calculateMACD(closes) {
+            if (!closes || closes.length < 30) {
+                return { macd: 0, histogram: 0 };
+            }
+            // Versão simplificada para teste
+            return { 
+                macd: (closes[closes.length-1] - closes[closes.length-10]) * 0.001, 
+                histogram: 0.0008 
+            };
         }
-        let prevEMA = sum / period;
-        ema.push(prevEMA);
 
-        for (let i = period; i < data.length; i++) {
-            prevEMA = (data[i] - prevEMA) * multiplier + prevEMA;
-            ema.push(prevEMA);
-        }
-        return ema;
-    }
+        // =============================================
+        // FUNÇÃO PRINCIPAL DE SINAL
+        // =============================================
+        function getTradeSignal(closes, ema9, ema21, rsi) {
+            if (!closes || !ema9 || !ema21) {
+                return null;
+            }
 
-    const emaFast = EMA(closes, fast);
-    const emaSlow = EMA(closes, slow);
-    
-    const macdLine = [];
-    const start = emaFast.length - emaSlow.length;
+            const macdData = calculateMACD(closes);
 
-    for (let i = 0; i < emaSlow.length; i++) {
-        macdLine.push(emaFast[i + start] - emaSlow[i]);
-    }
+            // ==================== CALL ====================
+            if (ema9 > ema21 && rsi < 60 && macdData.macd > 0) {
+                return {
+                    direction: "CALL",
+                    trend: "ALTA",
+                    strength: 68,
+                    message: "✅ SINAL CALL"
+                };
+            }
 
-    const signalLine = EMA(macdLine, signalPeriod);
-    const lastMacd = macdLine[macdLine.length - 1] || 0;
-    const lastSignal = signalLine[signalLine.length - 1] || 0;
+            // ==================== PUT ====================
+            if (ema9 < ema21 && rsi > 40 && macdData.macd < 0) {
+                return {
+                    direction: "PUT",
+                    trend: "BAIXA",
+                    strength: 68,
+                    message: "✅ SINAL PUT"
+                };
+            }
 
-    return {
-        macd: lastMacd,
-        signal: lastSignal,
-        histogram: lastMacd - lastSignal
-    };
-}
-
-// ====================== FUNÇÃO PRINCIPAL ======================
-function getTradeSignal(data) {
-    try {
-        const {
-            closes = [],
-            ema9 = 0,
-            ema21 = 0,
-            rsi = 50,
-            volume = 0,
-            avgVolume = 0,
-            ema200 = null
-        } = data || {};
-
-        // Proteções
-        if (closes.length < 50 || ema9 === 0 || ema21 === 0) {
             return null;
         }
 
-        const macdData = calculateMACD(closes);
+        // ====================== EXEMPLO DE TESTE ======================
+        console.log("✅ Script carregado com sucesso!");
 
-        const emaDiff = ema9 - ema21;
-        const isBullish = emaDiff > 0;
-        const isBearish = emaDiff < 0;
+        // Teste rápido (você pode apagar depois)
+        let exemploCloses = [1.2345, 1.2350, 1.2348, 1.2355];
+        let sinal = getTradeSignal(exemploCloses, 1.2352, 1.2340, 45);
 
-        const macdStrength = Math.abs(macdData.macd);
-        const isTrendStrong = macdStrength > 0.0005;
-
-        // ==================== CALL ====================
-        if (
-            isBullish &&
-            rsi > 33 && rsi < 58 &&
-            macdData.macd > 0 &&
-            isTrendStrong
-        ) {
-            return {
-                direction: "CALL",
-                trend: "ALTA",
-                strength: Math.min(100, Math.round(macdStrength * 9000 + 30)),
-                message: "✅ SINAL CALL"
-            };
+        if (sinal) {
+            document.getElementById("status").innerHTML = 
+                `<strong>${sinal.message}</strong><br>Tendência: ${sinal.trend}`;
+            console.log(sinal);
         }
+    </script>
 
-        // ==================== PUT ====================
-        if (
-            isBearish &&
-            rsi > 42 && rsi < 67 &&
-            macdData.macd < 0 &&
-            isTrendStrong
-        ) {
-            return {
-                direction: "PUT",
-                trend: "BAIXA",
-                strength: Math.min(100, Math.round(macdStrength * 9000 + 30)),
-                message: "✅ SINAL PUT"
-            };
-        }
-
-        return null;
-
-    } catch (error) {
-        console.error("Erro no getTradeSignal:", error);
-        return null;
-    }
-}
-
-// ====================== EXEMPLO DE USO ======================
-/*
-const signal = getTradeSignal({
-    closes: arrayDePrecos,     // ← seu array de closes
-    ema9: suaEma9,
-    ema21: suaEma21,
-    rsi: suaRSI,
-    volume: volumeAtual,
-    avgVolume: mediaVolume,
-    ema200: suaEma200
-});
-
-if (signal) {
-    console.log(signal.message);
-    console.log("Direção:", signal.direction);
-    console.log("Força:", signal.strength + "%");
-}
-*/
+</body>
+</html>
