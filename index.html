@@ -81,19 +81,29 @@ button{width:100%;padding:18px;border:none;border-radius:15px;background:#00ff99
 </div>
 
 <script>
-// ====================== VARIÁVEIS GLOBAIS ======================
+// ====================== CONFIGURAÇÕES ======================
 const apiKey = "65b715a09bc44070a1d6947b293281a9";
-const pairs = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "EUR/JPY", "GBP/JPY", "USD/CAD"];
+const pairs = [
+    "EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "USD/CAD", "EUR/JPY",
+    "GBP/JPY", "NZD/USD", "EUR/GBP", "USD/CHF", "AUD/JPY", "EUR/AUD"
+];
+
 let timer;
 let signalLocked = false;
 let wins = 0, losses = 0, streak = 0;
 
-// ====================== FUNÇÕES AUXILIARES ======================
+// ====================== FUNÇÕES BÁSICAS ======================
 function updateClock(){
     document.getElementById("clock").innerText = new Date().toLocaleTimeString("pt-BR");
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+function isGoodTradingHour() {
+    const hour = new Date().getHours();
+    // Evita horários de baixa liquidez (madrugada e almoço)
+    return hour >= 7 && hour <= 22;
+}
 
 function nextM5(){
     const now = new Date();
@@ -104,7 +114,7 @@ function nextM5(){
     return now;
 }
 
-// ====================== INDICADORES MELHORADOS ======================
+// ====================== INDICADORES ======================
 function calculateEMA(period, data){
     if(data.length < period) return 0;
     let multiplier = 2 / (period + 1);
@@ -117,15 +127,11 @@ function calculateEMA(period, data){
 
 function calculateMACD(data){
     if(data.length < 50) return {macd: 0, histogram: 0};
-    
     const ema12 = calculateEMA(12, data);
     const ema26 = calculateEMA(26, data);
     const macdLine = ema12 - ema26;
-    
-    // Simulação simples de signal e histogram
-    const signal = calculateEMA(9, data.slice(-20)); // aproximado
+    const signal = calculateEMA(9, data.slice(-30));
     const histogram = macdLine - signal;
-    
     return { macd: macdLine, histogram: histogram };
 }
 
@@ -152,7 +158,7 @@ function calculateVolatility(data){
     return total / (data.length - 1);
 }
 
-// ====================== ANÁLISE PRINCIPAL ======================
+// ====================== ANÁLISE ======================
 async function analyzePair(pair){
     try{
         const url = `https://api.twelvedata.com/time_series?symbol=${encodeURIComponent(pair)}&interval=5min&outputsize=80&apikey=${apiKey}`;
@@ -196,14 +202,17 @@ async function analyzePair(pair){
             volatility 
         };
     } catch(e){
-        console.error("Erro ao analisar " + pair, e);
         return null;
     }
 }
 
 async function analyzeMarket(){
     if(signalLocked) return;
-    
+    if(!isGoodTradingHour()){
+        document.getElementById("pair").innerText = "FORA DO HORÁRIO";
+        return;
+    }
+
     document.getElementById("loading").style.display = "block";
     let results = [];
 
@@ -236,7 +245,6 @@ async function analyzeMarket(){
     const next = nextM5();
     document.getElementById("entry").innerText = "Entrada: " + next.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
 
-    // Countdown
     clearInterval(timer);
     timer = setInterval(() => {
         const now = new Date();
@@ -262,13 +270,9 @@ async function analyzeMarket(){
 
 function simulateResult(){
     if(Math.random() > 0.38){ 
-        wins++; 
-        streak++; 
-        addHistory("✅ WIN confirmado"); 
+        wins++; streak++; addHistory("✅ WIN confirmado"); 
     } else { 
-        losses++; 
-        streak = 0; 
-        addHistory("❌ LOSS confirmado"); 
+        losses++; streak = 0; addHistory("❌ LOSS confirmado"); 
     }
     updateStats();
 }
@@ -295,7 +299,7 @@ function addHistory(text){
 analyzeMarket();
 setInterval(() => { 
     if(!signalLocked) analyzeMarket(); 
-}, 45000); // Atualiza a cada 45 segundos
+}, 45000);
 </script>
 </body>
 </html>
