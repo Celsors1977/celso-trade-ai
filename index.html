@@ -286,15 +286,18 @@ function calculateRSI(data, period = 14) {
     return 100 - (100 / (1 + rs));
 }
 
-// --- LINK DO SERVIDOR CORRIGIDO (query1.finance.yahoo.com) ---
+// --- CONEXÃO BLINDADA CONTRA ERROS DE CORS ---
 async function analyzePair(pair) {
     try {
         const yahooSymbol = pair.replace("/", "") + "=X";
+        const targetUrl = "https://query1.finance.yahoo.com/v8/finance/chart/" + yahooSymbol + "?interval=5m&range=1d";
         
-        // CORREÇÃO AQUI: Endereço oficial do endpoint do Yahoo via proxy estável
-        const url = "https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/" + yahooSymbol + "?interval=5m&range=1d";
+        // SOLUÇÃO: encodeURIComponent protege a URL para que o proxy envie os parâmetros perfeitamente
+        const url = "https://corsproxy.io/?" + encodeURIComponent(targetUrl);
         
         const response = await fetch(url);
+        if (!response.ok) return null;
+        
         const data = await response.json();
         
         if (!data.chart || !data.chart.result || !data.chart.result[0]) return null;
@@ -302,7 +305,8 @@ async function analyzePair(pair) {
         const result = data.chart.result[0];
         const rawCloses = result.indicators.quote[0].close;
         
-        // Limpa registros sem preço
+        if (!rawCloses) return null;
+        
         const closes = rawCloses.filter(v => v !== null && v !== undefined);
         if (closes.length < 22) return null;
 
