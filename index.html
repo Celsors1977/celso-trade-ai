@@ -1,46 +1,50 @@
-/**
- * SISTEMA COMPLETO DE SINAIS CALL/PUT
- * Versão Autônoma - Não depende de outras funções
- */
+// =============================================
+// SISTEMA COMPLETO DE SINAIS CALL / PUT
+// Versão Autônoma - Tudo incluído
+// =============================================
 
-function calculateMACD(closes, fast = 12, slow = 26, signal = 9) {
-    if (!closes || closes.length < slow) return { macd: 0, signal: 0, histogram: 0 };
+function calculateMACD(closes, fast = 12, slow = 26, signalPeriod = 9) {
+    if (!closes || closes.length < slow + 10) {
+        return { macd: 0, signal: 0, histogram: 0 };
+    }
 
-    function ema(data, period) {
+    // Função EMA
+    function EMA(data, period) {
         let multiplier = 2 / (period + 1);
-        let emaArray = [];
+        let ema = [];
         let sum = 0;
-        
+
         for (let i = 0; i < period; i++) {
             sum += data[i];
         }
-        let prevEma = sum / period;
-        emaArray.push(prevEma);
+        let prevEMA = sum / period;
+        ema.push(prevEMA);
 
         for (let i = period; i < data.length; i++) {
-            prevEma = (data[i] - prevEma) * multiplier + prevEma;
-            emaArray.push(prevEma);
+            prevEMA = (data[i] - prevEMA) * multiplier + prevEMA;
+            ema.push(prevEMA);
         }
-        return emaArray;
+        return ema;
     }
 
-    const emaFast = ema(closes, fast);
-    const emaSlow = ema(closes, slow);
+    const emaFast = EMA(closes, fast);
+    const emaSlow = EMA(closes, slow);
+    
     const macdLine = [];
-    
-    const start = Math.max(0, emaFast.length - emaSlow.length);
-    
-    for (let i = 0; i < emaFast.length - start; i++) {
+    const start = emaFast.length - emaSlow.length;
+
+    for (let i = 0; i < emaSlow.length; i++) {
         macdLine.push(emaFast[i + start] - emaSlow[i]);
     }
 
-    const signalLine = ema(macdLine, signal);
-    const histogram = macdLine[macdLine.length - 1] - signalLine[signalLine.length - 1];
+    const signalLine = EMA(macdLine, signalPeriod);
+    const lastMacd = macdLine[macdLine.length - 1] || 0;
+    const lastSignal = signalLine[signalLine.length - 1] || 0;
 
     return {
-        macd: macdLine[macdLine.length - 1] || 0,
-        signal: signalLine[signalLine.length - 1] || 0,
-        histogram: histogram || 0
+        macd: lastMacd,
+        signal: lastSignal,
+        histogram: lastMacd - lastSignal
     };
 }
 
@@ -57,69 +61,73 @@ function getTradeSignal(data) {
             ema200 = null
         } = data || {};
 
-        if (closes.length < 50) return null;
+        // Proteções
+        if (closes.length < 50 || ema9 === 0 || ema21 === 0) {
+            return null;
+        }
 
         const macdData = calculateMACD(closes);
 
         const emaDiff = ema9 - ema21;
-        const isBullishEMA = emaDiff > 0;
-        const isBearishEMA = emaDiff < 0;
+        const isBullish = emaDiff > 0;
+        const isBearish = emaDiff < 0;
 
         const macdStrength = Math.abs(macdData.macd);
-        const histStrength = Math.abs(macdData.histogram);
+        const isTrendStrong = macdStrength > 0.0005;
 
-        const isTrendStrong = macdStrength > 0.0005 && histStrength > 0.0002;
-        const isHistogramConfirming = 
-            (isBullishEMA && macdData.histogram > 0) || 
-            (isBearishEMA && macdData.histogram < 0);
-
-        const hasStrongVolume = avgVolume > 0 ? volume > avgVolume * 1.12 : true;
-
-        let isAlignedWithHigherTF = true;
-        if (ema200 !== null) {
-            isAlignedWithHigherTF = (isBullishEMA && ema9 > ema200) || (isBearishEMA && ema9 < ema200);
-        }
-
-        // ==================== SINAL CALL ====================
+        // ==================== CALL ====================
         if (
-            isBullishEMA &&
-            rsi > 33 && rsi < 57 &&
-            isTrendStrong &&
+            isBullish &&
+            rsi > 33 && rsi < 58 &&
             macdData.macd > 0 &&
-            isHistogramConfirming &&
-            hasStrongVolume &&
-            isAlignedWithHigherTF
+            isTrendStrong
         ) {
             return {
                 direction: "CALL",
                 trend: "ALTA",
-                strength: Math.min(100, Math.round(macdStrength * 8000 + 25)),
-                message: "✅ Sinal CALL"
+                strength: Math.min(100, Math.round(macdStrength * 9000 + 30)),
+                message: "✅ SINAL CALL"
             };
         }
 
-        // ==================== SINAL PUT ====================
+        // ==================== PUT ====================
         if (
-            isBearishEMA &&
-            rsi > 43 && rsi < 67 &&
-            isTrendStrong &&
+            isBearish &&
+            rsi > 42 && rsi < 67 &&
             macdData.macd < 0 &&
-            isHistogramConfirming &&
-            hasStrongVolume &&
-            isAlignedWithHigherTF
+            isTrendStrong
         ) {
             return {
                 direction: "PUT",
                 trend: "BAIXA",
-                strength: Math.min(100, Math.round(macdStrength * 8000 + 25)),
-                message: "✅ Sinal PUT"
+                strength: Math.min(100, Math.round(macdStrength * 9000 + 30)),
+                message: "✅ SINAL PUT"
             };
         }
 
         return null;
 
     } catch (error) {
-        console.error("Erro no getTradeSignal:", error.message);
+        console.error("Erro no getTradeSignal:", error);
         return null;
     }
 }
+
+// ====================== EXEMPLO DE USO ======================
+/*
+const signal = getTradeSignal({
+    closes: arrayDePrecos,     // ← seu array de closes
+    ema9: suaEma9,
+    ema21: suaEma21,
+    rsi: suaRSI,
+    volume: volumeAtual,
+    avgVolume: mediaVolume,
+    ema200: suaEma200
+});
+
+if (signal) {
+    console.log(signal.message);
+    console.log("Direção:", signal.direction);
+    console.log("Força:", signal.strength + "%");
+}
+*/
