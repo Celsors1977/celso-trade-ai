@@ -7,8 +7,9 @@
     <style>
         body { font-family: Arial; margin: 20px; background: #f0f0f0; text-align: center; }
         h2 { color: #1e3a8a; }
-        input { padding: 10px; margin: 10px; width: 180px; font-size: 16px; }
-        button { padding: 12px 20px; font-size: 18px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        input, select { padding: 10px; margin: 10px; width: 220px; font-size: 16px; }
+        button { padding: 12px 25px; font-size: 18px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        button:hover { background: #1e3a8a; }
         #resultado { margin: 30px auto; padding: 25px; font-size: 24px; border-radius: 12px; width: 80%; max-width: 500px; }
     </style>
 </head>
@@ -16,29 +17,42 @@
 
     <h2>🚀 Sistema de Sinais CALL / PUT</h2>
 
-    <label>EMA 9: </label><input type="number" id="ema9" value="1.2345" step="0.0001"><br><br>
-    <label>EMA 21: </label><input type="number" id="ema21" value="1.2330" step="0.0001"><br><br>
-    <label>RSI: </label><input type="number" id="rsi" value="45"><br><br>
+    <label>📌 Moeda / Par:</label><br>
+    <input type="text" id="moeda" value="EURUSD" placeholder="Ex: EURUSD, GBPJPY, BTCUSD"><br><br>
 
-    <button onclick="testarSinal()">🔍 GERAR SINAL AGORA</button>
+    <label>EMA 9:</label><input type="number" id="ema9" value="1.2345" step="0.0001"><br><br>
+    <label>EMA 21:</label><input type="number" id="ema21" value="1.2330" step="0.0001"><br><br>
+    <label>RSI:</label><input type="number" id="rsi" value="45"><br><br>
+
+    <button onclick="testarSinal()">🔍 GERAR SINAL</button>
 
     <div id="resultado">Clique no botão para gerar o sinal...</div>
 
     <script>
         function getTradeSignal(ema9, ema21, rsi) {
-            // Simulação simples do MACD
             const macd = 0.0012;
 
             if (ema9 > ema21 && rsi < 60) {
-                return { direction: "CALL", trend: "ALTA", strength: 78, message: "✅ SINAL CALL FORTE" };
+                return { 
+                    direction: "CALL", 
+                    trend: "ALTA", 
+                    strength: 78, 
+                    message: "✅ SINAL CALL FORTE" 
+                };
             }
             if (ema9 < ema21 && rsi > 40) {
-                return { direction: "PUT", trend: "BAIXA", strength: 75, message: "✅ SINAL PUT FORTE" };
+                return { 
+                    direction: "PUT", 
+                    trend: "BAIXA", 
+                    strength: 75, 
+                    message: "✅ SINAL PUT FORTE" 
+                };
             }
             return { message: "❌ Sem sinal no momento" };
         }
 
         function testarSinal() {
+            const moeda = document.getElementById("moeda").value || "MOEDA";
             const ema9 = parseFloat(document.getElementById("ema9").value) || 0;
             const ema21 = parseFloat(document.getElementById("ema21").value) || 0;
             const rsi = parseFloat(document.getElementById("rsi").value) || 50;
@@ -49,6 +63,7 @@
             if (sinal.direction) {
                 div.style.backgroundColor = sinal.direction === "CALL" ? "#90EE90" : "#FF9999";
                 div.innerHTML = `
+                    <strong>${moeda}</strong><br><br>
                     <strong>${sinal.message}</strong><br><br>
                     Direção: <b>${sinal.direction}</b><br>
                     Tendência: <b>${sinal.trend}</b><br>
@@ -56,14 +71,14 @@
                 `;
             } else {
                 div.style.backgroundColor = "#FFEE99";
-                div.innerHTML = sinal.message;
+                div.innerHTML = `<strong>${moeda}</strong><br><br>${sinal.message}`;
             }
         }
 
-        // Executa automaticamente ao carregar a página
+        // Testa automaticamente ao carregar
         window.onload = function() {
-            console.log("✅ Sistema carregado!");
-            testarSinal();   // Testa automaticamente com os valores padrão
+            console.log("✅ Sistema carregado com Moeda!");
+            testarSinal();
         };
     </script>
 
