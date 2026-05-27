@@ -2,6 +2,7 @@
 <html lang="pt-br">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -27,7 +28,7 @@ background:#111;
 padding:20px;
 border-radius:20px;
 border:1px solid #222;
-box-shadow:0 0 20px rgba(0,255,153,0.08);
+box-shadow:0 0 20px rgba(0,255,153,0.05);
 }
 
 .logo{
@@ -70,10 +71,6 @@ font-weight:bold;
 color:#ff4444;
 font-size:40px;
 font-weight:bold;
-}
-
-.yellow{
-color:gold;
 }
 
 .status{
@@ -143,6 +140,10 @@ color:#00ff99;
 color:#ff4444;
 }
 
+.yellow{
+color:gold;
+}
+
 .alert{
 margin-top:15px;
 font-size:18px;
@@ -152,9 +153,15 @@ display:none;
 animation:blink 1s infinite;
 }
 
-.rsi-box,
-.filter-box,
-.volatility-box{
+.rsi-box{
+margin-top:20px;
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+.filter-box{
 margin-top:20px;
 background:#0a0a0a;
 padding:15px;
@@ -187,7 +194,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente M5 ULTRA
+Scanner Inteligente M5 PRO
 </div>
 
 <div class="center">
@@ -272,19 +279,9 @@ Entrada: --
 
 <div class="filter-box">
 
-<div>Mercado</div>
+<div>Filtro de Mercado</div>
 
 <h2 id="marketFilter">
---
-</h2>
-
-</div>
-
-<div class="volatility-box">
-
-<div>Volatilidade</div>
-
-<h2 id="volatility">
 --
 </h2>
 
@@ -480,22 +477,6 @@ return 100 - (100 / (1 + rs));
 
 }
 
-function calculateVolatility(data){
-
-let total = 0;
-
-for(let i=1;i<data.length;i++){
-
-total += Math.abs(
-data[i] - data[i-1]
-);
-
-}
-
-return total / data.length;
-
-}
-
 async function analyzePair(pair){
 
 try{
@@ -505,7 +486,7 @@ const url =
 +
 encodeURIComponent(pair)
 +
-"&interval=5min&outputsize=80&apikey="
+"&interval=5min&outputsize=60&apikey="
 +
 apiKey;
 
@@ -535,9 +516,6 @@ calculateEMA(21,closes);
 const rsi =
 calculateRSI(closes);
 
-const volatility =
-calculateVolatility(closes);
-
 const last =
 closes[closes.length-1];
 
@@ -561,11 +539,10 @@ rsi < 70
 force > 0.0003
 &&
 movement > 0.0002
-&&
-volatility > 0.0004
 ){
 
 direction = "CALL";
+
 trend = "ALTA";
 
 }else if(
@@ -576,11 +553,10 @@ rsi > 30
 force > 0.0003
 &&
 movement > 0.0002
-&&
-volatility > 0.0004
 ){
 
 direction = "PUT";
+
 trend = "BAIXA";
 
 }else{
@@ -591,12 +567,12 @@ return null;
 
 let marketCondition;
 
-if(force > 0.0015){
+if(force > 0.001){
 
 marketCondition =
 "TENDÊNCIA FORTE";
 
-}else if(force > 0.0008){
+}else if(force > 0.0005){
 
 marketCondition =
 "MERCADO BOM";
@@ -612,6 +588,8 @@ return{
 
 pair: pair,
 
+movement: movement,
+
 direction: direction,
 
 trend: trend,
@@ -619,8 +597,6 @@ trend: trend,
 force: force,
 
 rsi: Math.floor(rsi),
-
-volatility: volatility,
 
 marketCondition: marketCondition
 
@@ -694,10 +670,6 @@ document.getElementById("rsiValue")
 .innerText =
 "--";
 
-document.getElementById("volatility")
-.innerText =
-"--";
-
 document.getElementById("loading")
 .style.display = "none";
 
@@ -706,9 +678,7 @@ return;
 }
 
 results.sort((a,b)=>
-(b.force + b.volatility)
--
-(a.force + a.volatility)
+b.force - a.force
 );
 
 const best = results[0];
@@ -716,28 +686,22 @@ const best = results[0];
 const probability =
 Math.min(
 99,
-Math.floor(
-(best.force + best.volatility)
-* 100000
-)
+Math.floor(best.force * 100000)
 );
 
 const strength =
 Math.min(
 99,
-Math.floor(
-(best.force + best.volatility)
-* 120000
-)
+Math.floor(best.force * 120000)
 );
 
 let risk;
 
-if(best.force > 0.0015){
+if(best.force > 0.001){
 
 risk = "BAIXO";
 
-}else if(best.force > 0.0008){
+}else if(best.force > 0.0005){
 
 risk = "MÉDIO";
 
@@ -798,10 +762,6 @@ best.rsi;
 document.getElementById("marketFilter")
 .innerText =
 best.marketCondition;
-
-document.getElementById("volatility")
-.innerText =
-best.volatility.toFixed(5);
 
 const next =
 nextM5();
