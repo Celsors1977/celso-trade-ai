@@ -1,104 +1,89 @@
 /**
- * getTradeSignal - Sistema Completo de Sinais CALL / PUT
- * Versão Robusta com múltiplos filtros
+ * getTradeSignal - Versão Segura e Completa
  */
-function getTradeSignal({
-    closes,          // Array de preços de fechamento
-    ema9,
-    ema21,
-    rsi,
-    volume = 0,
-    avgVolume = 0,
-    ema200 = null,   // Opcional - tendência de longo prazo
-    currentTime = null // Opcional - para filtro de horário
-}) {
 
-    // ====================== CÁLCULOS ======================
-    const macdData = calculateMACD(closes);
-    
-    const emaDiff = ema9 - ema21;
-    const isBullishEMA = emaDiff > 0;
-    const isBearishEMA = emaDiff < 0;
+function getTradeSignal(data) {
+    try {
+        const {
+            closes = [],
+            ema9 = 0,
+            ema21 = 0,
+            rsi = 50,
+            volume = 0,
+            avgVolume = 0,
+            ema200 = null
+        } = data || {};
 
-    // Força do MACD
-    const macdStrength = Math.abs(macdData.macd || 0);
-    const histStrength = Math.abs(macdData.histogram || 0);
+        // Proteção contra dados inválidos
+        if (!closes || closes.length < 30) {
+            return null;
+        }
 
-    const isTrendStrong = macdStrength > 0.0005 && histStrength > 0.00025;
+        // ====================== CÁLCULOS ======================
+        const macdData = calculateMACD ? calculateMACD(closes) : { macd: 0, histogram: 0 };
+        
+        const emaDiff = ema9 - ema21;
+        const isBullishEMA = emaDiff > 0;
+        const isBearishEMA = emaDiff < 0;
 
-    const isHistogramConfirming = 
-        (isBullishEMA && (macdData.histogram || 0) > 0) || 
-        (isBearishEMA && (macdData.histogram || 0) < 0);
+        const macdStrength = Math.abs(macdData.macd || 0);
+        const histStrength = Math.abs(macdData.histogram || 0);
 
-    // Volume
-    const hasStrongVolume = volume > (avgVolume * 1.15);
+        const isTrendStrong = macdStrength > 0.0005 && histStrength > 0.0002;
 
-    // Alinhamento com tendência maior (EMA 200)
-    let isAlignedWithHigherTF = true;
-    if (ema200 !== null) {
-        isAlignedWithHigherTF = 
-            (isBullishEMA && ema9 > ema200) || 
-            (isBearishEMA && ema9 < ema200);
+        const isHistogramConfirming = 
+            (isBullishEMA && (macdData.histogram || 0) > 0) || 
+            (isBearishEMA && (macdData.histogram || 0) < 0);
+
+        const hasStrongVolume = avgVolume > 0 ? volume > (avgVolume * 1.12) : true;
+
+        let isAlignedWithHigherTF = true;
+        if (ema200 !== null && ema200 !== 0) {
+            isAlignedWithHigherTF = 
+                (isBullishEMA && ema9 > ema200) || 
+                (isBearishEMA && ema9 < ema200);
+        }
+
+        // ====================== SINAL CALL ======================
+        if (
+            isBullishEMA &&
+            rsi > 32 && rsi < 58 &&
+            isTrendStrong &&
+            (macdData.macd || 0) > 0 &&
+            isHistogramConfirming &&
+            hasStrongVolume &&
+            isAlignedWithHigherTF
+        ) {
+            return {
+                direction: "CALL",
+                trend: "ALTA",
+                strength: Math.min(100, Math.round(macdStrength * 10000 + 20)),
+                message: "Sinal CALL detectado"
+            };
+        }
+
+        // ====================== SINAL PUT ======================
+        if (
+            isBearishEMA &&
+            rsi > 42 && rsi < 68 &&
+            isTrendStrong &&
+            (macdData.macd || 0) < 0 &&
+            isHistogramConfirming &&
+            hasStrongVolume &&
+            isAlignedWithHigherTF
+        ) {
+            return {
+                direction: "PUT",
+                trend: "BAIXA",
+                strength: Math.min(100, Math.round(macdStrength * 10000 + 20)),
+                message: "Sinal PUT detectado"
+            };
+        }
+
+        return null;
+
+    } catch (error) {
+        console.error("Erro no getTradeSignal:", error);
+        return null;
     }
-
-    // ====================== CONDIÇÃO CALL ======================
-    if (
-        isBullishEMA &&                    // EMA9 > EMA21
-        rsi > 32 && rsi < 58 &&            // RSI em zona saudável
-        isTrendStrong &&                   // Tendência forte
-        macdData.macd > 0 &&               // MACD positivo
-        isHistogramConfirming &&           // Histograma confirmando alta
-        hasStrongVolume &&                 // Volume forte
-        isAlignedWithHigherTF              // Alinhado com tendência maior
-    ) {
-        return {
-            direction: "CALL",
-            trend: "ALTA",
-            strength: Math.min(100, Math.round(macdStrength * 12000 + (rsi < 48 ? 18 : 0))),
-            message: "Sinal de Compra - Tendência de Alta"
-        };
-    }
-
-    // ====================== CONDIÇÃO PUT ======================
-    else if (
-        isBearishEMA &&                    // EMA9 < EMA21
-        rsi > 42 && rsi < 68 &&            // RSI em zona saudável
-        isTrendStrong &&
-        macdData.macd < 0 &&
-        isHistogramConfirming &&           // Histograma confirmando baixa
-        hasStrongVolume &&
-        isAlignedWithHigherTF
-    ) {
-        return {
-            direction: "PUT",
-            trend: "BAIXA",
-            strength: Math.min(100, Math.round(macdStrength * 12000 + (rsi > 52 ? 18 : 0))),
-            message: "Sinal de Venda - Tendência de Baixa"
-        };
-    }
-
-    // Nenhum sinal válido
-    return null;
 }
-
-// ====================== EXEMPLO DE USO ======================
-/*
-const signal = getTradeSignal({
-    closes: priceHistory,        // array de closes
-    ema9: currentEMA9,
-    ema21: currentEMA21,
-    rsi: currentRSI,
-    volume: currentVolume,
-    avgVolume: averageVolume20,
-    ema200: currentEMA200
-});
-
-if (signal) {
-    console.log(`🚨 SINAL: ${signal.direction}`);
-    console.log(`Tendência: ${signal.trend}`);
-    console.log(`Força: ${signal.strength}%`);
-    console.log(signal.message);
-} else {
-    console.log("Sem sinal no momento.");
-}
-*/
