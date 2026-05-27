@@ -5,80 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Sinais CALL/PUT</title>
     <style>
-        body { font-family: Arial; margin: 20px; background: #f4f4f4; }
-        h2 { color: #333; }
-        input, button { padding: 10px; margin: 5px; }
-        #resultado { font-size: 18px; margin-top: 20px; padding: 15px; border-radius: 8px; }
+        body { font-family: Arial; margin: 20px; background: #f0f0f0; text-align: center; }
+        h2 { color: #1e3a8a; }
+        input { padding: 10px; margin: 10px; width: 180px; font-size: 16px; }
+        button { padding: 12px 20px; font-size: 18px; background: #1e40af; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        #resultado { margin: 30px auto; padding: 25px; font-size: 24px; border-radius: 12px; width: 80%; max-width: 500px; }
     </style>
 </head>
 <body>
 
-    <h2>Sistema de Sinais - CALL / PUT</h2>
+    <h2>🚀 Sistema de Sinais CALL / PUT</h2>
 
-    <label>EMA 9:</label><input type="number" id="ema9" value="1.2345" step="0.0001"><br>
-    <label>EMA 21:</label><input type="number" id="ema21" value="1.2330" step="0.0001"><br>
-    <label>RSI:</label><input type="number" id="rsi" value="45" min="0" max="100"><br>
-    <button onclick="testarSinal()">🔍 TESTAR SINAL</button>
+    <label>EMA 9: </label><input type="number" id="ema9" value="1.2345" step="0.0001"><br><br>
+    <label>EMA 21: </label><input type="number" id="ema21" value="1.2330" step="0.0001"><br><br>
+    <label>RSI: </label><input type="number" id="rsi" value="45"><br><br>
 
-    <div id="resultado">Aguardando teste...</div>
+    <button onclick="testarSinal()">🔍 GERAR SINAL AGORA</button>
+
+    <div id="resultado">Clique no botão para gerar o sinal...</div>
 
     <script>
-        function calculateMACD(closes) {
-            if (!closes || closes.length < 10) return { macd: 0.001, histogram: 0.0005 };
-            return { 
-                macd: 0.0012, 
-                histogram: 0.0008 
-            };
-        }
-
         function getTradeSignal(ema9, ema21, rsi) {
-            const macdData = calculateMACD([]);
+            // Simulação simples do MACD
+            const macd = 0.0012;
 
-            if (ema9 > ema21 && rsi < 60 && macdData.macd > 0) {
-                return {
-                    direction: "CALL",
-                    trend: "ALTA",
-                    strength: 72,
-                    message: "✅ SINAL CALL FORTE"
-                };
+            if (ema9 > ema21 && rsi < 60) {
+                return { direction: "CALL", trend: "ALTA", strength: 78, message: "✅ SINAL CALL FORTE" };
             }
-
-            if (ema9 < ema21 && rsi > 40 && macdData.macd < 0) {
-                return {
-                    direction: "PUT",
-                    trend: "BAIXA",
-                    strength: 68,
-                    message: "✅ SINAL PUT FORTE"
-                };
+            if (ema9 < ema21 && rsi > 40) {
+                return { direction: "PUT", trend: "BAIXA", strength: 75, message: "✅ SINAL PUT FORTE" };
             }
-
             return { message: "❌ Sem sinal no momento" };
         }
 
         function testarSinal() {
-            const ema9 = parseFloat(document.getElementById("ema9").value);
-            const ema21 = parseFloat(document.getElementById("ema21").value);
-            const rsi = parseFloat(document.getElementById("rsi").value);
+            const ema9 = parseFloat(document.getElementById("ema9").value) || 0;
+            const ema21 = parseFloat(document.getElementById("ema21").value) || 0;
+            const rsi = parseFloat(document.getElementById("rsi").value) || 50;
 
             const sinal = getTradeSignal(ema9, ema21, rsi);
-            
             const div = document.getElementById("resultado");
-            
+
             if (sinal.direction) {
-                div.style.background = sinal.direction === "CALL" ? "#d4edda" : "#f8d7da";
+                div.style.backgroundColor = sinal.direction === "CALL" ? "#90EE90" : "#FF9999";
                 div.innerHTML = `
-                    <strong>${sinal.message}</strong><br>
-                    Direção: ${sinal.direction}<br>
-                    Tendência: ${sinal.trend}<br>
-                    Força: ${sinal.strength}%
+                    <strong>${sinal.message}</strong><br><br>
+                    Direção: <b>${sinal.direction}</b><br>
+                    Tendência: <b>${sinal.trend}</b><br>
+                    Força: <b>${sinal.strength}%</b>
                 `;
             } else {
-                div.style.background = "#fff3cd";
+                div.style.backgroundColor = "#FFEE99";
                 div.innerHTML = sinal.message;
             }
         }
 
-        console.log("✅ Sistema carregado corretamente!");
+        // Executa automaticamente ao carregar a página
+        window.onload = function() {
+            console.log("✅ Sistema carregado!");
+            testarSinal();   // Testa automaticamente com os valores padrão
+        };
     </script>
 
 </body>
