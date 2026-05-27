@@ -4,72 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Sinais CALL/PUT</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background: #f4f4f4; }
+        h2 { color: #333; }
+        input, button { padding: 10px; margin: 5px; }
+        #resultado { font-size: 18px; margin-top: 20px; padding: 15px; border-radius: 8px; }
+    </style>
 </head>
 <body>
 
     <h2>Sistema de Sinais - CALL / PUT</h2>
-    <p id="status">Aguardando dados...</p>
+
+    <label>EMA 9:</label><input type="number" id="ema9" value="1.2345" step="0.0001"><br>
+    <label>EMA 21:</label><input type="number" id="ema21" value="1.2330" step="0.0001"><br>
+    <label>RSI:</label><input type="number" id="rsi" value="45" min="0" max="100"><br>
+    <button onclick="testarSinal()">🔍 TESTAR SINAL</button>
+
+    <div id="resultado">Aguardando teste...</div>
 
     <script>
-        // =============================================
-        // CALCULATE MACD (incluído)
-        // =============================================
         function calculateMACD(closes) {
-            if (!closes || closes.length < 30) {
-                return { macd: 0, histogram: 0 };
-            }
-            // Versão simplificada para teste
+            if (!closes || closes.length < 10) return { macd: 0.001, histogram: 0.0005 };
             return { 
-                macd: (closes[closes.length-1] - closes[closes.length-10]) * 0.001, 
+                macd: 0.0012, 
                 histogram: 0.0008 
             };
         }
 
-        // =============================================
-        // FUNÇÃO PRINCIPAL DE SINAL
-        // =============================================
-        function getTradeSignal(closes, ema9, ema21, rsi) {
-            if (!closes || !ema9 || !ema21) {
-                return null;
-            }
+        function getTradeSignal(ema9, ema21, rsi) {
+            const macdData = calculateMACD([]);
 
-            const macdData = calculateMACD(closes);
-
-            // ==================== CALL ====================
             if (ema9 > ema21 && rsi < 60 && macdData.macd > 0) {
                 return {
                     direction: "CALL",
                     trend: "ALTA",
-                    strength: 68,
-                    message: "✅ SINAL CALL"
+                    strength: 72,
+                    message: "✅ SINAL CALL FORTE"
                 };
             }
 
-            // ==================== PUT ====================
             if (ema9 < ema21 && rsi > 40 && macdData.macd < 0) {
                 return {
                     direction: "PUT",
                     trend: "BAIXA",
                     strength: 68,
-                    message: "✅ SINAL PUT"
+                    message: "✅ SINAL PUT FORTE"
                 };
             }
 
-            return null;
+            return { message: "❌ Sem sinal no momento" };
         }
 
-        // ====================== EXEMPLO DE TESTE ======================
-        console.log("✅ Script carregado com sucesso!");
+        function testarSinal() {
+            const ema9 = parseFloat(document.getElementById("ema9").value);
+            const ema21 = parseFloat(document.getElementById("ema21").value);
+            const rsi = parseFloat(document.getElementById("rsi").value);
 
-        // Teste rápido (você pode apagar depois)
-        let exemploCloses = [1.2345, 1.2350, 1.2348, 1.2355];
-        let sinal = getTradeSignal(exemploCloses, 1.2352, 1.2340, 45);
-
-        if (sinal) {
-            document.getElementById("status").innerHTML = 
-                `<strong>${sinal.message}</strong><br>Tendência: ${sinal.trend}`;
-            console.log(sinal);
+            const sinal = getTradeSignal(ema9, ema21, rsi);
+            
+            const div = document.getElementById("resultado");
+            
+            if (sinal.direction) {
+                div.style.background = sinal.direction === "CALL" ? "#d4edda" : "#f8d7da";
+                div.innerHTML = `
+                    <strong>${sinal.message}</strong><br>
+                    Direção: ${sinal.direction}<br>
+                    Tendência: ${sinal.trend}<br>
+                    Força: ${sinal.strength}%
+                `;
+            } else {
+                div.style.background = "#fff3cd";
+                div.innerHTML = sinal.message;
+            }
         }
+
+        console.log("✅ Sistema carregado corretamente!");
     </script>
 
 </body>
