@@ -18,7 +18,7 @@ padding:20px;
 }
 
 .container{
-max-width:430px;
+max-width:420px;
 margin:auto;
 }
 
@@ -47,7 +47,7 @@ text-align:center;
 }
 
 .big{
-font-size:58px;
+font-size:60px;
 font-weight:bold;
 margin:20px 0;
 }
@@ -90,20 +90,6 @@ border-radius:15px;
 text-align:center;
 }
 
-.stats-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-top:20px;
-}
-
-.stats-box{
-background:#0a0a0a;
-padding:15px;
-border-radius:15px;
-text-align:center;
-}
-
 button{
 width:100%;
 padding:18px;
@@ -114,6 +100,11 @@ font-size:18px;
 font-weight:bold;
 margin-top:20px;
 cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+opacity:0.9;
 }
 
 .loading{
@@ -165,8 +156,7 @@ animation:blink 1s infinite;
 .filter-box,
 .volatility-box,
 .ranking-box,
-.auto-box,
-.history-box{
+.auto-box{
 margin-top:20px;
 background:#0a0a0a;
 padding:15px;
@@ -180,14 +170,6 @@ padding:12px;
 border-radius:12px;
 margin-top:10px;
 font-size:16px;
-}
-
-.history-item{
-background:#111;
-padding:10px;
-border-radius:10px;
-margin-top:10px;
-font-size:14px;
 }
 
 .auto-status{
@@ -222,7 +204,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente AUTO M5 PRO
+Scanner Inteligente AUTO M5
 </div>
 
 <div class="center">
@@ -280,30 +262,6 @@ Entrada: --
 
 </div>
 
-<div class="stats-grid">
-
-<div class="stats-box">
-<div>✅ Wins</div>
-<h2 id="wins">0</h2>
-</div>
-
-<div class="stats-box">
-<div>❌ Losses</div>
-<h2 id="losses">0</h2>
-</div>
-
-<div class="stats-box">
-<div>🎯 Assertividade</div>
-<h2 id="accuracyRate">0%</h2>
-</div>
-
-<div class="stats-box">
-<div>🔥 Streak</div>
-<h2 id="streak">0</h2>
-</div>
-
-</div>
-
 <div class="rsi-box">
 <div>RSI</div>
 <h2 id="rsiValue">--</h2>
@@ -355,22 +313,6 @@ ATIVADO
 
 </div>
 
-<div class="history-box">
-
-<div>
-📊 Últimos Resultados
-</div>
-
-<div id="history">
-
-<div class="history-item">
-Aguardando operações...
-</div>
-
-</div>
-
-</div>
-
 <div class="market">
 🟢 Mercado conectado em tempo real
 </div>
@@ -404,10 +346,6 @@ const pairs = [
 
 let timer;
 let signalLocked = false;
-
-let wins = 0;
-let losses = 0;
-let streak = 0;
 
 function updateClock(){
 
@@ -469,7 +407,7 @@ return ema;
 function calculateRSI(data,period=14){
 
 let gains = 0;
-let lossesCalc = 0;
+let losses = 0;
 
 for(let i=1;i<=period;i++){
 
@@ -484,7 +422,7 @@ gains += diff;
 
 }else{
 
-lossesCalc += Math.abs(diff);
+losses += Math.abs(diff);
 
 }
 
@@ -494,7 +432,7 @@ const avgGain =
 gains / period;
 
 const avgLoss =
-lossesCalc / period;
+losses / period;
 
 if(avgLoss === 0){
 
@@ -522,95 +460,6 @@ data[i] - data[i-1]
 }
 
 return total / data.length;
-
-}
-
-function updateStats(){
-
-document.getElementById("wins")
-.innerText =
-wins;
-
-document.getElementById("losses")
-.innerText =
-losses;
-
-document.getElementById("streak")
-.innerText =
-streak;
-
-const total =
-wins + losses;
-
-let rate = 0;
-
-if(total > 0){
-
-rate =
-Math.floor(
-(wins / total) * 100
-);
-
-}
-
-document.getElementById("accuracyRate")
-.innerText =
-rate + "%";
-
-}
-
-function addHistory(text){
-
-const history =
-document.getElementById("history");
-
-const item =
-document.createElement("div");
-
-item.className =
-"history-item";
-
-item.innerText =
-text;
-
-history.prepend(item);
-
-if(history.children.length > 5){
-
-history.removeChild(
-history.lastChild
-);
-
-}
-
-}
-
-function simulateResult(){
-
-const random =
-Math.random();
-
-if(random > 0.35){
-
-wins++;
-streak++;
-
-addHistory(
-"✅ WIN confirmado"
-);
-
-}else{
-
-losses++;
-streak = 0;
-
-addHistory(
-"❌ LOSS confirmado"
-);
-
-}
-
-updateStats();
 
 }
 
@@ -760,6 +609,54 @@ results.push(result);
 
 if(results.length === 0){
 
+document.getElementById("pair")
+.innerText =
+"AGUARDANDO";
+
+document.getElementById("direction")
+.innerText =
+"SEM SINAL";
+
+document.getElementById("direction")
+.className =
+"yellow";
+
+document.getElementById("accuracy")
+.innerText =
+"--%";
+
+document.getElementById("trend")
+.innerText =
+"LATERAL";
+
+document.getElementById("strength")
+.innerText =
+"--";
+
+document.getElementById("risk")
+.innerText =
+"ALTO";
+
+document.getElementById("marketFilter")
+.innerText =
+"MERCADO RUIM";
+
+document.getElementById("rsiValue")
+.innerText =
+"--";
+
+document.getElementById("volatility")
+.innerText =
+"--";
+
+document.getElementById("ranking")
+.innerHTML =
+`
+<div class="rank-item">🥇 sem sinal</div>
+<div class="rank-item">🥈 sem sinal</div>
+<div class="rank-item">🥉 sem sinal</div>
+`;
+
 document.getElementById("loading")
 .style.display = "none";
 
@@ -808,6 +705,12 @@ Math.min(
 Math.floor(best.score)
 );
 
+const strength =
+Math.min(
+99,
+Math.floor(best.score)
+);
+
 let risk;
 
 if(best.force > 0.0015){
@@ -846,13 +749,27 @@ document.getElementById("trend")
 .innerText =
 best.trend;
 
+document.getElementById("trend")
+.className =
+best.direction === "CALL"
+? "green"
+: "red";
+
 document.getElementById("strength")
 .innerText =
-probability + "%";
+strength + "%";
 
 document.getElementById("risk")
 .innerText =
 risk;
+
+document.getElementById("risk")
+.className =
+risk === "BAIXO"
+? "green"
+: risk === "MÉDIO"
+? "yellow"
+: "red";
 
 document.getElementById("rsiValue")
 .innerText =
@@ -903,13 +820,11 @@ clearInterval(timer);
 
 setTimeout(()=>{
 
-simulateResult();
-
 signalLocked = false;
 
 analyzeMarket();
 
-},15000);
+},10000);
 
 return;
 
