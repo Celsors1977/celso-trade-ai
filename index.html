@@ -154,29 +154,12 @@ animation:blink 1s infinite;
 
 .rsi-box,
 .filter-box,
-.volatility-box,
-.ranking-box,
-.auto-box{
+.volatility-box{
 margin-top:20px;
 background:#0a0a0a;
 padding:15px;
 border-radius:15px;
 text-align:center;
-}
-
-.rank-item{
-background:#111;
-padding:12px;
-border-radius:12px;
-margin-top:10px;
-font-size:16px;
-}
-
-.auto-status{
-font-size:20px;
-font-weight:bold;
-color:#00ff99;
-margin-top:10px;
 }
 
 @keyframes blink{
@@ -204,7 +187,7 @@ Celso Ricardi Trader AI
 </div>
 
 <div class="subtitle">
-Scanner Inteligente AUTO M5
+Scanner Inteligente M5 ULTRA
 </div>
 
 <div class="center">
@@ -246,70 +229,64 @@ Entrada: --
 <div class="status">
 
 <div class="box">
+
 <div>Tendência</div>
-<h3 id="trend">--</h3>
+
+<h3 id="trend">
+--
+</h3>
+
 </div>
 
 <div class="box">
+
 <div>Força</div>
-<h3 id="strength">--</h3>
+
+<h3 id="strength">
+--
+</h3>
+
 </div>
 
 <div class="box">
+
 <div>Risco</div>
-<h3 id="risk">--</h3>
+
+<h3 id="risk">
+--
+</h3>
+
 </div>
 
 </div>
 
 <div class="rsi-box">
+
 <div>RSI</div>
-<h2 id="rsiValue">--</h2>
+
+<h2 id="rsiValue">
+--
+</h2>
+
 </div>
 
 <div class="filter-box">
+
 <div>Mercado</div>
-<h2 id="marketFilter">--</h2>
+
+<h2 id="marketFilter">
+--
+</h2>
+
 </div>
 
 <div class="volatility-box">
+
 <div>Volatilidade</div>
-<h2 id="volatility">--</h2>
-</div>
 
-<div class="auto-box">
-
-<div>
-🤖 Scanner Automático
-</div>
-
-<div class="auto-status" id="autoStatus">
-ATIVADO
-</div>
-
-</div>
-
-<div class="ranking-box">
-
-<div>
-🏆 Ranking dos Pares
-</div>
-
-<div id="ranking">
-
-<div class="rank-item">
-🥇 aguardando...
-</div>
-
-<div class="rank-item">
-🥈 aguardando...
-</div>
-
-<div class="rank-item">
-🥉 aguardando...
-</div>
-
-</div>
+<h2 id="volatility">
+--
+</h2>
 
 </div>
 
@@ -318,7 +295,7 @@ ATIVADO
 </div>
 
 <button onclick="analyzeMarket()">
-ATUALIZAR AGORA
+GERAR SINAL REAL
 </button>
 
 <div class="loading" id="loading">
@@ -350,8 +327,7 @@ function updateClock(){
 
 const now = new Date();
 
-document.getElementById("clock")
-.innerText =
+document.getElementById("clock").innerText =
 now.toLocaleTimeString("pt-BR");
 
 }
@@ -613,26 +589,47 @@ return null;
 
 }
 
-let score =
-(force * 100000)
-+
-(volatility * 100000);
+let marketCondition;
+
+if(force > 0.0015){
+
+marketCondition =
+"TENDÊNCIA FORTE";
+
+}else if(force > 0.0008){
+
+marketCondition =
+"MERCADO BOM";
+
+}else{
+
+marketCondition =
+"LATERAL";
+
+}
 
 return{
 
 pair: pair,
+
 direction: direction,
+
 trend: trend,
+
 force: force,
+
 rsi: Math.floor(rsi),
+
 volatility: volatility,
-score: score
+
+marketCondition: marketCondition
 
 };
 
 }catch(e){
 
 console.log(e);
+
 return null;
 
 }
@@ -701,14 +698,6 @@ document.getElementById("volatility")
 .innerText =
 "--";
 
-document.getElementById("ranking")
-.innerHTML =
-`
-<div class="rank-item">🥇 sem sinal</div>
-<div class="rank-item">🥈 sem sinal</div>
-<div class="rank-item">🥉 sem sinal</div>
-`;
-
 document.getElementById("loading")
 .style.display = "none";
 
@@ -717,48 +706,29 @@ return;
 }
 
 results.sort((a,b)=>
-b.score - a.score
+(b.force + b.volatility)
+-
+(a.force + a.volatility)
 );
 
 const best = results[0];
 
-let rankingHTML = "";
-
-results.slice(0,3).forEach((item,index)=>{
-
-let medal = "🥇";
-
-if(index === 1) medal = "🥈";
-if(index === 2) medal = "🥉";
-
-rankingHTML +=
-`
-<div class="rank-item">
-${medal}
-${item.pair}
--
-${item.direction}
--
-${Math.floor(item.score)}%
-</div>
-`;
-
-});
-
-document.getElementById("ranking")
-.innerHTML =
-rankingHTML;
-
 const probability =
 Math.min(
 99,
-Math.floor(best.score)
+Math.floor(
+(best.force + best.volatility)
+* 100000
+)
 );
 
 const strength =
 Math.min(
 99,
-Math.floor(best.score)
+Math.floor(
+(best.force + best.volatility)
+* 120000
+)
 );
 
 let risk;
@@ -827,7 +797,7 @@ best.rsi;
 
 document.getElementById("marketFilter")
 .innerText =
-best.trend;
+best.marketCondition;
 
 document.getElementById("volatility")
 .innerText =
@@ -854,14 +824,6 @@ document.getElementById("loading")
 .style.display = "none";
 
 }
-
-analyzeMarket();
-
-setInterval(()=>{
-
-analyzeMarket();
-
-},15000);
 
 </script>
 
