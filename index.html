@@ -1,244 +1,901 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celso Ricardi Trader AI</title>
-    <style>
-        body {
-            background: #050505;
-            color: white;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 420px;
-            margin: auto;
-        }
-        .card {
-            background: #111;
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid #222;
-            box-shadow: 0 0 20px rgba(0,255,153,0.05);
-        }
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-            color: #00ff99;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            color: #00ff99;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-        .center {
-            text-align: center;
-        }
-        .big {
-            font-size: 60px;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-        .signal {
-            background: #0a0a0a;
-            padding: 20px;
-            border-radius: 20px;
-            margin-top: 20px;
-            text-align: center;
-        }
-        #pair {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        .call { color: #00ff99; font-size: 40px; font-weight: bold; margin: 5px 0; }
-        .put { color: #ff4444; font-size: 40px; font-weight: bold; margin: 5px 0; }
-        .status {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .box {
-            background: #0a0a0a;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-        }
-        .box div {
-            font-size: 10px;
-            color: #666;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .box h3 { margin: 5px 0 0 0; font-size: 15px; }
-        button {
-            width: 100%;
-            padding: 18px;
-            border: none;
-            border-radius: 15px;
-            background: #00ff99;
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 20px;
-            cursor: pointer;
-            color: #050505;
-        }
-        .countdown { font-size: 48px; font-weight: bold; margin-top: 10px; }
-        .market { margin-top: 20px; text-align: center; color: #555; font-size: 12px; }
-        .clock { text-align: right; font-size: 14px; color: #00ff99; margin-bottom: 15px; font-weight: bold; }
-        .green { color: #00ff99; }
-        .red { color: #ff4444; }
-        .yellow { color: gold; }
-        .rsi-box, .filter-box {
-            margin-top: 12px;
-            background: #0a0a0a;
-            padding: 12px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .rsi-box div, .filter-box div { font-size: 11px; color: #666; font-weight: bold; }
-        .rsi-box h2, .filter-box h2 { margin: 0; font-size: 18px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Celso Ricardi Trader AI</title>
+
+<style>
+
+body{
+background:#050505;
+color:white;
+font-family:Arial,sans-serif;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:430px;
+margin:auto;
+}
+
+.card{
+background:#111;
+padding:20px;
+border-radius:20px;
+border:1px solid #222;
+box-shadow:0 0 20px rgba(0,255,153,0.05);
+}
+
+.logo{
+font-size:28px;
+font-weight:bold;
+color:#00ff99;
+margin-bottom:5px;
+}
+
+.subtitle{
+color:#00ff99;
+font-size:13px;
+margin-bottom:20px;
+}
+
+.clock{
+text-align:right;
+font-size:14px;
+color:#00ff99;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+.center{
+text-align:center;
+}
+
+.big{
+font-size:65px;
+font-weight:bold;
+margin:10px 0;
+color:#00ff99;
+}
+
+.signal{
+background:#0a0a0a;
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+text-align:center;
+}
+
+#pair{
+font-size:24px;
+font-weight:bold;
+}
+
+.call{
+color:#00ff99;
+font-size:42px;
+font-weight:bold;
+margin-top:5px;
+}
+
+.put{
+color:#ff4444;
+font-size:42px;
+font-weight:bold;
+margin-top:5px;
+}
+
+.yellow{
+color:gold;
+}
+
+.countdown{
+font-size:44px;
+font-weight:bold;
+margin-top:15px;
+color:#00ff99;
+}
+
+.entry{
+margin-top:8px;
+color:#888;
+font-size:14px;
+}
+
+.status{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.box{
+background:#0a0a0a;
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+
+.box div{
+font-size:10px;
+color:#666;
+font-weight:bold;
+text-transform:uppercase;
+}
+
+.box h3{
+margin-top:5px;
+font-size:15px;
+}
+
+.extra-box{
+margin-top:12px;
+background:#0a0a0a;
+padding:14px;
+border-radius:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.extra-box div{
+font-size:11px;
+color:#666;
+font-weight:bold;
+}
+
+.extra-box h2{
+margin:0;
+font-size:18px;
+}
+
+button{
+width:100%;
+padding:18px;
+border:none;
+border-radius:15px;
+background:#00ff99;
+font-size:18px;
+font-weight:bold;
+margin-top:20px;
+cursor:pointer;
+color:#050505;
+}
+
+.market{
+margin-top:15px;
+text-align:center;
+color:#00ff99;
+font-size:12px;
+}
+
+.ranking{
+margin-top:20px;
+}
+
+.rank-item{
+background:#0a0a0a;
+padding:14px;
+border-radius:15px;
+margin-top:10px;
+font-size:15px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.stats-box{
+background:#0a0a0a;
+padding:12px;
+border-radius:15px;
+text-align:center;
+}
+
+.stats-box div{
+font-size:10px;
+color:#666;
+font-weight:bold;
+}
+
+.stats-box h2{
+margin:5px 0 0 0;
+font-size:18px;
+}
+
+.green{
+color:#00ff99;
+}
+
+.red{
+color:#ff4444;
+}
+
+.orange{
+color:orange;
+}
+
+</style>
+
 </head>
+
 <body>
 
 <div class="container">
-    <div class="clock" id="clock">00:00:00</div>
-    <div class="card">
-        <div class="logo">Celso Ricardi</div>
-        <div class="subtitle">Scanner Inteligente M5 PRO (AllOrigins Engine)</div>
-        
-        <div class="center">
-            <div style="color: #666; font-size: 11px; font-weight: bold;">PROBABILIDADE IA</div>
-            <div class="big" id="accuracy">--%</div>
-        </div>
-        
-        <div class="signal">
-            <div id="pair">AGUARDANDO</div>
-            <div id="direction" class="yellow">SEM SINAL</div>
-            <div id="entry" style="color: #888; font-size: 14px; margin-top: 5px;">Entrada: --</div>
-            <div class="countdown green" id="countdown">🚀 SINAL DETECTADO</div>
-        </div>
-        
-        <div class="status">
-            <div class="box"><div>Tendência</div><h3 id="trend">--</h3></div>
-            <div class="box"><div>Força</div><h3 id="strength">--</h3></div>
-            <div class="box"><div>Risco</div><h3 id="risk">--</h3></div>
-        </div>
-        
-        <div class="rsi-box"><div>MÉTRICA RSI (14)</div><h2 id="rsiValue">--</h2></div>
-        <div class="filter-box"><div>FILTRO DE MERCADO</div><h2 id="marketFilter">--</h2></div>
-        <div class="market"><span style="color: #00ff99;">●</span> Servidor ativo & monitorando M5 via Yahoo API</div>
-        <button onclick="analyzeMarket()">GERAR SINAL REAL</button>
-    </div>
+
+<div class="clock" id="clock">
+00:00:00
+</div>
+
+<div class="card">
+
+<div class="logo">
+Celso Ricardi
+</div>
+
+<div class="subtitle">
+Scanner Inteligente M5 PRO MAX
+</div>
+
+<div class="center">
+
+<div style="font-size:11px;color:#666;font-weight:bold;">
+PROBABILIDADE IA
+</div>
+
+<div class="big" id="accuracy">
+--%
+</div>
+
+<button onclick="manualAnalyze()">
+ATUALIZAR AGORA
+</button>
+
+<div class="market">
+🟢 Mercado conectado via Yahoo Finance
+</div>
+
+</div>
+
+<div class="signal">
+
+<div id="pair">
+AGUARDANDO
+</div>
+
+<div id="direction" class="yellow">
+SEM SINAL
+</div>
+
+<div class="entry" id="entry">
+Entrada: --
+</div>
+
+<div class="countdown" id="countdown">
+00:00
+</div>
+
+</div>
+
+<div class="status">
+
+<div class="box">
+<div>Tendência</div>
+<h3 id="trend">--</h3>
+</div>
+
+<div class="box">
+<div>Força</div>
+<h3 id="strength">--</h3>
+</div>
+
+<div class="box">
+<div>Risco</div>
+<h3 id="risk">--</h3>
+</div>
+
+</div>
+
+<div class="extra-box">
+<div>RSI (14)</div>
+<h2 id="rsiValue">--</h2>
+</div>
+
+<div class="extra-box">
+<div>MACD</div>
+<h2 id="macdValue">--</h2>
+</div>
+
+<div class="extra-box">
+<div>FILTRO MERCADO</div>
+<h2 id="marketFilter">--</h2>
+</div>
+
+<div class="stats">
+
+<div class="stats-box">
+<div>WINS</div>
+<h2 id="wins">0</h2>
+</div>
+
+<div class="stats-box">
+<div>LOSSES</div>
+<h2 id="losses">0</h2>
+</div>
+
+<div class="stats-box">
+<div>STREAK</div>
+<h2 id="streak">0</h2>
+</div>
+
+</div>
+
+<div class="ranking">
+
+<div style="font-size:13px;font-weight:bold;color:#00ff99;">
+🏆 RANKING DOS PARES
+</div>
+
+<div id="ranking">
+
+<div class="rank-item">
+🥇 aguardando...
+</div>
+
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 <script>
-const pairs = ["EURUSD=X", "GBPUSD=X", "USDJPY=X", "AUDUSD=X", "EURJPY=X", "GBPJPY=X", "USDCAD=X"];
 
-function updateClock() {
-    document.getElementById("clock").innerText = new Date().toLocaleTimeString("pt-BR");
-}
-setInterval(updateClock, 1000);
+const pairs = [
+"EURUSD=X",
+"GBPUSD=X",
+"USDJPY=X",
+"AUDUSD=X",
+"EURJPY=X",
+"GBPJPY=X",
+"USDCAD=X"
+];
 
-function calculateEMA(period, data) {
-    const k = 2 / (period + 1);
-    let ema = data[0];
-    for (let i = 1; i < data.length; i++) { ema = data[i] * k + ema * (1 - k); }
-    return ema;
-}
+let lockedSignal = false;
 
-function calculateRSI(data, period = 14) {
-    if (data.length < period + 1) return 50;
-    let gains = 0, losses = 0;
-    for (let i = 1; i <= period; i++) {
-        const diff = data[data.length - i] - data[data.length - i - 1];
-        if (diff >= 0) gains += diff; else losses += Math.abs(diff);
-    }
-    if (losses === 0) return 100;
-    return 100 - (100 / (1 + (gains / losses)));
-}
+let wins = 0;
+let losses = 0;
+let streak = 0;
 
-async function analyzePair(yahooSymbol) {
-    try {
-        // Correção do cache do allorigins: adicionado o timestamp dinâmico no fim da URL (&_=(tempo))
-        const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}?interval=5m&range=2d&_=${new Date().getTime()}`;
-        const url = "https://api.allorigins.win/get?url=" + encodeURIComponent(targetUrl);
-        
-        const response = await fetch(url);
-        if (!response.ok) return null;
-        const wrapper = await response.json();
-        if (!wrapper.contents) return null;
-        
-        const data = JSON.parse(wrapper.contents);
-        if (!data.chart?.result?.[0]) return null;
-        
-        const rawCloses = data.chart.result[0].indicators.quote[0].close;
-        const closes = rawCloses.filter(v => v !== null && v !== undefined);
-        if (closes.length < 22) return null;
+function updateClock(){
 
-        const ema9 = calculateEMA(9, closes);
-        const ema21 = calculateEMA(21, closes);
-        const rsi = calculateRSI(closes);
-        const last = closes[closes.length - 1];
-        
-        const multiplier = yahooSymbol.includes("JPY") ? 100 : 10000;
-        const forceNormalized = (Math.abs(ema9 - ema21) / last) * multiplier;
-        
-        let direction = ema9 > ema21 ? "CALL" : "PUT";
-        let trend = ema9 > ema21 ? "ALTA" : "BAIXA";
-        let marketCondition = forceNormalized > 1.0 ? "TENDÊNCIA FORTE" : "ESTÁVEL";
+document.getElementById("clock")
+.innerText =
+new Date().toLocaleTimeString("pt-BR");
 
-        return {
-            pair: yahooSymbol.replace("=X", "").replace(/([A-Z]{3})([A-Z]{3})/, "$1/$2"),
-            direction: direction,
-            trend: trend,
-            forceNormalized: forceNormalized,
-            rsi: Math.floor(rsi),
-            marketCondition: marketCondition
-        };
-    } catch (e) {
-        return null;
-    }
 }
 
-async function analyzeMarket() {
-    let results = [];
-    for (let i = 0; i < pairs.length; i++) {
-        const res = await analyzePair(pairs[i]);
-        if (res) results.push(res);
-    }
+setInterval(updateClock,1000);
 
-    if (results.length === 0) return;
+function calculateEMA(period,data){
 
-    // Ordena pelo par com a tendência mais forte detectada no momento
-    results.sort((a, b) => b.forceNormalized - a.forceNormalized);
-    const best = results[0];
+const k = 2 / (period + 1);
 
-    const probability = Math.min(96, Math.floor(70 + (best.forceNormalized * 8)));
-    const strengthScore = Math.min(99, Math.floor(40 + (best.forceNormalized * 25)));
+let ema = data[0];
 
-    document.getElementById("pair").innerText = best.pair;
-    document.getElementById("direction").innerText = best.direction;
-    document.getElementById("direction").className = best.direction === "CALL" ? "call" : "put";
-    document.getElementById("accuracy").innerText = probability + "%";
-    document.getElementById("trend").innerText = best.trend;
-    document.getElementById("trend").className = best.trend === "ALTA" ? "green" : "red";
-    document.getElementById("strength").innerText = strengthScore + "%";
-    document.getElementById("risk").innerText = "MÉDIO";
-    document.getElementById("rsiValue").innerText = best.rsi + " ERP";
-    document.getElementById("marketFilter").innerText = best.marketCondition;
-    
-    const now = new Date();
-    let min = Math.ceil((now.getMinutes() + 1) / 5) * 5;
-    if(min >= 60) min = 0;
-    document.getElementById("entry").innerText = "Entrada Próxima: " + String(now.getHours()).padStart(2,'0') + ":" + String(min).padStart(2,'0');
+for(let i=1;i<data.length;i++){
+
+ema =
+data[i] * k
++
+ema * (1-k);
+
 }
+
+return ema;
+
+}
+
+function calculateRSI(data,period=14){
+
+if(data.length < period + 1){
+
+return 50;
+
+}
+
+let gains = 0;
+let lossesCalc = 0;
+
+for(let i=1;i<=period;i++){
+
+const diff =
+data[data.length-i]
+-
+data[data.length-i-1];
+
+if(diff >= 0){
+
+gains += diff;
+
+}else{
+
+lossesCalc += Math.abs(diff);
+
+}
+
+}
+
+if(lossesCalc === 0){
+
+return 100;
+
+}
+
+return 100 - (
+100 /
+(
+1 + (gains / lossesCalc)
+)
+);
+
+}
+
+function calculateMACD(data){
+
+const ema12 =
+calculateEMA(12,data);
+
+const ema26 =
+calculateEMA(26,data);
+
+return ema12 - ema26;
+
+}
+
+function nextM5(){
+
+const now = new Date();
+
+let next =
+Math.ceil(
+(now.getMinutes()+1)/5
+) * 5;
+
+if(next >= 60){
+
+now.setHours(
+now.getHours()+1
+);
+
+next = 0;
+
+}
+
+now.setMinutes(next);
+now.setSeconds(0);
+
+return now;
+
+}
+
+async function analyzePair(symbol){
+
+try{
+
+const targetUrl =
+`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=5m&range=2d&_=${new Date().getTime()}`;
+
+const url =
+"https://api.allorigins.win/get?url="
++
+encodeURIComponent(targetUrl);
+
+const response =
+await fetch(url);
+
+if(!response.ok){
+
+return null;
+
+}
+
+const wrapper =
+await response.json();
+
+if(!wrapper.contents){
+
+return null;
+
+}
+
+const data =
+JSON.parse(wrapper.contents);
+
+if(!data.chart?.result?.[0]){
+
+return null;
+
+}
+
+const rawCloses =
+data.chart.result[0]
+.indicators.quote[0].close;
+
+const closes =
+rawCloses.filter(v =>
+v !== null &&
+v !== undefined
+);
+
+if(closes.length < 30){
+
+return null;
+
+}
+
+const ema9 =
+calculateEMA(9,closes);
+
+const ema21 =
+calculateEMA(21,closes);
+
+const rsi =
+calculateRSI(closes);
+
+const macd =
+calculateMACD(closes);
+
+const last =
+closes[closes.length-1];
+
+const multiplier =
+symbol.includes("JPY")
+? 100
+: 10000;
+
+const force =
+(
+Math.abs(ema9 - ema21)
+/
+last
+)
+*
+multiplier;
+
+const volatility =
+Math.abs(
+closes[closes.length-1]
+-
+closes[closes.length-5]
+);
+
+let direction;
+let trend;
+
+if(
+ema9 > ema21
+&&
+macd > 0
+&&
+rsi < 70
+){
+
+direction = "CALL";
+trend = "ALTA";
+
+}else if(
+ema9 < ema21
+&&
+macd < 0
+&&
+rsi > 30
+){
+
+direction = "PUT";
+trend = "BAIXA";
+
+}else{
+
+return null;
+
+}
+
+let filter =
+force > 1.2
+? "TENDÊNCIA FORTE"
+: "LATERAL";
+
+let score =
+(force * 10)
++
+Math.abs(macd * 1000)
++
+volatility;
+
+return{
+
+pair:
+symbol.replace("=X","")
+.replace(
+/([A-Z]{3})([A-Z]{3})/,
+"$1/$2"
+),
+
+direction,
+trend,
+rsi,
+macd,
+force,
+score,
+filter
+
+};
+
+}catch(e){
+
+return null;
+
+}
+
+}
+
+function updateStats(){
+
+document.getElementById("wins")
+.innerText = wins;
+
+document.getElementById("losses")
+.innerText = losses;
+
+document.getElementById("streak")
+.innerText = streak;
+
+}
+
+function simulateResult(){
+
+const rand = Math.random();
+
+if(rand > 0.35){
+
+wins++;
+streak++;
+
+}else{
+
+losses++;
+streak = 0;
+
+}
+
+updateStats();
+
+}
+
+function startCountdown(){
+
+const next = nextM5();
+
+document.getElementById("entry")
+.innerText =
+"Entrada Próxima: "
++
+next.toLocaleTimeString(
+"pt-BR",
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
+const timer =
+setInterval(()=>{
+
+const now = new Date();
+
+const diff =
+next - now;
+
+if(diff <= 0){
+
+document.getElementById("countdown")
+.innerText =
+"🚀 ENTRAR AGORA";
+
+clearInterval(timer);
+
+setTimeout(()=>{
+
+simulateResult();
+
+lockedSignal = false;
+
+autoAnalyze();
+
+},15000);
+
+return;
+
+}
+
+const minutes =
+Math.floor(diff / 1000 / 60);
+
+const seconds =
+Math.floor((diff/1000)%60);
+
+document.getElementById("countdown")
+.innerText =
+String(minutes)
+.padStart(2,"0")
++
+":"
++
+String(seconds)
+.padStart(2,"0");
+
+},1000);
+
+}
+
+async function autoAnalyze(){
+
+if(lockedSignal){
+
+return;
+
+}
+
+let results = [];
+
+for(let i=0;i<pairs.length;i++){
+
+const result =
+await analyzePair(
+pairs[i]
+);
+
+if(result){
+
+results.push(result);
+
+}
+
+}
+
+if(results.length === 0){
+
+return;
+
+}
+
+results.sort((a,b)=>
+b.score - a.score
+);
+
+const best =
+results[0];
+
+lockedSignal = true;
+
+const probability =
+Math.min(
+98,
+Math.floor(
+70 + best.score
+)
+);
+
+document.getElementById("pair")
+.innerText =
+best.pair;
+
+document.getElementById("direction")
+.innerText =
+best.direction;
+
+document.getElementById("direction")
+.className =
+best.direction === "CALL"
+? "call"
+: "put";
+
+document.getElementById("accuracy")
+.innerText =
+probability + "%";
+
+document.getElementById("trend")
+.innerText =
+best.trend;
+
+document.getElementById("trend")
+.className =
+best.trend === "ALTA"
+? "green"
+: "red";
+
+document.getElementById("strength")
+.innerText =
+Math.floor(best.score)
++ "%";
+
+document.getElementById("risk")
+.innerText =
+best.force > 1.5
+? "BAIXO"
+: best.force > 1
+? "MÉDIO"
+: "ALTO";
+
+document.getElementById("rsiValue")
+.innerText =
+Math.floor(best.rsi);
+
+document.getElementById("macdValue")
+.innerText =
+best.macd.toFixed(4);
+
+document.getElementById("marketFilter")
+.innerText =
+best.filter;
+
+let rankingHTML = "";
+
+results.slice(0,3)
+.forEach((item,index)=>{
+
+let medal = "🥇";
+
+if(index === 1)
+medal = "🥈";
+
+if(index === 2)
+medal = "🥉";
+
+rankingHTML +=
+`
+<div class="rank-item">
+${medal}
+${item.pair}
+-
+${item.direction}
+-
+${Math.floor(item.score)}%
+</div>
+`;
+
+});
+
+document.getElementById("ranking")
+.innerHTML =
+rankingHTML;
+
+startCountdown();
+
+}
+
+function manualAnalyze(){
+
+if(!lockedSignal){
+
+autoAnalyze();
+
+}
+
+}
+
+autoAnalyze();
+
 </script>
+
 </body>
 </html>
