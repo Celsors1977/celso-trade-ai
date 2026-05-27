@@ -132,9 +132,10 @@ color:#00ff99;
 }
 
 .market{
-margin-top:20px;
+margin-top:15px;
 text-align:center;
 color:#00ff99;
+font-size:14px;
 }
 
 .clock{
@@ -230,6 +231,11 @@ Scanner Inteligente AUTO M5 PRO
 <div>
 Probabilidade IA
 </div>
+
+<!-- Botão e Status movidos para cá -->
+<div class="market">🟢 Mercado conectado em tempo real</div>
+<button onclick="analyzeMarket()">ATUALIZAR AGORA</button>
+<div class="loading" id="loading">🤖 IA analisando mercado...</div>
 
 <div class="big" id="accuracy">
 --%
@@ -371,26 +377,13 @@ Aguardando operações...
 
 </div>
 
-<div class="market">
-🟢 Mercado conectado em tempo real
-</div>
-
-<button onclick="analyzeMarket()">
-ATUALIZAR AGORA
-</button>
-
-<div class="loading" id="loading">
-🤖 IA analisando mercado...
-</div>
-
 </div>
 
 </div>
 
 <script>
 
-const apiKey =
-"65b715a09bc44070a1d6947b293281a9";
+const apiKey = "65b715a09bc44070a1d6947b293281a9";
 
 const pairs = [
 "EUR/USD",
@@ -410,557 +403,199 @@ let losses = 0;
 let streak = 0;
 
 function updateClock(){
-
 const now = new Date();
-
-document.getElementById("clock")
-.innerText =
-now.toLocaleTimeString("pt-BR");
-
+document.getElementById("clock").innerText = now.toLocaleTimeString("pt-BR");
 }
 
 setInterval(updateClock,1000);
-
 updateClock();
 
 function nextM5(){
-
 const now = new Date();
-
 let minutes = now.getMinutes();
-
-let next =
-Math.ceil((minutes + 1) / 5) * 5;
-
+let next = Math.ceil((minutes + 1) / 5) * 5;
 if(next >= 60){
-
 now.setHours(now.getHours()+1);
-
 next = 0;
-
 }
-
 now.setMinutes(next);
 now.setSeconds(0);
-
 return now;
-
 }
 
 function calculateEMA(period,data){
-
 const k = 2 / (period + 1);
-
 let ema = data[0];
-
 for(let i=1;i<data.length;i++){
-
-ema =
-data[i] * k
-+
-ema * (1-k);
-
+ema = data[i] * k + ema * (1-k);
 }
-
 return ema;
-
 }
 
 function calculateRSI(data,period=14){
-
 let gains = 0;
 let lossesCalc = 0;
-
 for(let i=1;i<=period;i++){
-
-const diff =
-data[data.length-i]
--
-data[data.length-i-1];
-
+const diff = data[data.length-i] - data[data.length-i-1];
 if(diff >= 0){
-
 gains += diff;
-
 }else{
-
 lossesCalc += Math.abs(diff);
-
 }
-
 }
-
-const avgGain =
-gains / period;
-
-const avgLoss =
-lossesCalc / period;
-
-if(avgLoss === 0){
-
-return 100;
-
-}
-
-const rs =
-avgGain / avgLoss;
-
+const avgGain = gains / period;
+const avgLoss = lossesCalc / period;
+if(avgLoss === 0) return 100;
+const rs = avgGain / avgLoss;
 return 100 - (100 / (1 + rs));
-
 }
 
 function calculateVolatility(data){
-
 let total = 0;
-
 for(let i=1;i<data.length;i++){
-
-total += Math.abs(
-data[i] - data[i-1]
-);
-
+total += Math.abs(data[i] - data[i-1]);
 }
-
 return total / data.length;
-
 }
 
 function updateStats(){
-
-document.getElementById("wins")
-.innerText =
-wins;
-
-document.getElementById("losses")
-.innerText =
-losses;
-
-document.getElementById("streak")
-.innerText =
-streak;
-
-const total =
-wins + losses;
-
+document.getElementById("wins").innerText = wins;
+document.getElementById("losses").innerText = losses;
+document.getElementById("streak").innerText = streak;
+const total = wins + losses;
 let rate = 0;
-
-if(total > 0){
-
-rate =
-Math.floor(
-(wins / total) * 100
-);
-
-}
-
-document.getElementById("accuracyRate")
-.innerText =
-rate + "%";
-
+if(total > 0) rate = Math.floor((wins / total) * 100);
+document.getElementById("accuracyRate").innerText = rate + "%";
 }
 
 function addHistory(text){
-
-const history =
-document.getElementById("history");
-
-const item =
-document.createElement("div");
-
-item.className =
-"history-item";
-
-item.innerText =
-text;
-
+const history = document.getElementById("history");
+const item = document.createElement("div");
+item.className = "history-item";
+item.innerText = text;
 history.prepend(item);
-
 if(history.children.length > 5){
-
-history.removeChild(
-history.lastChild
-);
-
+history.removeChild(history.lastChild);
 }
-
 }
 
 function simulateResult(){
-
-const random =
-Math.random();
-
+const random = Math.random();
 if(random > 0.35){
-
 wins++;
 streak++;
-
-addHistory(
-"✅ WIN confirmado"
-);
-
+addHistory("✅ WIN confirmado");
 }else{
-
 losses++;
 streak = 0;
-
-addHistory(
-"❌ LOSS confirmado"
-);
-
+addHistory("❌ LOSS confirmado");
 }
-
 updateStats();
-
 }
 
 async function analyzePair(pair){
-
 try{
-
-const url =
-"https://api.twelvedata.com/time_series?symbol="
-+
-encodeURIComponent(pair)
-+
-"&interval=5min&outputsize=80&apikey="
-+
-apiKey;
-
-const response =
-await fetch(url);
-
-const data =
-await response.json();
-
-if(!data.values){
-
-return null;
-
-}
-
-const closes =
-data.values.map(c =>
-parseFloat(c.close)
-).reverse();
-
-const ema9 =
-calculateEMA(9,closes);
-
-const ema21 =
-calculateEMA(21,closes);
-
-const rsi =
-calculateRSI(closes);
-
-const volatility =
-calculateVolatility(closes);
-
-const last =
-closes[closes.length-1];
-
-const previous =
-closes[closes.length-2];
-
-const movement =
-Math.abs(last - previous);
-
-const force =
-Math.abs(ema9 - ema21);
+const url = "https://api.twelvedata.com/time_series?symbol=" + encodeURIComponent(pair) + "&interval=5min&outputsize=80&apikey=" + apiKey;
+const response = await fetch(url);
+const data = await response.json();
+if(!data.values) return null;
+const closes = data.values.map(c => parseFloat(c.close)).reverse();
+const ema9 = calculateEMA(9,closes);
+const ema21 = calculateEMA(21,closes);
+const rsi = calculateRSI(closes);
+const volatility = calculateVolatility(closes);
+const last = closes[closes.length-1];
+const previous = closes[closes.length-2];
+const movement = Math.abs(last - previous);
+const force = Math.abs(ema9 - ema21);
 
 let direction;
 let trend;
 
-if(
-ema9 > ema21
-&&
-rsi < 70
-&&
-force > 0.0003
-&&
-movement > 0.0002
-&&
-volatility > 0.0004
-){
-
+if(ema9 > ema21 && rsi < 70 && force > 0.0003 && movement > 0.0002 && volatility > 0.0004){
 direction = "CALL";
 trend = "ALTA";
-
-}else if(
-ema9 < ema21
-&&
-rsi > 30
-&&
-force > 0.0003
-&&
-movement > 0.0002
-&&
-volatility > 0.0004
-){
-
+}else if(ema9 < ema21 && rsi > 30 && force > 0.0003 && movement > 0.0002 && volatility > 0.0004){
 direction = "PUT";
 trend = "BAIXA";
-
 }else{
-
 return null;
-
 }
 
-let score =
-(force * 100000)
-+
-(volatility * 100000);
-
-return{
-
-pair: pair,
-direction: direction,
-trend: trend,
-force: force,
-rsi: Math.floor(rsi),
-volatility: volatility,
-score: score
-
-};
-
+let score = (force * 100000) + (volatility * 100000);
+return{ pair, direction, trend, force, rsi: Math.floor(rsi), volatility, score };
 }catch(e){
-
 console.log(e);
-
 return null;
-
 }
-
 }
 
 async function analyzeMarket(){
-
-if(signalLocked){
-return;
-}
-
-document.getElementById("loading")
-.style.display = "block";
-
+if(signalLocked) return;
+document.getElementById("loading").style.display = "block";
 let results = [];
-
 for(let i=0;i<pairs.length;i++){
-
-const result =
-await analyzePair(pairs[i]);
-
-if(result){
-
-results.push(result);
-
+const result = await analyzePair(pairs[i]);
+if(result) results.push(result);
 }
-
-}
-
 if(results.length === 0){
-
-document.getElementById("loading")
-.style.display = "none";
-
+document.getElementById("loading").style.display = "none";
 return;
-
 }
-
-results.sort((a,b)=>
-b.score - a.score
-);
-
+results.sort((a,b) => b.score - a.score);
 const best = results[0];
-
 signalLocked = true;
 
 let rankingHTML = "";
-
 results.slice(0,3).forEach((item,index)=>{
-
-let medal = "🥇";
-
-if(index === 1) medal = "🥈";
-if(index === 2) medal = "🥉";
-
-rankingHTML +=
-`
-<div class="rank-item">
-${medal}
-${item.pair}
--
-${item.direction}
--
-${Math.floor(item.score)}%
-</div>
-`;
-
+let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
+rankingHTML += `<div class="rank-item">${medal} ${item.pair} - ${item.direction} - ${Math.floor(item.score)}%</div>`;
 });
+document.getElementById("ranking").innerHTML = rankingHTML;
 
-document.getElementById("ranking")
-.innerHTML =
-rankingHTML;
+const probability = Math.min(99, Math.floor(best.score));
+let risk = best.force > 0.0015 ? "BAIXO" : best.force > 0.0008 ? "MÉDIO" : "ALTO";
 
-const probability =
-Math.min(
-99,
-Math.floor(best.score)
-);
+document.getElementById("pair").innerText = best.pair;
+document.getElementById("direction").innerText = best.direction;
+document.getElementById("direction").className = best.direction === "CALL" ? "call" : "put";
+document.getElementById("accuracy").innerText = probability + "%";
+document.getElementById("trend").innerText = best.trend;
+document.getElementById("strength").innerText = probability + "%";
+document.getElementById("risk").innerText = risk;
+document.getElementById("rsiValue").innerText = best.rsi;
+document.getElementById("marketFilter").innerText = best.trend;
+document.getElementById("volatility").innerText = best.volatility.toFixed(5);
 
-let risk;
-
-if(best.force > 0.0015){
-
-risk = "BAIXO";
-
-}else if(best.force > 0.0008){
-
-risk = "MÉDIO";
-
-}else{
-
-risk = "ALTO";
-
-}
-
-document.getElementById("pair")
-.innerText =
-best.pair;
-
-document.getElementById("direction")
-.innerText =
-best.direction;
-
-document.getElementById("direction")
-.className =
-best.direction === "CALL"
-? "call"
-: "put";
-
-document.getElementById("accuracy")
-.innerText =
-probability + "%";
-
-document.getElementById("trend")
-.innerText =
-best.trend;
-
-document.getElementById("strength")
-.innerText =
-probability + "%";
-
-document.getElementById("risk")
-.innerText =
-risk;
-
-document.getElementById("rsiValue")
-.innerText =
-best.rsi;
-
-document.getElementById("marketFilter")
-.innerText =
-best.trend;
-
-document.getElementById("volatility")
-.innerText =
-best.volatility.toFixed(5);
-
-const next =
-nextM5();
-
-document.getElementById("entry")
-.innerText =
-"Entrada: "
-+
-next.toLocaleTimeString(
-"pt-BR",
-{
-hour:"2-digit",
-minute:"2-digit"
-}
-);
+const next = nextM5();
+document.getElementById("entry").innerText = "Entrada: " + next.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
 
 clearInterval(timer);
-
 timer = setInterval(()=>{
-
 const now = new Date();
-
 const diff = next - now;
-
 if(diff <= 0){
-
-document.getElementById("countdown")
-.innerText =
-"🚀 ENTRAR AGORA";
-
-document.getElementById("alertText")
-.style.display =
-"none";
-
+document.getElementById("countdown").innerText = "🚀 ENTRAR AGORA";
+document.getElementById("alertText").style.display = "none";
 clearInterval(timer);
-
 setTimeout(()=>{
-
 simulateResult();
-
 signalLocked = false;
-
 analyzeMarket();
-
 },15000);
-
 return;
-
 }
-
-const m =
-Math.floor(diff / 1000 / 60);
-
-const s =
-Math.floor((diff / 1000) % 60);
-
-document.getElementById("countdown")
-.innerText =
-String(m).padStart(2,"0")
-+
-":"
-+
-String(s).padStart(2,"0");
-
-if(diff <= 10000){
-
-document.getElementById("alertText")
-.style.display =
-"block";
-
-}else{
-
-document.getElementById("alertText")
-.style.display =
-"none";
-
-}
-
+const m = Math.floor(diff / 1000 / 60);
+const s = Math.floor((diff / 1000) % 60);
+document.getElementById("countdown").innerText = String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+document.getElementById("alertText").style.display = diff <= 10000 ? "block" : "none";
 },1000);
 
-document.getElementById("loading")
-.style.display = "none";
-
+document.getElementById("loading").style.display = "none";
 }
 
 analyzeMarket();
-
-setInterval(()=>{
-
-if(!signalLocked){
-
-analyzeMarket();
-
-}
-
-},15000);
+setInterval(()=>{ if(!signalLocked) analyzeMarket(); },15000);
 
 </script>
 
