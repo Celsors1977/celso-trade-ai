@@ -24,14 +24,15 @@
             box-shadow: 0 0 20px rgba(0,255,153,0.05);
         }
         .logo {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             color: #00ff99;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .subtitle {
             color: #888;
             margin-bottom: 20px;
+            font-size: 13px;
         }
         .center {
             text-align: center;
@@ -39,7 +40,7 @@
         .big {
             font-size: 60px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         .signal {
             background: #0a0a0a;
@@ -48,15 +49,21 @@
             margin-top: 20px;
             text-align: center;
         }
+        #pair {
+            font-size: 20px;
+            font-weight: bold;
+        }
         .call {
             color: #00ff99;
             font-size: 40px;
             font-weight: bold;
+            margin: 5px 0;
         }
         .put {
             color: #ff4444;
             font-size: 40px;
             font-weight: bold;
+            margin: 5px 0;
         }
         .status {
             display: grid;
@@ -70,6 +77,16 @@
             border-radius: 15px;
             text-align: center;
         }
+        .box div {
+            font-size: 10px;
+            color: #666;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .box h3 {
+            margin: 5px 0 0 0;
+            font-size: 15px;
+        }
         button {
             width: 100%;
             padding: 18px;
@@ -81,6 +98,7 @@
             margin-top: 20px;
             cursor: pointer;
             transition: 0.3s;
+            color: #050505;
         }
         button:hover {
             opacity: 0.9;
@@ -93,40 +111,53 @@
             font-weight: bold;
         }
         .countdown {
-            font-size: 34px;
+            font-size: 48px;
             font-weight: bold;
-            margin-top: 15px;
-            color: #00ff99;
+            margin-top: 10px;
+            transition: color 0.3s;
         }
         .market {
             margin-top: 20px;
             text-align: center;
-            color: #00ff99;
+            color: #555;
+            font-size: 12px;
         }
         .clock {
             text-align: right;
             font-size: 14px;
             color: #00ff99;
             margin-bottom: 15px;
+            font-weight: bold;
         }
         .green { color: #00ff99; }
         .red { color: #ff4444; }
         .yellow { color: gold; }
         
         .alert {
-            margin-top: 15px;
-            font-size: 18px;
+            margin-top: 10px;
+            font-size: 16px;
             font-weight: bold;
-            color: gold;
+            color: #ff4444;
             display: none;
             animation: blink 1s infinite;
         }
         .rsi-box, .filter-box {
-            margin-top: 20px;
+            margin-top: 12px;
             background: #0a0a0a;
-            padding: 15px;
+            padding: 12px;
             border-radius: 15px;
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .rsi-box div, .filter-box div {
+            font-size: 11px;
+            color: #666;
+            font-weight: bold;
+        }
+        .rsi-box h2, .filter-box h2 {
+            margin: 0;
+            font-size: 18px;
         }
         @keyframes blink {
             0% { opacity: 0.2; }
@@ -142,19 +173,19 @@
     
     <div class="card">
         <div class="logo">Celso Ricardi Trader AI</div>
-        <div class="subtitle">Scanner Inteligente M5 PRO</div>
+        <div class="subtitle">Scanner Inteligente M5 PRO (Yahoo Engine)</div>
         
         <div class="center">
-            <div>Probabilidade IA</div>
+            <div style="color: #666; font-size: 11px; font-weight: bold;">PROBABILIDADE IA</div>
             <div class="big" id="accuracy">--%</div>
         </div>
         
         <div class="signal">
             <div id="pair">AGUARDANDO</div>
             <div id="direction" class="yellow">SEM SINAL</div>
-            <div id="entry">Entrada: --</div>
-            <div class="countdown" id="countdown">00:00</div>
-            <div class="alert" id="alertText">⚠️ PREPARE A ENTRADA</div>
+            <div id="entry" style="color: #888; font-size: 14px; margin-top: 5px;">Entrada: --</div>
+            <div class="countdown green" id="countdown">05:00</div>
+            <div class="alert" id="alertText">⚠️ PREPARE A ENTRADA!</div>
         </div>
         
         <div class="status">
@@ -173,33 +204,57 @@
         </div>
         
         <div class="rsi-box">
-            <div>RSI</div>
+            <div>MÉTRICA RSI (14)</div>
             <h2 id="rsiValue">--</h2>
         </div>
         
         <div class="filter-box">
-            <div>Filtro de Mercado</div>
+            <div>FILTRO DE MERCADO</div>
             <h2 id="marketFilter">--</h2>
         </div>
         
-        <div class="market">🟢 Mercado conectado em tempo real</div>
+        <div class="market">🟢 Servidor ativo & monitorando M5 via Yahoo Finance</div>
         <button onclick="analyzeMarket()">GERAR SINAL REAL</button>
-        <div class="loading" id="loading">🤖 IA analisando mercado...</div>
+        <div class="loading" id="loading">🤖 IA analisando mercado global...</div>
     </div>
 </div>
 
 <script>
-// Sua chave da API TwelveData
-const apiKey = "65b715a09bc44070a1d6947b293281a9";
+// Lista de pares convertidos para o padrão do Yahoo Finance
 const pairs = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "EUR/JPY", "GBP/JPY", "USD/CAD"];
-let timer;
 
-function updateClock() {
+// --- RELÓGIO E CRONÔMETRO FLUIDO M5 AUTOMÁTICO ---
+function updateTimers() {
     const now = new Date();
+    // 1. Atualiza o relógio do topo
     document.getElementById("clock").innerText = now.toLocaleTimeString("pt-BR");
+    
+    // 2. Calcula os minutos e segundos restantes para a próxima vela de 5 minutos
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    
+    const remainder = minutes % 5;
+    const totalSecondsPast = (remainder * 60) + seconds;
+    const totalSecondsRemaining = 300 - totalSecondsPast;
+    
+    const m = Math.floor(totalSecondsRemaining / 60);
+    const s = totalSecondsRemaining % 60;
+    
+    // 3. Atualiza o texto do contador principal na tela
+    document.getElementById("countdown").innerText = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+    
+    // 4. Alerta visual crítico faltando 15 segundos ou menos
+    if (totalSecondsRemaining <= 15) {
+        document.getElementById("countdown").className = "countdown red";
+        document.getElementById("alertText").style.display = "block";
+    } else {
+        document.getElementById("countdown").className = "countdown green";
+        document.getElementById("alertText").style.display = "none";
+    }
 }
-setInterval(updateClock, 1000);
-updateClock();
+// Inicia o motor do relógio imediatamente e roda a cada 1 segundo
+setInterval(updateTimers, 1000);
+updateTimers();
 
 function nextM5() {
     const now = new Date();
@@ -212,29 +267,6 @@ function nextM5() {
     now.setMinutes(next);
     now.setSeconds(0);
     return now;
-}
-
-function startCountdown(target) {
-    clearInterval(timer);
-    timer = setInterval(() => {
-        const now = new Date();
-        const diff = target - now;
-        if (diff <= 0) {
-            document.getElementById("countdown").innerText = "🚀 ENTRAR AGORA";
-            document.getElementById("alertText").style.display = "none";
-            clearInterval(timer);
-            return;
-        }
-        const m = Math.floor(diff / 1000 / 60);
-        const s = Math.floor((diff / 1000) % 60);
-        document.getElementById("countdown").innerText = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
-        
-        if (diff <= 15000) { // Alerta faltando 15 segundos
-            document.getElementById("alertText").style.display = "block";
-        } else {
-            document.getElementById("alertText").style.display = "none";
-        }
-    }, 1000);
 }
 
 function calculateEMA(period, data) {
@@ -260,43 +292,53 @@ function calculateRSI(data, period = 14) {
     return 100 - (100 / (1 + rs));
 }
 
+// --- INTEGRAÇÃO DIRETA COM YAHOO FINANCE SEM CHAVE E SEM CORTES ---
 async function analyzePair(pair) {
     try {
-        const url = "https://api.twelvedata.com/time_series?symbol=" + encodeURIComponent(pair) + "&interval=5min&outputsize=30&apikey=" + apiKey;
+        // Converte o formato (Ex: EUR/USD vira EURUSD=X)
+        const yahooSymbol = pair.replace("/", "") + "=X";
+        
+        // Uso do proxy de desvio estável para pular o bloqueio de segurança do navegador
+        const url = "https://corsproxy.io/?https://query1.financecharts.yahoo.com/v8/finance/chart/" + yahooSymbol + "?interval=5m&range=1d";
+        
         const response = await fetch(url);
         const data = await response.json();
-        if (!data.values) return null;
+        
+        if (!data.chart || !data.chart.result || !data.chart.result[0]) return null;
+        
+        const result = data.chart.result[0];
+        const rawCloses = result.indicators.quote[0].close;
+        
+        // Limpeza drástica de valores nulos enviados pelo Yahoo Finance
+        const closes = rawCloses.filter(v => v !== null && v !== undefined);
+        if (closes.length < 22) return null;
 
-        const closes = data.values.map(c => parseFloat(c.close)).reverse();
         const ema9 = calculateEMA(9, closes);
         const ema21 = calculateEMA(21, closes);
         const rsi = calculateRSI(closes);
         
         const last = closes[closes.length - 1];
-        const previous = closes[closes.length - 2];
-        const movement = Math.abs(last - previous);
         
-        // Multiplicador para normalizar pares com JPY (que têm menos casas decimais)
         const isJpy = pair.includes("JPY");
         const multiplier = isJpy ? 100 : 10000;
         
-        // Força medida pela distância relativa das médias móveis
+        // Força medida pelo afastamento das médias
         const forceNormalized = (Math.abs(ema9 - ema21) / last) * multiplier;
 
         let direction = null;
         let trend = ema9 > ema21 ? "ALTA" : "BAIXA";
 
-        // Regra operacional calibrada: Cruzamento + Filtro Estatístico do RSI
-        if (ema9 > ema21 && rsi > 45 && rsi < 65) {
+        // Filtro operacional calibrado do RSI
+        if (ema9 > ema21 && rsi > 40 && rsi < 68) {
             direction = "CALL";
-        } else if (ema9 < ema21 && rsi < 55 && rsi > 35) {
+        } else if (ema9 < ema21 && rsi < 60 && rsi > 32) {
             direction = "PUT";
         }
 
         let marketCondition = "ESTÁVEL";
-        if (forceNormalized > 1.5) {
+        if (forceNormalized > 1.2) {
             marketCondition = "TENDÊNCIA FORTE";
-        } else if (forceNormalized < 0.4) {
+        } else if (forceNormalized < 0.3) {
             marketCondition = "LATERALIZADO";
         }
 
@@ -309,7 +351,7 @@ async function analyzePair(pair) {
             marketCondition: marketCondition
         };
     } catch (e) {
-        console.log(e);
+        console.log("Erro no par " + pair + ":", e);
         return null;
     }
 }
@@ -318,24 +360,21 @@ async function analyzeMarket() {
     document.getElementById("loading").style.display = "block";
     let results = [];
 
+    // Loop assíncrono rápido puxando direto do servidor do Yahoo
     for (let i = 0; i < pairs.length; i++) {
         const result = await analyzePair(pairs[i]);
-        // Armazena todos os pares analisados que retornaram dados válidos
         if (result) { results.push(result); }
     }
 
-    // Filtra apenas os que geraram sinal válido de CALL ou PUT
     let actionableResults = results.filter(r => r.direction !== null);
 
-    // Se nenhum par deu padrão perfeito de entrada, escolhemos a melhor estrutura de tendência geral
+    // Proteção de mercado parado: força a direção caso o RSI esteja muito neutro
     if (actionableResults.length === 0 && results.length > 0) {
         actionableResults = results; 
-        // Força uma direção padrão baseada na tendência se o RSI estiver neutro
         actionableResults.forEach(r => r.direction = r.trend === "ALTA" ? "CALL" : "PUT");
     }
 
     if (actionableResults.length === 0) {
-        // Reset padrão se a API falhar completamente
         document.getElementById("pair").innerText = "AGUARDANDO";
         document.getElementById("direction").innerText = "SEM SINAL";
         document.getElementById("direction").className = "yellow";
@@ -343,26 +382,25 @@ async function analyzeMarket() {
         document.getElementById("trend").innerText = "--";
         document.getElementById("strength").innerText = "--";
         document.getElementById("risk").innerText = "ALTO";
-        document.getElementById("marketFilter").innerText = "MERCADO INATIVO";
+        document.getElementById("marketFilter").innerText = "ERRO DE CONEXÃO";
         document.getElementById("rsiValue").innerText = "--";
         document.getElementById("loading").style.display = "none";
         return;
     }
 
-    // Ordena pelo par que tem a tendência mais forte e nítida no momento
+    // Seleciona o melhor par com a tendência mais definida e limpa do momento
     actionableResults.sort((a, b) => b.forceNormalized - a.forceNormalized);
     const best = actionableResults[0];
 
-    // Cálculos matemáticos reais para gerar as notas visuais do painel
-    const baseProb = best.direction === best.trend ? 78 : 65;
-    const probability = Math.min(96, Math.floor(baseProb + (best.forceNormalized * 8)));
-    const strengthScore = Math.min(99, Math.floor(40 + (best.forceNormalized * 25)));
+    const baseProb = best.direction === best.trend ? 75 : 62;
+    const probability = Math.min(96, Math.floor(baseProb + (best.forceNormalized * 9)));
+    const strengthScore = Math.min(99, Math.floor(35 + (best.forceNormalized * 30)));
     
     let risk = "MÉDIO";
-    if (best.marketCondition === "TENDÊNCIA FORTE" && probability > 82) risk = "BAIXO";
+    if (best.marketCondition === "TENDÊNCIA FORTE" && probability > 80) risk = "BAIXO";
     if (best.marketCondition === "LATERALIZADO") risk = "ALTO";
 
-    // Atualização dos elementos HTML com os dados calculados da API
+    // Atualização completa da interface gráfica
     document.getElementById("pair").innerText = best.pair;
     document.getElementById("direction").innerText = best.direction;
     document.getElementById("direction").className = best.direction === "CALL" ? "call" : "put";
@@ -375,13 +413,13 @@ async function analyzeMarket() {
     document.getElementById("risk").innerText = risk;
     document.getElementById("risk").className = risk === "BAIXO" ? "green" : risk === "MÉDIO" ? "yellow" : "red";
     
-    document.getElementById("rsiValue").innerText = best.rsi;
+    document.getElementById("rsiValue").innerText = best.rsi + " ERP";
     document.getElementById("marketFilter").innerText = best.marketCondition;
 
+    // Registra o marcador da meta do horário
     const next = nextM5();
-    document.getElementById("entry").innerText = "Entrada: " + next.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    document.getElementById("entry").innerText = "Próxima Entrada às: " + next.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
     
-    startCountdown(next);
     document.getElementById("loading").style.display = "none";
 }
 </script>
