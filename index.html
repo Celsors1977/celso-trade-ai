@@ -173,7 +173,7 @@
     
     <div class="card">
         <div class="logo">Celso Ricardi Trader AI</div>
-        <div class="subtitle">Scanner Inteligente M5 PRO (Yahoo Engine)</div>
+        <div class="subtitle">Scanner Inteligente M5 PRO (AllOrigins Engine)</div>
         
         <div class="center">
             <div style="color: #666; font-size: 11px; font-weight: bold;">PROBABILIDADE IA</div>
@@ -213,7 +213,7 @@
             <h2 id="marketFilter">--</h2>
         </div>
         
-        <div class="market">🟢 Servidor ativo & monitorando M5 via Yahoo Finance</div>
+        <div class="market">🟢 Servidor ativo & monitorando M5 via Yahoo API</div>
         <button onclick="analyzeMarket()">GERAR SINAL REAL</button>
         <div class="loading" id="loading">🤖 IA analisando mercado global...</div>
     </div>
@@ -272,33 +272,42 @@ function calculateEMA(period, data) {
     return ema;
 }
 
+// Cálculo robusto do RSI
 function calculateRSI(data, period = 14) {
+    if (data.length < period + 1) return 50;
     let gains = 0;
     let losses = 0;
+    
     for (let i = 1; i <= period; i++) {
         const diff = data[data.length - i] - data[data.length - i - 1];
         if (diff >= 0) { gains += diff; } else { losses += Math.abs(diff); }
     }
+    
     const avgGain = gains / period;
     const avgLoss = losses / period;
-    if (avgLoss === 0) return 50;
+    if (avgLoss === 0) return 100;
+    
     const rs = avgGain / avgLoss;
     return 100 - (100 / (1 + rs));
 }
 
-// --- CONEXÃO BLINDADA CONTRA ERROS DE CORS ---
+// --- CONEXÃO BLINDADA VIA ALLORIGINS ENGINE ---
 async function analyzePair(pair) {
     try {
         const yahooSymbol = pair.replace("/", "") + "=X";
         const targetUrl = "https://query1.finance.yahoo.com/v8/finance/chart/" + yahooSymbol + "?interval=5m&range=1d";
         
-        // SOLUÇÃO: encodeURIComponent protege a URL para que o proxy envie os parâmetros perfeitamente
-        const url = "https://corsproxy.io/?" + encodeURIComponent(targetUrl);
+        // NOVO PROXY: AllOrigins busca o dado no lado do servidor e envelopa sem bloqueios
+        const url = "https://api.allorigins.win/get?url=" + encodeURIComponent(targetUrl);
         
         const response = await fetch(url);
         if (!response.ok) return null;
         
-        const data = await response.json();
+        const wrapper = await response.json();
+        if (!wrapper.contents) return null;
+        
+        // Desembrulha o JSON interno que veio do servidor do Yahoo
+        const data = JSON.parse(wrapper.contents);
         
         if (!data.chart || !data.chart.result || !data.chart.result[0]) return null;
         
