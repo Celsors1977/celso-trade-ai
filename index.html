@@ -5,598 +5,261 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Celso Ricardi Trader AI</title>
+<title>Celso Ricardi Trader AI - MACD PRO</title>
 
 <style>
-
-body{
-background:#050505;
-color:white;
-font-family:Arial;
-margin:0;
-padding:20px;
-}
-
-.container{
-max-width:430px;
-margin:auto;
-}
-
-.card{
-background:#111;
-padding:20px;
-border-radius:20px;
-border:1px solid #222;
-box-shadow:0 0 20px rgba(0,255,153,0.08);
-}
-
-.logo{
-font-size:28px;
-font-weight:bold;
-color:#00ff99;
-margin-bottom:10px;
-}
-
-.subtitle{
-color:#888;
-margin-bottom:20px;
-}
-
-.center{
-text-align:center;
-}
-
-.big{
-font-size:58px;
-font-weight:bold;
-margin:20px 0;
-}
-
-.signal{
-background:#0a0a0a;
-padding:20px;
-border-radius:20px;
-margin-top:20px;
-text-align:center;
-}
-
-.call{
-color:#00ff99;
-font-size:40px;
-font-weight:bold;
-}
-
-.put{
-color:#ff4444;
-font-size:40px;
-font-weight:bold;
-}
-
-.yellow{
-color:gold;
-}
-
-.status{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:10px;
-margin-top:20px;
-}
-
-.box{
-background:#0a0a0a;
-padding:15px;
-border-radius:15px;
-text-align:center;
-}
-
-.stats-grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-top:20px;
-}
-
-.stats-box{
-background:#0a0a0a;
-padding:15px;
-border-radius:15px;
-text-align:center;
-}
-
-button{
-width:100%;
-padding:18px;
-border:none;
-border-radius:15px;
-background:#00ff99;
-font-size:18px;
-font-weight:bold;
-margin-top:20px;
-cursor:pointer;
-}
-
-.loading{
-display:none;
-text-align:center;
-margin-top:15px;
-color:#00ff99;
-font-weight:bold;
-}
-
-.countdown{
-font-size:34px;
-font-weight:bold;
-margin-top:15px;
-color:#00ff99;
-}
-
-.market{
-margin-top:15px;
-text-align:center;
-color:#00ff99;
-font-size:14px;
-}
-
-.clock{
-text-align:right;
-font-size:14px;
-color:#00ff99;
-margin-bottom:15px;
-}
-
-.green{
-color:#00ff99;
-}
-
-.red{
-color:#ff4444;
-}
-
-.alert{
-margin-top:15px;
-font-size:18px;
-font-weight:bold;
-color:gold;
-display:none;
-animation:blink 1s infinite;
-}
-
-.rsi-box,
-.filter-box,
-.volatility-box,
-.ranking-box,
-.auto-box,
-.history-box{
-margin-top:20px;
-background:#0a0a0a;
-padding:15px;
-border-radius:15px;
-text-align:center;
-}
-
-.rank-item{
-background:#111;
-padding:12px;
-border-radius:12px;
-margin-top:10px;
-font-size:16px;
-}
-
-.history-item{
-background:#111;
-padding:10px;
-border-radius:10px;
-margin-top:10px;
-font-size:14px;
-}
-
-.auto-status{
-font-size:20px;
-font-weight:bold;
-color:#00ff99;
-margin-top:10px;
-}
-
-@keyframes blink{
-0%{opacity:0.2;}
-50%{opacity:1;}
-100%{opacity:0.2;}
-}
-
+body{background:#050505;color:white;font-family:Arial;margin:0;padding:20px;}
+.container{max-width:430px;margin:auto;}
+.card{background:#111;padding:20px;border-radius:20px;border:1px solid #222;box-shadow:0 0 20px rgba(0,255,153,0.08);}
+.logo{font-size:28px;font-weight:bold;color:#00ff99;margin-bottom:10px;}
+.subtitle{color:#888;margin-bottom:20px;}
+.center{text-align:center;}
+.big{font-size:58px;font-weight:bold;margin:20px 0;}
+.signal{background:#0a0a0a;padding:20px;border-radius:20px;margin-top:20px;text-align:center;}
+.call{color:#00ff99;font-size:40px;font-weight:bold;}
+.put{color:#ff4444;font-size:40px;font-weight:bold;}
+.yellow{color:gold;}
+.status{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:20px;}
+.box{background:#0a0a0a;padding:15px;border-radius:15px;text-align:center;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;}
+.stats-box{background:#0a0a0a;padding:15px;border-radius:15px;text-align:center;}
+button{width:100%;padding:18px;border:none;border-radius:15px;background:#00ff99;font-size:18px;font-weight:bold;margin-top:20px;cursor:pointer;}
+.loading{display:none;text-align:center;margin-top:15px;color:#00ff99;font-weight:bold;}
+.countdown{font-size:34px;font-weight:bold;margin-top:15px;color:#00ff99;}
+.market{margin-top:15px;text-align:center;color:#00ff99;font-size:14px;}
+.clock{text-align:right;font-size:14px;color:#00ff99;margin-bottom:15px;}
+.alert{margin-top:15px;font-size:18px;font-weight:bold;color:gold;display:none;animation:blink 1s infinite;}
+.rsi-box, .filter-box, .volatility-box, .ranking-box, .auto-box, .history-box{margin-top:20px;background:#0a0a0a;padding:15px;border-radius:15px;text-align:center;}
+.rank-item{background:#111;padding:12px;border-radius:12px;margin-top:10px;font-size:16px;}
+.history-item{background:#111;padding:10px;border-radius:10px;margin-top:10px;font-size:14px;}
+.auto-status{font-size:20px;font-weight:bold;color:#00ff99;margin-top:10px;}
+@keyframes blink{0%{opacity:0.2;}50%{opacity:1;}100%{opacity:0.2;}}
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="card">
+        <div class="logo">Celso Ricardi Trader AI</div>
+        <div class="subtitle">Scanner Profissional MACD + EMA</div>
 
-<div class="clock" id="clock">
-00:00:00
-</div>
+        <div class="center">
+            <div>Probabilidade IA</div>
+            <!-- Botões e Status no meio -->
+            <div class="market">🟢 Mercado conectado em tempo real</div>
+            <button onclick="analyzeMarket()">ATUALIZAR AGORA</button>
+            <div class="loading" id="loading">🤖 IA analisando mercado...</div>
+            <div class="big" id="accuracy">--%</div>
+        </div>
 
-<div class="card">
+        <div class="signal">
+            <div id="pair">AGUARDANDO</div>
+            <div id="direction" class="yellow">SEM SINAL</div>
+            <div id="entry">Entrada: --</div>
+            <div class="countdown" id="countdown">00:00</div>
+            <div class="alert" id="alertText">⚠️ PREPARE A ENTRADA</div>
+        </div>
 
-<div class="logo">
-Celso Ricardi Trader AI
-</div>
+        <div class="status">
+            <div class="box"><div>Tendência</div><h3 id="trend">--</h3></div>
+            <div class="box"><div>Força</div><h3 id="strength">--</h3></div>
+            <div class="box"><div>Risco</div><h3 id="risk">--</h3></div>
+        </div>
 
-<div class="subtitle">
-Scanner Inteligente AUTO M5 PRO
-</div>
+        <div class="stats-grid">
+            <div class="stats-box"><div>✅ Wins</div><h2 id="wins">0</h2></div>
+            <div class="stats-box"><div>❌ Losses</div><h2 id="losses">0</h2></div>
+            <div class="stats-box"><div>🎯 Assertividade</div><h2 id="accuracyRate">0%</h2></div>
+            <div class="stats-box"><div>🔥 Streak</div><h2 id="streak">0</h2></div>
+        </div>
 
-<div class="center">
+        <div class="rsi-box"><div>MACD Momentum</div><h2 id="macdValue">--</h2></div>
+        <div class="filter-box"><div>Tendência Filtro</div><h2 id="marketFilter">--</h2></div>
+        <div class="volatility-box"><div>Volatilidade</div><h2 id="volatility">--</h2></div>
+        <div class="auto-box"><div>🤖 Scanner Automático</div><div class="auto-status">ATIVADO</div></div>
+        
+        <div class="ranking-box">
+            <div>🏆 Ranking dos Pares</div>
+            <div id="ranking"><div class="rank-item">🥇 aguardando...</div></div>
+        </div>
 
-<div>
-Probabilidade IA
-</div>
-
-<!-- Botão e Status movidos para cá -->
-<div class="market">🟢 Mercado conectado em tempo real</div>
-<button onclick="analyzeMarket()">ATUALIZAR AGORA</button>
-<div class="loading" id="loading">🤖 IA analisando mercado...</div>
-
-<div class="big" id="accuracy">
---%
-</div>
-
-</div>
-
-<div class="signal">
-
-<div id="pair">
-AGUARDANDO
-</div>
-
-<div id="direction" class="yellow">
-SEM SINAL
-</div>
-
-<div id="entry">
-Entrada: --
-</div>
-
-<div class="countdown" id="countdown">
-00:00
-</div>
-
-<div class="alert" id="alertText">
-⚠️ PREPARE A ENTRADA
-</div>
-
-</div>
-
-<div class="status">
-
-<div class="box">
-<div>Tendência</div>
-<h3 id="trend">--</h3>
-</div>
-
-<div class="box">
-<div>Força</div>
-<h3 id="strength">--</h3>
-</div>
-
-<div class="box">
-<div>Risco</div>
-<h3 id="risk">--</h3>
-</div>
-
-</div>
-
-<div class="stats-grid">
-
-<div class="stats-box">
-<div>✅ Wins</div>
-<h2 id="wins">0</h2>
-</div>
-
-<div class="stats-box">
-<div>❌ Losses</div>
-<h2 id="losses">0</h2>
-</div>
-
-<div class="stats-box">
-<div>🎯 Assertividade</div>
-<h2 id="accuracyRate">0%</h2>
-</div>
-
-<div class="stats-box">
-<div>🔥 Streak</div>
-<h2 id="streak">0</h2>
-</div>
-
-</div>
-
-<div class="rsi-box">
-<div>RSI</div>
-<h2 id="rsiValue">--</h2>
-</div>
-
-<div class="filter-box">
-<div>Mercado</div>
-<h2 id="marketFilter">--</h2>
-</div>
-
-<div class="volatility-box">
-<div>Volatilidade</div>
-<h2 id="volatility">--</h2>
-</div>
-
-<div class="auto-box">
-
-<div>
-🤖 Scanner Automático
-</div>
-
-<div class="auto-status">
-ATIVADO
-</div>
-
-</div>
-
-<div class="ranking-box">
-
-<div>
-🏆 Ranking dos Pares
-</div>
-
-<div id="ranking">
-
-<div class="rank-item">
-🥇 aguardando...
-</div>
-
-<div class="rank-item">
-🥈 aguardando...
-</div>
-
-<div class="rank-item">
-🥉 aguardando...
-</div>
-
-</div>
-
-</div>
-
-<div class="history-box">
-
-<div>
-📊 Últimos Resultados
-</div>
-
-<div id="history">
-
-<div class="history-item">
-Aguardando operações...
-</div>
-
-</div>
-
-</div>
-
-</div>
-
+        <div class="history-box">
+            <div>📊 Últimos Resultados</div>
+            <div id="history"><div class="history-item">Aguardando operações...</div></div>
+        </div>
+    </div>
 </div>
 
 <script>
-
 const apiKey = "65b715a09bc44070a1d6947b293281a9";
-
-const pairs = [
-"EUR/USD",
-"GBP/USD",
-"USD/JPY",
-"AUD/USD",
-"EUR/JPY",
-"GBP/JPY",
-"USD/CAD"
-];
+const pairs = ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD", "EUR/JPY", "GBP/JPY", "USD/CAD"];
 
 let timer;
 let signalLocked = false;
+let wins = 0, losses = 0, streak = 0;
 
-let wins = 0;
-let losses = 0;
-let streak = 0;
-
-function updateClock(){
-const now = new Date();
-document.getElementById("clock").innerText = now.toLocaleTimeString("pt-BR");
-}
-
+function updateClock(){ document.getElementById("clock").innerText = new Date().toLocaleTimeString("pt-BR"); }
 setInterval(updateClock,1000);
 updateClock();
 
 function nextM5(){
-const now = new Date();
-let minutes = now.getMinutes();
-let next = Math.ceil((minutes + 1) / 5) * 5;
-if(next >= 60){
-now.setHours(now.getHours()+1);
-next = 0;
-}
-now.setMinutes(next);
-now.setSeconds(0);
-return now;
+    const now = new Date();
+    let minutes = now.getMinutes();
+    let next = Math.ceil((minutes + 1) / 5) * 5;
+    if(next >= 60){ now.setHours(now.getHours()+1); next = 0; }
+    now.setMinutes(next); now.setSeconds(0);
+    return now;
 }
 
-function calculateEMA(period,data){
-const k = 2 / (period + 1);
-let ema = data[0];
-for(let i=1;i<data.length;i++){
-ema = data[i] * k + ema * (1-k);
-}
-return ema;
+function calculateEMA(period, data){
+    const k = 2 / (period + 1);
+    let ema = data[0];
+    for(let i=1; i<data.length; i++){ ema = data[i] * k + ema * (1-k); }
+    return ema;
 }
 
-function calculateRSI(data,period=14){
-let gains = 0;
-let lossesCalc = 0;
-for(let i=1;i<=period;i++){
-const diff = data[data.length-i] - data[data.length-i-1];
-if(diff >= 0){
-gains += diff;
-}else{
-lossesCalc += Math.abs(diff);
+// NOVA FUNÇÃO: MACD
+function calculateMACD(data){
+    const ema12 = calculateEMA(12, data);
+    const ema26 = calculateEMA(26, data);
+    return (ema12 - ema26); // Retorna a linha do MACD
 }
-}
-const avgGain = gains / period;
-const avgLoss = lossesCalc / period;
-if(avgLoss === 0) return 100;
-const rs = avgGain / avgLoss;
-return 100 - (100 / (1 + rs));
+
+function calculateRSI(data, period=14){
+    let gains = 0, lossesCalc = 0;
+    for(let i=1; i<=period; i++){
+        const diff = data[data.length-i] - data[data.length-i-1];
+        if(diff >= 0) gains += diff; else lossesCalc += Math.abs(diff);
+    }
+    const avgGain = gains / period;
+    const avgLoss = lossesCalc / period;
+    if(avgLoss === 0) return 100;
+    const rs = avgGain / avgLoss;
+    return 100 - (100 / (1 + rs));
 }
 
 function calculateVolatility(data){
-let total = 0;
-for(let i=1;i<data.length;i++){
-total += Math.abs(data[i] - data[i-1]);
-}
-return total / data.length;
+    let total = 0;
+    for(let i=1; i<data.length; i++){ total += Math.abs(data[i] - data[i-1]); }
+    return total / data.length;
 }
 
 function updateStats(){
-document.getElementById("wins").innerText = wins;
-document.getElementById("losses").innerText = losses;
-document.getElementById("streak").innerText = streak;
-const total = wins + losses;
-let rate = 0;
-if(total > 0) rate = Math.floor((wins / total) * 100);
-document.getElementById("accuracyRate").innerText = rate + "%";
+    document.getElementById("wins").innerText = wins;
+    document.getElementById("losses").innerText = losses;
+    document.getElementById("streak").innerText = streak;
+    const total = wins + losses;
+    let rate = total > 0 ? Math.floor((wins / total) * 100) : 0;
+    document.getElementById("accuracyRate").innerText = rate + "%";
 }
 
 function addHistory(text){
-const history = document.getElementById("history");
-const item = document.createElement("div");
-item.className = "history-item";
-item.innerText = text;
-history.prepend(item);
-if(history.children.length > 5){
-history.removeChild(history.lastChild);
-}
+    const history = document.getElementById("history");
+    const item = document.createElement("div");
+    item.className = "history-item";
+    item.innerText = text;
+    history.prepend(item);
+    if(history.children.length > 5) history.removeChild(history.lastChild);
 }
 
 function simulateResult(){
-const random = Math.random();
-if(random > 0.35){
-wins++;
-streak++;
-addHistory("✅ WIN confirmado");
-}else{
-losses++;
-streak = 0;
-addHistory("❌ LOSS confirmado");
-}
-updateStats();
+    if(Math.random() > 0.35){ wins++; streak++; addHistory("✅ WIN confirmado"); }
+    else{ losses++; streak = 0; addHistory("❌ LOSS confirmado"); }
+    updateStats();
 }
 
 async function analyzePair(pair){
-try{
-const url = "https://api.twelvedata.com/time_series?symbol=" + encodeURIComponent(pair) + "&interval=5min&outputsize=80&apikey=" + apiKey;
-const response = await fetch(url);
-const data = await response.json();
-if(!data.values) return null;
-const closes = data.values.map(c => parseFloat(c.close)).reverse();
-const ema9 = calculateEMA(9,closes);
-const ema21 = calculateEMA(21,closes);
-const rsi = calculateRSI(closes);
-const volatility = calculateVolatility(closes);
-const last = closes[closes.length-1];
-const previous = closes[closes.length-2];
-const movement = Math.abs(last - previous);
-const force = Math.abs(ema9 - ema21);
+    try{
+        const url = "https://api.twelvedata.com/time_series?symbol=" + encodeURIComponent(pair) + "&interval=5min&outputsize=80&apikey=" + apiKey;
+        const response = await fetch(url);
+        const data = await response.json();
+        if(!data.values) return null;
+        const closes = data.values.map(c => parseFloat(c.close)).reverse();
+        
+        const ema9 = calculateEMA(9, closes);
+        const ema21 = calculateEMA(21, closes);
+        const macd = calculateMACD(closes);
+        const rsi = calculateRSI(closes);
+        const volatility = calculateVolatility(closes);
 
-let direction;
-let trend;
+        // FILTROS PROFISSIONAIS
+        const isTrendStrong = Math.abs(macd) > 0.0002; // Filtro anti-lateralização (MACD longe de zero)
+        
+        let direction, trend;
 
-if(ema9 > ema21 && rsi < 70 && force > 0.0003 && movement > 0.0002 && volatility > 0.0004){
-direction = "CALL";
-trend = "ALTA";
-}else if(ema9 < ema21 && rsi > 30 && force > 0.0003 && movement > 0.0002 && volatility > 0.0004){
-direction = "PUT";
-trend = "BAIXA";
-}else{
-return null;
-}
+        // Regra CALL: EMA tendencia + MACD positivo (Momentum de alta)
+        if(ema9 > ema21 && macd > 0 && isTrendStrong && rsi < 65 && volatility > 0.0003){
+            direction = "CALL";
+            trend = "ALTA";
+        }
+        // Regra PUT: EMA tendencia + MACD negativo (Momentum de baixa)
+        else if(ema9 < ema21 && macd < 0 && isTrendStrong && rsi > 35 && volatility > 0.0003){
+            direction = "PUT";
+            trend = "BAIXA";
+        } else {
+            return null;
+        }
 
-let score = (force * 100000) + (volatility * 100000);
-return{ pair, direction, trend, force, rsi: Math.floor(rsi), volatility, score };
-}catch(e){
-console.log(e);
-return null;
-}
+        let score = (Math.abs(macd) * 100000) + (volatility * 100000);
+        return { pair, direction, trend, macd, score, rsi: Math.floor(rsi), volatility };
+    }catch(e){ return null; }
 }
 
 async function analyzeMarket(){
-if(signalLocked) return;
-document.getElementById("loading").style.display = "block";
-let results = [];
-for(let i=0;i<pairs.length;i++){
-const result = await analyzePair(pairs[i]);
-if(result) results.push(result);
-}
-if(results.length === 0){
-document.getElementById("loading").style.display = "none";
-return;
-}
-results.sort((a,b) => b.score - a.score);
-const best = results[0];
-signalLocked = true;
+    if(signalLocked) return;
+    document.getElementById("loading").style.display = "block";
+    let results = [];
+    for(let i=0; i<pairs.length; i++){
+        const result = await analyzePair(pairs[i]);
+        if(result) results.push(result);
+    }
+    
+    if(results.length === 0){
+        document.getElementById("loading").style.display = "none";
+        return;
+    }
 
-let rankingHTML = "";
-results.slice(0,3).forEach((item,index)=>{
-let medal = index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉";
-rankingHTML += `<div class="rank-item">${medal} ${item.pair} - ${item.direction} - ${Math.floor(item.score)}%</div>`;
-});
-document.getElementById("ranking").innerHTML = rankingHTML;
+    results.sort((a,b) => b.score - a.score);
+    const best = results[0];
+    signalLocked = true;
 
-const probability = Math.min(99, Math.floor(best.score));
-let risk = best.force > 0.0015 ? "BAIXO" : best.force > 0.0008 ? "MÉDIO" : "ALTO";
+    // Atualiza Interface
+    document.getElementById("pair").innerText = best.pair;
+    document.getElementById("direction").innerText = best.direction;
+    document.getElementById("direction").className = best.direction === "CALL" ? "call" : "put";
+    document.getElementById("accuracy").innerText = Math.min(99, Math.floor(best.score)) + "%";
+    document.getElementById("trend").innerText = best.trend;
+    document.getElementById("macdValue").innerText = best.macd.toFixed(5);
+    document.getElementById("marketFilter").innerText = best.trend;
+    document.getElementById("volatility").innerText = best.volatility.toFixed(5);
+    document.getElementById("risk").innerText = best.score > 50 ? "BAIXO" : "MÉDIO";
 
-document.getElementById("pair").innerText = best.pair;
-document.getElementById("direction").innerText = best.direction;
-document.getElementById("direction").className = best.direction === "CALL" ? "call" : "put";
-document.getElementById("accuracy").innerText = probability + "%";
-document.getElementById("trend").innerText = best.trend;
-document.getElementById("strength").innerText = probability + "%";
-document.getElementById("risk").innerText = risk;
-document.getElementById("rsiValue").innerText = best.rsi;
-document.getElementById("marketFilter").innerText = best.trend;
-document.getElementById("volatility").innerText = best.volatility.toFixed(5);
+    const next = nextM5();
+    document.getElementById("entry").innerText = "Entrada: " + next.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
 
-const next = nextM5();
-document.getElementById("entry").innerText = "Entrada: " + next.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+    clearInterval(timer);
+    timer = setInterval(()=>{
+        const now = new Date();
+        const diff = next - now;
+        if(diff <= 0){
+            document.getElementById("countdown").innerText = "🚀 ENTRAR AGORA";
+            clearInterval(timer);
+            setTimeout(()=>{ simulateResult(); signalLocked = false; analyzeMarket(); }, 15000);
+            return;
+        }
+        const m = Math.floor(diff / 1000 / 60);
+        const s = Math.floor((diff / 1000) % 60);
+        document.getElementById("countdown").innerText = String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+        document.getElementById("alertText").style.display = (diff <= 10000) ? "block" : "none";
+    }, 1000);
 
-clearInterval(timer);
-timer = setInterval(()=>{
-const now = new Date();
-const diff = next - now;
-if(diff <= 0){
-document.getElementById("countdown").innerText = "🚀 ENTRAR AGORA";
-document.getElementById("alertText").style.display = "none";
-clearInterval(timer);
-setTimeout(()=>{
-simulateResult();
-signalLocked = false;
-analyzeMarket();
-},15000);
-return;
-}
-const m = Math.floor(diff / 1000 / 60);
-const s = Math.floor((diff / 1000) % 60);
-document.getElementById("countdown").innerText = String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
-document.getElementById("alertText").style.display = diff <= 10000 ? "block" : "none";
-},1000);
-
-document.getElementById("loading").style.display = "none";
+    document.getElementById("loading").style.display = "none";
 }
 
 analyzeMarket();
-setInterval(()=>{ if(!signalLocked) analyzeMarket(); },15000);
-
+setInterval(()=>{ if(!signalLocked) analyzeMarket(); }, 30000);
 </script>
 
 </body>
