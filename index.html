@@ -283,7 +283,7 @@ Entrada: --
 🤖 Scanner Automático
 </div>
 
-<div class="auto-status">
+<div class="auto-status" id="autoStatus">
 ATIVADO
 </div>
 
@@ -345,7 +345,6 @@ const pairs = [
 ];
 
 let timer;
-let signalLocked = false;
 
 function updateClock(){
 
@@ -382,6 +381,64 @@ now.setMinutes(next);
 now.setSeconds(0);
 
 return now;
+
+}
+
+function startCountdown(target){
+
+clearInterval(timer);
+
+timer = setInterval(()=>{
+
+const now = new Date();
+
+const diff = target - now;
+
+if(diff <= 0){
+
+document.getElementById("countdown")
+.innerText =
+"🚀 ENTRAR AGORA";
+
+document.getElementById("alertText")
+.style.display =
+"none";
+
+clearInterval(timer);
+
+return;
+
+}
+
+const m =
+Math.floor(diff / 1000 / 60);
+
+const s =
+Math.floor((diff / 1000) % 60);
+
+document.getElementById("countdown")
+.innerText =
+String(m).padStart(2,"0")
++
+":"
++
+String(s).padStart(2,"0");
+
+if(diff <= 10000){
+
+document.getElementById("alertText")
+.style.display =
+"block";
+
+}else{
+
+document.getElementById("alertText")
+.style.display =
+"none";
+
+}
+
+},1000);
 
 }
 
@@ -576,7 +633,6 @@ score: score
 }catch(e){
 
 console.log(e);
-
 return null;
 
 }
@@ -584,10 +640,6 @@ return null;
 }
 
 async function analyzeMarket(){
-
-if(signalLocked){
-return;
-}
 
 document.getElementById("loading")
 .style.display = "block";
@@ -669,8 +721,6 @@ b.score - a.score
 );
 
 const best = results[0];
-
-signalLocked = true;
 
 let rankingHTML = "";
 
@@ -798,67 +848,7 @@ minute:"2-digit"
 }
 );
 
-clearInterval(timer);
-
-timer = setInterval(()=>{
-
-const now = new Date();
-
-const diff = next - now;
-
-if(diff <= 0){
-
-document.getElementById("countdown")
-.innerText =
-"🚀 ENTRAR AGORA";
-
-document.getElementById("alertText")
-.style.display =
-"none";
-
-clearInterval(timer);
-
-setTimeout(()=>{
-
-signalLocked = false;
-
-analyzeMarket();
-
-},10000);
-
-return;
-
-}
-
-const m =
-Math.floor(diff / 1000 / 60);
-
-const s =
-Math.floor((diff / 1000) % 60);
-
-document.getElementById("countdown")
-.innerText =
-String(m).padStart(2,"0")
-+
-":"
-+
-String(s).padStart(2,"0");
-
-if(diff <= 10000){
-
-document.getElementById("alertText")
-.style.display =
-"block";
-
-}else{
-
-document.getElementById("alertText")
-.style.display =
-"none";
-
-}
-
-},1000);
+startCountdown(next);
 
 document.getElementById("loading")
 .style.display = "none";
@@ -869,11 +859,7 @@ analyzeMarket();
 
 setInterval(()=>{
 
-if(!signalLocked){
-
 analyzeMarket();
-
-}
 
 },15000);
 
