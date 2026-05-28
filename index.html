@@ -381,7 +381,7 @@ Entrada: --
 
 <div class="indicator-box">
 <div>STO MTF</div>
-<h2 id="stoStatus">--</h2>
+<h2 id="stoStatus">🟡🟡🟡</h2>
 </div>
 
 </div>
@@ -740,7 +740,7 @@ score += 10;
 
 }
 
-if(bullishSto){
+if(bullishSto || bearishSto){
 
 score += 20;
 
@@ -1040,11 +1040,24 @@ document.getElementById("rsiStatus")
 .innerText =
 Math.floor(best.rsi);
 
+if(best.bullishSto){
+
 document.getElementById("stoStatus")
-.innerText =
-best.bullishSto
-? "🟢"
-: "🔴";
+.innerText = "🟢🟢🟢";
+
+}
+else if(best.bearishSto){
+
+document.getElementById("stoStatus")
+.innerText = "🔴🔴🔴";
+
+}
+else{
+
+document.getElementById("stoStatus")
+.innerText = "🟡🟡🟡";
+
+}
 
 let rankingHTML = "";
 
