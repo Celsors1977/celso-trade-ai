@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Celso Trade AI — PREMIUM PANEL</title>
+<title>Celso Trade AI — AUTO RESULT</title>
 
 <style>
 
@@ -173,18 +173,6 @@ font-size:12px;
 color:#00ff99;
 }
 
-.ranking{
-margin-top:20px;
-}
-
-.rank-item{
-background:#0a0a0a;
-padding:14px;
-border-radius:15px;
-margin-top:10px;
-font-size:14px;
-}
-
 .stats{
 display:grid;
 grid-template-columns:1fr 1fr 1fr;
@@ -210,13 +198,6 @@ margin:5px 0 0 0;
 font-size:20px;
 }
 
-.controls{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-margin-top:15px;
-}
-
 button{
 width:100%;
 padding:16px;
@@ -225,22 +206,9 @@ border-radius:15px;
 font-size:18px;
 font-weight:bold;
 cursor:pointer;
-}
-
-.scan-btn{
 background:#00ff99;
 color:#050505;
 margin-top:15px;
-}
-
-.win-btn{
-background:#003d24;
-color:#00ff99;
-}
-
-.loss-btn{
-background:#3d0000;
-color:#ff4444;
 }
 
 .loading{
@@ -248,11 +216,6 @@ margin-top:15px;
 text-align:center;
 font-size:13px;
 color:#999;
-}
-
-.locked{
-background:#003d24;
-color:#00ff99;
 }
 
 .green{
@@ -282,7 +245,7 @@ Celso Trade AI
 </div>
 
 <div class="subtitle">
-PREMIUM PANEL — Confluência Inteligente
+AUTO RESULT — Resultado Automático
 </div>
 
 <div class="center">
@@ -295,12 +258,12 @@ PROBABILIDADE IA
 --%
 </div>
 
-<button class="scan-btn" onclick="manualScan()">
+<button onclick="manualScan()">
 ATUALIZAR
 </button>
 
 <div class="market">
-🟢 40 PARES PREMIUM — MODO ELITE
+🟢 40 PARES PREMIUM — AUTO MONITOR
 </div>
 
 </div>
@@ -326,7 +289,7 @@ Entrada: --
 </div>
 
 <div class="premium" id="premiumStatus" style="background:#222;">
-⚠️ Clique em ATUALIZAR para procurar entrada premium
+⚠️ Clique em ATUALIZAR
 </div>
 
 <div class="status">
@@ -376,7 +339,7 @@ Entrada: --
 </div>
 
 <div class="indicator">
-<div>STO MTF</div>
+<div>STO</div>
 <h2 id="sto">🟡🟡🟡</h2>
 </div>
 
@@ -397,34 +360,6 @@ Entrada: --
 <div class="stat">
 <div>WINRATE</div>
 <h2 id="winrate">0%</h2>
-</div>
-
-</div>
-
-<div class="controls">
-
-<button class="win-btn" onclick="registerWin()">
-🟢 WIN
-</button>
-
-<button class="loss-btn" onclick="registerLoss()">
-🔴 LOSS
-</button>
-
-</div>
-
-<div class="ranking">
-
-<div style="font-size:13px;font-weight:bold;color:#00ff99;">
-🏆 TOP 3 PARES
-</div>
-
-<div id="ranking">
-
-<div class="rank-item">
-🥇 aguardando scanner...
-</div>
-
 </div>
 
 </div>
@@ -502,6 +437,10 @@ const pairs = [
 let wins = 0;
 let losses = 0;
 
+let currentPair = null;
+let currentDirection = null;
+let entryPrice = null;
+
 function updateClock(){
 
 document.getElementById("clock")
@@ -529,22 +468,6 @@ document.getElementById("losses")
 
 document.getElementById("winrate")
 .innerText = rate + "%";
-
-}
-
-function registerWin(){
-
-wins++;
-
-updateStats();
-
-}
-
-function registerLoss(){
-
-losses++;
-
-updateStats();
 
 }
 
@@ -655,6 +578,42 @@ return now;
 
 }
 
+async function getCurrentPrice(symbol){
+
+try{
+
+const targetUrl =
+`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1m&range=1d&_=${Date.now()}`;
+
+const url =
+"https://api.allorigins.win/get?url="
++
+encodeURIComponent(targetUrl);
+
+const response =
+await fetch(url);
+
+const wrapper =
+await response.json();
+
+const data =
+JSON.parse(wrapper.contents);
+
+const closes =
+data.chart.result[0]
+.indicators.quote[0].close
+.filter(v => v !== null);
+
+return closes[closes.length-1];
+
+}catch(e){
+
+return null;
+
+}
+
+}
+
 async function analyzePair(symbol){
 
 try{
@@ -670,20 +629,8 @@ encodeURIComponent(targetUrl);
 const response =
 await fetch(url);
 
-if(!response.ok){
-
-return null;
-
-}
-
 const wrapper =
 await response.json();
-
-if(!wrapper.contents){
-
-return null;
-
-}
 
 const data =
 JSON.parse(wrapper.contents);
@@ -692,12 +639,6 @@ const closes =
 data.chart.result[0]
 .indicators.quote[0].close
 .filter(v => v !== null);
-
-if(closes.length < 40){
-
-return null;
-
-}
 
 const ema9 = EMA(9,closes);
 const ema21 = EMA(21,closes);
@@ -733,11 +674,6 @@ sto1 < 45 &&
 sto5 < 45 &&
 sto15 < 45;
 
-const lateral =
-adx < 1.5 ||
-atr < 0.0003 ||
-Math.abs(ema9-ema21) < 0.0001;
-
 let score = 0;
 
 if(ema9 > ema21) score += 15;
@@ -747,22 +683,13 @@ if(atr > 0.0005) score += 15;
 if(rsi > 52 && rsi < 68) score += 10;
 if(bullishSto || bearishSto) score += 20;
 
-if(lateral){
-
-score -= 40;
-
-}
-
 let direction = null;
 let trend = null;
 
 if(
 ema9 > ema21 &&
 macd > 0 &&
-bullishSto &&
-adx > 2 &&
-atr > 0.0005 &&
-!lateral
+bullishSto
 ){
 
 direction = "CALL";
@@ -773,10 +700,7 @@ trend = "ALTA";
 if(
 ema9 < ema21 &&
 macd < 0 &&
-bearishSto &&
-adx > 2 &&
-atr > 0.0005 &&
-!lateral
+bearishSto
 ){
 
 direction = "PUT";
@@ -845,13 +769,9 @@ await new Promise(r=>setTimeout(r,120));
 
 if(results.length === 0){
 
-document.getElementById("premiumStatus")
-.innerHTML =
-"⚠️ Mercado sem entrada premium";
-
 document.getElementById("loading")
 .innerText =
-"Mercado lateral ou fraco.";
+"Mercado fraco.";
 
 return;
 
@@ -861,19 +781,8 @@ results.sort((a,b)=>b.score-a.score);
 
 const best = results[0];
 
-if(best.score < 90){
-
-document.getElementById("premiumStatus")
-.innerHTML =
-"⚠️ Nenhuma entrada elite encontrada";
-
-document.getElementById("loading")
-.innerText =
-"Aguardando entrada forte.";
-
-return;
-
-}
+currentPair = best.pair;
+currentDirection = best.direction;
 
 document.getElementById("pair")
 .innerText =
@@ -941,11 +850,7 @@ best.bullishSto
 
 document.getElementById("premiumStatus")
 .innerHTML =
-"🔥 ENTRADA PREMIUM DETECTADA";
-
-document.getElementById("premiumStatus")
-.className =
-"premium locked";
+"🔥 ENTRADA PREMIUM";
 
 const next = nextM5();
 
@@ -963,44 +868,12 @@ minute:"2-digit"
 
 startCountdown(next);
 
-let rankingHTML = "";
-
-results.slice(0,3)
-.forEach((item,index)=>{
-
-let medal = "🥇";
-
-if(index === 1) medal = "🥈";
-if(index === 2) medal = "🥉";
-
-rankingHTML +=
-`
-<div class="rank-item">
-${medal}
-${item.pair}
--
-${item.direction}
--
-${item.score}%
-</div>
-`;
-
-});
-
-document.getElementById("ranking")
-.innerHTML =
-rankingHTML;
-
-document.getElementById("loading")
-.innerText =
-"✅ Entrada travada até novo scan.";
-
 }
 
 function startCountdown(target){
 
 const timer =
-setInterval(()=>{
+setInterval(async ()=>{
 
 const now = new Date();
 
@@ -1011,9 +884,11 @@ if(diff <= 0){
 
 document.getElementById("countdown")
 .innerText =
-"🚀 ENTRAR";
+"🚀 OPERAÇÃO";
 
 clearInterval(timer);
+
+await startOperationMonitor();
 
 return;
 
@@ -1034,6 +909,75 @@ String(min).padStart(2,"0")
 String(sec).padStart(2,"0");
 
 },1000);
+
+}
+
+async function startOperationMonitor(){
+
+document.getElementById("loading")
+.innerText =
+"📡 Monitorando operação...";
+
+const symbol =
+currentPair.replace("/","") + "=X";
+
+entryPrice =
+await getCurrentPrice(symbol);
+
+setTimeout(async ()=>{
+
+const finalPrice =
+await getCurrentPrice(symbol);
+
+let win = false;
+
+if(
+currentDirection === "CALL" &&
+finalPrice > entryPrice
+){
+
+win = true;
+
+}
+
+if(
+currentDirection === "PUT" &&
+finalPrice < entryPrice
+){
+
+win = true;
+
+}
+
+if(win){
+
+wins++;
+
+document.getElementById("premiumStatus")
+.innerHTML =
+"🟢 WIN AUTOMÁTICO";
+
+}else{
+
+losses++;
+
+document.getElementById("premiumStatus")
+.innerHTML =
+"🔴 LOSS AUTOMÁTICO";
+
+}
+
+updateStats();
+
+document.getElementById("countdown")
+.innerText =
+"✔️ FINALIZADA";
+
+document.getElementById("loading")
+.innerText =
+"✅ Clique em ATUALIZAR para nova oportunidade.";
+
+},300000);
 
 }
 
