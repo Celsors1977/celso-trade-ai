@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Celso Ricardi Trader AI ELITE X</title>
+<title>Celso Trade AI — PREMIUM ONLY</title>
 
 <style>
 
@@ -14,7 +14,7 @@ background:#050505;
 color:white;
 font-family:Arial,sans-serif;
 margin:0;
-padding:20px;
+padding:15px;
 }
 
 .container{
@@ -34,20 +34,20 @@ box-shadow:0 0 25px rgba(0,255,153,0.08);
 font-size:28px;
 font-weight:bold;
 color:#00ff99;
-margin-bottom:5px;
 }
 
 .subtitle{
 color:#00ff99;
-font-size:13px;
+font-size:12px;
+margin-top:5px;
 margin-bottom:20px;
 }
 
 .clock{
 text-align:right;
 font-size:14px;
-color:#00ff99;
 font-weight:bold;
+color:#00ff99;
 margin-bottom:15px;
 }
 
@@ -56,40 +56,23 @@ text-align:center;
 }
 
 .big{
-font-size:62px;
+font-size:64px;
 font-weight:bold;
-color:#00ff99;
 margin:10px 0;
+color:#00ff99;
 }
 
 .signal{
 background:#0a0a0a;
-padding:20px;
+padding:22px;
 border-radius:20px;
 margin-top:20px;
 text-align:center;
 border:1px solid #1c1c1c;
-animation:pulse 2s infinite;
-}
-
-@keyframes pulse{
-
-0%{
-transform:scale(1);
-}
-
-50%{
-transform:scale(1.02);
-}
-
-100%{
-transform:scale(1);
-}
-
 }
 
 #pair{
-font-size:24px;
+font-size:28px;
 font-weight:bold;
 }
 
@@ -111,18 +94,17 @@ margin-top:5px;
 color:gold;
 }
 
-.countdown{
-font-size:32px;
-font-weight:bold;
-margin-top:15px;
-color:#00ff99;
-white-space:nowrap;
-}
-
 .entry{
 margin-top:8px;
 color:#888;
 font-size:14px;
+}
+
+.countdown{
+font-size:34px;
+font-weight:bold;
+margin-top:12px;
+color:#00ff99;
 }
 
 .status{
@@ -134,7 +116,7 @@ margin-top:20px;
 
 .box{
 background:#0a0a0a;
-padding:15px;
+padding:14px;
 border-radius:15px;
 text-align:center;
 }
@@ -143,33 +125,11 @@ text-align:center;
 font-size:10px;
 color:#666;
 font-weight:bold;
-text-transform:uppercase;
 }
 
 .box h3{
 margin:5px 0 0 0;
-font-size:15px;
-}
-
-.extra-box{
-margin-top:12px;
-background:#0a0a0a;
-padding:14px;
-border-radius:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.extra-box div{
-font-size:11px;
-color:#666;
-font-weight:bold;
-}
-
-.extra-box h2{
-margin:0;
-font-size:18px;
+font-size:16px;
 }
 
 .indicators{
@@ -179,47 +139,38 @@ gap:10px;
 margin-top:15px;
 }
 
-.indicator-box{
+.indicator{
 background:#0a0a0a;
 padding:12px;
 border-radius:15px;
 text-align:center;
 }
 
-.indicator-box div{
+.indicator div{
 font-size:10px;
 color:#666;
 font-weight:bold;
 }
 
-.indicator-box h2{
+.indicator h2{
 margin:5px 0 0 0;
 font-size:18px;
 }
 
-.stats{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:10px;
-margin-top:20px;
-}
-
-.stats-box{
-background:#0a0a0a;
-padding:12px;
+.premium{
+margin-top:15px;
+padding:15px;
 border-radius:15px;
 text-align:center;
-}
-
-.stats-box div{
-font-size:10px;
-color:#666;
+font-size:18px;
 font-weight:bold;
 }
 
-.stats-box h2{
-margin:5px 0 0 0;
-font-size:18px;
+.market{
+margin-top:15px;
+text-align:center;
+font-size:12px;
+color:#00ff99;
 }
 
 .ranking{
@@ -231,48 +182,27 @@ background:#0a0a0a;
 padding:14px;
 border-radius:15px;
 margin-top:10px;
-font-size:15px;
+font-size:14px;
 }
 
 button{
 width:100%;
-padding:18px;
+padding:16px;
 border:none;
 border-radius:15px;
 background:#00ff99;
-font-size:18px;
-font-weight:bold;
-margin-top:20px;
-cursor:pointer;
 color:#050505;
-}
-
-.market{
-margin-top:15px;
-text-align:center;
-font-size:12px;
-color:#00ff99;
-}
-
-.premium{
-margin-top:15px;
-padding:12px;
-border-radius:15px;
-text-align:center;
 font-size:18px;
 font-weight:bold;
+margin-top:15px;
+cursor:pointer;
 }
 
-.green{
-color:#00ff99;
-}
-
-.red{
-color:#ff4444;
-}
-
-.orange{
-color:orange;
+.loading{
+margin-top:15px;
+text-align:center;
+font-size:13px;
+color:#999;
 }
 
 </style>
@@ -290,11 +220,11 @@ color:orange;
 <div class="card">
 
 <div class="logo">
-Celso Ricardi
+Celso Trade AI
 </div>
 
 <div class="subtitle">
-Trader AI ELITE X — Confluência Inteligente
+PREMIUM ONLY — Multi Confluência Inteligente
 </div>
 
 <div class="center">
@@ -307,12 +237,12 @@ PROBABILIDADE IA
 --%
 </div>
 
-<button onclick="manualAnalyze()">
-ATUALIZAR AGORA
+<button onclick="manualScan()">
+ATUALIZAR
 </button>
 
 <div class="market">
-🟢 Sistema Inteligente Multi Indicadores
+🟢 Scanner Profissional 40 Pares
 </div>
 
 </div>
@@ -320,11 +250,11 @@ ATUALIZAR AGORA
 <div class="signal">
 
 <div id="pair">
-AGUARDANDO
+AGUARDANDO MERCADO
 </div>
 
 <div id="direction" class="yellow">
-SEM SINAL
+SEM ENTRADA
 </div>
 
 <div class="entry" id="entry">
@@ -332,88 +262,64 @@ Entrada: --
 </div>
 
 <div class="countdown" id="countdown">
-00:00
+⏳ AGUARDANDO
 </div>
 
 </div>
 
 <div class="premium" id="premiumStatus" style="background:#222;">
-⚠️ AGUARDANDO MERCADO
+⚠️ PROCURANDO ENTRADAS PREMIUM
 </div>
 
 <div class="status">
 
 <div class="box">
-<div>Tendência</div>
+<div>TENDÊNCIA</div>
 <h3 id="trend">--</h3>
 </div>
 
 <div class="box">
-<div>Força</div>
+<div>FORÇA</div>
 <h3 id="strength">--</h3>
 </div>
 
 <div class="box">
-<div>Risco</div>
+<div>RISCO</div>
 <h3 id="risk">--</h3>
 </div>
 
 </div>
 
-<div class="extra-box">
-<div>ALINHAMENTO</div>
-<h2 id="alignment">--</h2>
-</div>
-
 <div class="indicators">
 
-<div class="indicator-box">
+<div class="indicator">
 <div>EMA</div>
-<h2 id="emaStatus">--</h2>
+<h2 id="ema">--</h2>
 </div>
 
-<div class="indicator-box">
+<div class="indicator">
 <div>MACD</div>
-<h2 id="macdStatus">--</h2>
+<h2 id="macd">--</h2>
 </div>
 
-<div class="indicator-box">
+<div class="indicator">
 <div>ADX</div>
-<h2 id="adxStatus">--</h2>
+<h2 id="adx">--</h2>
 </div>
 
-<div class="indicator-box">
+<div class="indicator">
 <div>ATR</div>
-<h2 id="atrStatus">--</h2>
+<h2 id="atr">--</h2>
 </div>
 
-<div class="indicator-box">
+<div class="indicator">
 <div>RSI</div>
-<h2 id="rsiStatus">--</h2>
+<h2 id="rsi">--</h2>
 </div>
 
-<div class="indicator-box">
+<div class="indicator">
 <div>STO MTF</div>
-<h2 id="stoStatus">🟡🟡🟡</h2>
-</div>
-
-</div>
-
-<div class="stats">
-
-<div class="stats-box">
-<div>WINS</div>
-<h2 id="wins">0</h2>
-</div>
-
-<div class="stats-box">
-<div>LOSSES</div>
-<h2 id="losses">0</h2>
-</div>
-
-<div class="stats-box">
-<div>STREAK</div>
-<h2 id="streak">0</h2>
+<h2 id="sto">🟡🟡🟡</h2>
 </div>
 
 </div>
@@ -421,17 +327,21 @@ Entrada: --
 <div class="ranking">
 
 <div style="font-size:13px;font-weight:bold;color:#00ff99;">
-🏆 RANKING DOS PARES
+🏆 TOP 3 PARES
 </div>
 
 <div id="ranking">
 
 <div class="rank-item">
-🥇 aguardando...
+🥇 aguardando scanner...
 </div>
 
 </div>
 
+</div>
+
+<div class="loading" id="loading">
+Scanner pronto.
 </div>
 
 </div>
@@ -441,20 +351,66 @@ Entrada: --
 <script>
 
 const pairs = [
+
 "EURUSD=X",
 "GBPUSD=X",
 "USDJPY=X",
 "AUDUSD=X",
+"NZDUSD=X",
+"USDCAD=X",
+"USDCHF=X",
+
 "EURJPY=X",
 "GBPJPY=X",
-"USDCAD=X"
+"AUDJPY=X",
+"CADJPY=X",
+"CHFJPY=X",
+"NZDJPY=X",
+
+"EURGBP=X",
+"EURAUD=X",
+"EURNZD=X",
+"EURCAD=X",
+"EURCHF=X",
+
+"GBPAUD=X",
+"GBPCAD=X",
+"GBPCHF=X",
+"GBPNZD=X",
+
+"AUDCAD=X",
+"AUDCHF=X",
+"AUDNZD=X",
+
+"NZDCAD=X",
+"NZDCHF=X",
+
+"CADCHF=X",
+
+"EURSEK=X",
+"EURNOK=X",
+
+"USDNOK=X",
+"USDSEK=X",
+
+"SGDJPY=X",
+"HKDJPY=X",
+
+"CHFSGD=X",
+
+"AUDSGD=X",
+
+"EURSGD=X",
+
+"GBPSGD=X",
+
+"USDSGD=X",
+
+"CADSGD=X"
+
 ];
 
 let lockedSignal = false;
-
-let wins = 0;
-let losses = 0;
-let streak = 0;
 
 function updateClock(){
 
@@ -466,18 +422,15 @@ new Date().toLocaleTimeString("pt-BR");
 
 setInterval(updateClock,1000);
 
-function calculateEMA(period,data){
+function EMA(period,data){
 
-const k = 2 / (period + 1);
+const k = 2/(period+1);
 
 let ema = data[0];
 
 for(let i=1;i<data.length;i++){
 
-ema =
-data[i] * k
-+
-ema * (1-k);
+ema = data[i]*k + ema*(1-k);
 
 }
 
@@ -485,10 +438,10 @@ return ema;
 
 }
 
-function calculateRSI(data,period=14){
+function RSI(data,period=14){
 
 let gains = 0;
-let lossesCalc = 0;
+let losses = 0;
 
 for(let i=1;i<=period;i++){
 
@@ -503,40 +456,27 @@ gains += diff;
 
 }else{
 
-lossesCalc += Math.abs(diff);
+losses += Math.abs(diff);
 
 }
 
 }
 
-if(lossesCalc === 0){
+if(losses === 0){
 
 return 100;
 
 }
 
-return 100 - (
-100 /
-(
-1 + (gains / lossesCalc)
-)
-);
+return 100 - (100/(1+(gains/losses)));
 
 }
 
-function calculateMACD(data){
-
-return calculateEMA(12,data)
--
-calculateEMA(26,data);
-
-}
-
-function calculateATR(data){
+function ATR(data){
 
 let total = 0;
 
-for(let i=1;i<15;i++){
+for(let i=1;i<14;i++){
 
 total += Math.abs(
 data[data.length-i]
@@ -546,73 +486,22 @@ data[data.length-i-1]
 
 }
 
-return total / 14;
-
-}
-
-function calculateADX(data){
-
-const ema9 =
-calculateEMA(9,data);
-
-const ema21 =
-calculateEMA(21,data);
-
-const strength =
-Math.abs(ema9 - ema21);
-
-return strength * 10000;
+return total/14;
 
 }
 
 function stochastic(data){
 
-const min =
+const low =
 Math.min(...data.slice(-14));
 
-const max =
+const high =
 Math.max(...data.slice(-14));
 
 const last =
 data[data.length-1];
 
-return ((last - min)/(max - min))*100;
-
-}
-
-function candleConfirmation(data){
-
-const last =
-data[data.length-1];
-
-const prev =
-data[data.length-2];
-
-const move =
-Math.abs(last - prev);
-
-return move > 0.0003;
-
-}
-
-function detectLateralMarket(adx,atr,ema9,ema21){
-
-const emaDistance =
-Math.abs(ema9 - ema21);
-
-if(
-adx < 1
-||
-atr < 0.0003
-||
-emaDistance < 0.0001
-){
-
-return true;
-
-}
-
-return false;
+return ((last-low)/(high-low))*100;
 
 }
 
@@ -623,7 +512,7 @@ const now = new Date();
 let next =
 Math.ceil(
 (now.getMinutes()+1)/5
-) * 5;
+)*5;
 
 if(next >= 60){
 
@@ -645,7 +534,7 @@ async function analyzePair(symbol){
 try{
 
 const targetUrl =
-`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=5m&range=2d&_=${new Date().getTime()}`;
+`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=5m&range=2d&_=${Date.now()}`;
 
 const url =
 "https://api.allorigins.win/get?url="
@@ -673,21 +562,10 @@ return null;
 const data =
 JSON.parse(wrapper.contents);
 
-if(!data.chart?.result?.[0]){
-
-return null;
-
-}
-
-const rawCloses =
-data.chart.result[0]
-.indicators.quote[0].close;
-
 const closes =
-rawCloses.filter(v =>
-v !== null &&
-v !== undefined
-);
+data.chart.result[0]
+.indicators.quote[0].close
+.filter(v => v !== null);
 
 if(closes.length < 40){
 
@@ -695,31 +573,20 @@ return null;
 
 }
 
-const ema9 =
-calculateEMA(9,closes);
-
-const ema21 =
-calculateEMA(21,closes);
+const ema9 = EMA(9,closes);
+const ema21 = EMA(21,closes);
 
 const macd =
-calculateMACD(closes);
+EMA(12,closes)
+-
+EMA(26,closes);
 
-const rsi =
-calculateRSI(closes);
+const rsi = RSI(closes);
 
-const atr =
-calculateATR(closes);
+const atr = ATR(closes);
 
 const adx =
-calculateADX(closes);
-
-const lateral =
-detectLateralMarket(
-adx,
-atr,
-ema9,
-ema21
-);
+Math.abs(ema9-ema21)*10000;
 
 const sto1 =
 stochastic(closes.slice(-15));
@@ -731,68 +598,28 @@ const sto15 =
 stochastic(closes.slice(-35));
 
 const bullishSto =
-sto1 > 55
-&&
-sto5 > 55
-&&
+sto1 > 55 &&
+sto5 > 55 &&
 sto15 > 55;
 
 const bearishSto =
-sto1 < 45
-&&
-sto5 < 45
-&&
+sto1 < 45 &&
+sto5 < 45 &&
 sto15 < 45;
 
-const candleOk =
-candleConfirmation(closes);
-
-let direction = null;
-let trend = null;
+const lateral =
+adx < 1.5 ||
+atr < 0.0003 ||
+Math.abs(ema9-ema21) < 0.0001;
 
 let score = 0;
 
-if(ema9 > ema21){
-
-score += 15;
-
-}
-
-if(macd > 0){
-
-score += 15;
-
-}
-
-if(adx > 1.5){
-
-score += 20;
-
-}
-
-if(atr > 0.0004){
-
-score += 15;
-
-}
-
-if(rsi > 50 && rsi < 70){
-
-score += 10;
-
-}
-
-if(bullishSto || bearishSto){
-
-score += 20;
-
-}
-
-if(candleOk){
-
-score += 15;
-
-}
+if(ema9 > ema21) score += 15;
+if(macd > 0) score += 15;
+if(adx > 2) score += 20;
+if(atr > 0.0005) score += 15;
+if(rsi > 52 && rsi < 68) score += 10;
+if(bullishSto || bearishSto) score += 20;
 
 if(lateral){
 
@@ -800,17 +627,15 @@ score -= 40;
 
 }
 
+let direction = null;
+let trend = null;
+
 if(
-ema9 > ema21
-&&
-macd > 0
-&&
-bullishSto
-&&
-adx > 1.5
-&&
-candleOk
-&&
+ema9 > ema21 &&
+macd > 0 &&
+bullishSto &&
+adx > 2 &&
+atr > 0.0005 &&
 !lateral
 ){
 
@@ -820,16 +645,11 @@ trend = "ALTA";
 }
 
 if(
-ema9 < ema21
-&&
-macd < 0
-&&
-bearishSto
-&&
-adx > 1.5
-&&
-candleOk
-&&
+ema9 < ema21 &&
+macd < 0 &&
+bearishSto &&
+adx > 2 &&
+atr > 0.0005 &&
 !lateral
 ){
 
@@ -863,8 +683,7 @@ adx,
 atr,
 rsi,
 bullishSto,
-bearishSto,
-lateral
+bearishSto
 
 };
 
@@ -876,106 +695,7 @@ return null;
 
 }
 
-function updateStats(){
-
-document.getElementById("wins")
-.innerText = wins;
-
-document.getElementById("losses")
-.innerText = losses;
-
-document.getElementById("streak")
-.innerText = streak;
-
-}
-
-function simulateResult(){
-
-const rand = Math.random();
-
-if(rand > 0.35){
-
-wins++;
-streak++;
-
-}else{
-
-losses++;
-streak = 0;
-
-}
-
-updateStats();
-
-}
-
-function startCountdown(){
-
-const next = nextM5();
-
-document.getElementById("entry")
-.innerText =
-"Entrada Próxima: "
-+
-next.toLocaleTimeString(
-"pt-BR",
-{
-hour:"2-digit",
-minute:"2-digit"
-}
-);
-
-const timer =
-setInterval(()=>{
-
-const now = new Date();
-
-const diff =
-next - now;
-
-if(diff <= 0){
-
-document.getElementById("countdown")
-.innerText =
-"🚀 ENTRAR AGORA";
-
-clearInterval(timer);
-
-setTimeout(()=>{
-
-simulateResult();
-
-lockedSignal = false;
-
-autoAnalyze();
-
-},15000);
-
-return;
-
-}
-
-const minutes =
-Math.floor(diff / 1000 / 60);
-
-const seconds =
-Math.floor((diff/1000)%60);
-
-document.getElementById("countdown")
-.innerText =
-String(minutes)
-.padStart(2,"0")
-+
-":"
-+
-String(seconds)
-.padStart(2,"0");
-
-},1000);
-
-}
-
-async function autoAnalyze(){
+async function scanMarket(){
 
 if(lockedSignal){
 
@@ -983,14 +703,16 @@ return;
 
 }
 
+document.getElementById("loading")
+.innerText =
+"🔎 Escaneando 40 pares premium...";
+
 let results = [];
 
 for(let i=0;i<pairs.length;i++){
 
 const result =
-await analyzePair(
-pairs[i]
-);
+await analyzePair(pairs[i]);
 
 if(result){
 
@@ -998,24 +720,41 @@ results.push(result);
 
 }
 
+await new Promise(r=>setTimeout(r,120));
+
 }
 
 if(results.length === 0){
 
 document.getElementById("premiumStatus")
+.innerHTML =
+"⚠️ MERCADO SEM CONFLUÊNCIA";
+
+document.getElementById("loading")
 .innerText =
-"⚠️ MERCADO LATERAL";
+"Mercado lateral ou fraco.";
 
 return;
 
 }
 
-results.sort((a,b)=>
-b.score - a.score
-);
+results.sort((a,b)=>b.score-a.score);
 
-const best =
-results[0];
+const best = results[0];
+
+if(best.score < 90){
+
+document.getElementById("premiumStatus")
+.innerHTML =
+"⚠️ NENHUMA ENTRADA ELITE";
+
+document.getElementById("loading")
+.innerText =
+"Aguardando entrada premium.";
+
+return;
+
+}
 
 lockedSignal = true;
 
@@ -1035,21 +774,11 @@ best.direction === "CALL"
 
 document.getElementById("accuracy")
 .innerText =
-Math.min(
-99,
-best.score
-)
-+ "%";
+best.score + "%";
 
 document.getElementById("trend")
 .innerText =
 best.trend;
-
-document.getElementById("trend")
-.className =
-best.trend === "ALTA"
-? "green"
-: "red";
 
 document.getElementById("strength")
 .innerText =
@@ -1057,98 +786,73 @@ best.score + "%";
 
 document.getElementById("risk")
 .innerText =
-best.score >= 90
-? "BAIXO"
-: best.score >= 75
-? "MÉDIO"
-: "ALTO";
+"BAIXO";
 
-document.getElementById("alignment")
-.innerText =
-best.score >= 90
-? "🔥 FORTE"
-: "⚠️ MÉDIO";
-
-document.getElementById("emaStatus")
+document.getElementById("ema")
 .innerText =
 best.ema9 > best.ema21
 ? "🟢"
 : "🔴";
 
-document.getElementById("macdStatus")
+document.getElementById("macd")
 .innerText =
 best.macd > 0
 ? "🟢"
 : "🔴";
 
-document.getElementById("adxStatus")
+document.getElementById("adx")
 .innerText =
-best.adx > 1.5
+best.adx > 2
 ? "🔥"
 : "⚠️";
 
-document.getElementById("atrStatus")
+document.getElementById("atr")
 .innerText =
-best.atr > 0.0004
+best.atr > 0.0005
 ? "🟢"
 : "🔴";
 
-document.getElementById("rsiStatus")
+document.getElementById("rsi")
 .innerText =
 Math.floor(best.rsi);
 
 if(best.bullishSto){
 
-document.getElementById("stoStatus")
-.innerText = "🟢🟢🟢";
+document.getElementById("sto")
+.innerText =
+"🟢🟢🟢";
+
+}else{
+
+document.getElementById("sto")
+.innerText =
+"🔴🔴🔴";
 
 }
-else if(best.bearishSto){
-
-document.getElementById("stoStatus")
-.innerText = "🔴🔴🔴";
-
-}
-else{
-
-document.getElementById("stoStatus")
-.innerText = "🟡🟡🟡";
-
-}
-
-if(best.score >= 90){
 
 document.getElementById("premiumStatus")
 .innerHTML =
-"🔥 ENTRADA PREMIUM";
+"🔥 ENTRADA PREMIUM DETECTADA";
 
 document.getElementById("premiumStatus")
 .style.background =
 "#003d24";
 
+const next = nextM5();
+
+document.getElementById("entry")
+.innerText =
+"Entrada Próxima: "
++
+next.toLocaleTimeString(
+"pt-BR",
+{
+hour:"2-digit",
+minute:"2-digit"
 }
-else if(best.score >= 75){
+);
 
-document.getElementById("premiumStatus")
-.innerHTML =
-"⚠️ ENTRADA NORMAL";
-
-document.getElementById("premiumStatus")
-.style.background =
-"#4d3a00";
-
-}
-else{
-
-document.getElementById("premiumStatus")
-.innerHTML =
-"❌ EVITAR ENTRADA";
-
-document.getElementById("premiumStatus")
-.style.background =
-"#4d0000";
-
-}
+startCountdown(next);
 
 let rankingHTML = "";
 
@@ -1157,11 +861,8 @@ results.slice(0,3)
 
 let medal = "🥇";
 
-if(index === 1)
-medal = "🥈";
-
-if(index === 2)
-medal = "🥉";
+if(index === 1) medal = "🥈";
+if(index === 2) medal = "🥉";
 
 rankingHTML +=
 `
@@ -1181,21 +882,71 @@ document.getElementById("ranking")
 .innerHTML =
 rankingHTML;
 
-startCountdown();
+document.getElementById("loading")
+.innerText =
+"Scanner premium ativo.";
 
 }
 
-function manualAnalyze(){
+function startCountdown(target){
+
+const timer =
+setInterval(()=>{
+
+const now = new Date();
+
+const diff =
+target - now;
+
+if(diff <= 0){
+
+document.getElementById("countdown")
+.innerText =
+"🚀 ENTRAR";
+
+clearInterval(timer);
+
+setTimeout(()=>{
+
+lockedSignal = false;
+
+scanMarket();
+
+},20000);
+
+return;
+
+}
+
+const min =
+Math.floor(diff/1000/60);
+
+const sec =
+Math.floor((diff/1000)%60);
+
+document.getElementById("countdown")
+.innerText =
+String(min).padStart(2,"0")
++
+":"
++
+String(sec).padStart(2,"0");
+
+},1000);
+
+}
+
+function manualScan(){
 
 if(!lockedSignal){
 
-autoAnalyze();
+scanMarket();
 
 }
 
 }
 
-autoAnalyze();
+scanMarket();
 
 </script>
 
