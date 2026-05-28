@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Celso Ricardi Trader AI</title>
+<title>Celso Ricardi Trader AI ELITE</title>
 
 <style>
 
@@ -27,7 +27,7 @@ background:#111;
 padding:20px;
 border-radius:20px;
 border:1px solid #222;
-box-shadow:0 0 20px rgba(0,255,153,0.08);
+box-shadow:0 0 25px rgba(0,255,153,0.08);
 }
 
 .logo{
@@ -68,7 +68,24 @@ padding:20px;
 border-radius:20px;
 margin-top:20px;
 text-align:center;
-border:1px solid #1d1d1d;
+border:1px solid #1c1c1c;
+animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+
+0%{
+transform:scale(1);
+}
+
+50%{
+transform:scale(1.02);
+}
+
+100%{
+transform:scale(1);
+}
+
 }
 
 #pair{
@@ -95,7 +112,7 @@ color:gold;
 }
 
 .countdown{
-font-size:34px;
+font-size:32px;
 font-weight:bold;
 margin-top:15px;
 color:#00ff99;
@@ -155,41 +172,29 @@ margin:0;
 font-size:18px;
 }
 
-.stochastic-grid{
+.indicators{
 display:grid;
-grid-template-columns:1fr 1fr 1fr;
+grid-template-columns:1fr 1fr;
 gap:10px;
 margin-top:15px;
 }
 
-.sto-box{
+.indicator-box{
 background:#0a0a0a;
 padding:12px;
 border-radius:15px;
 text-align:center;
 }
 
-.sto-box div{
+.indicator-box div{
 font-size:10px;
 color:#666;
 font-weight:bold;
 }
 
-.sto-box h2{
+.indicator-box h2{
 margin:5px 0 0 0;
 font-size:18px;
-}
-
-.ranking{
-margin-top:20px;
-}
-
-.rank-item{
-background:#0a0a0a;
-padding:14px;
-border-radius:15px;
-margin-top:10px;
-font-size:15px;
 }
 
 .stats{
@@ -215,6 +220,18 @@ font-weight:bold;
 .stats-box h2{
 margin:5px 0 0 0;
 font-size:18px;
+}
+
+.ranking{
+margin-top:20px;
+}
+
+.rank-item{
+background:#0a0a0a;
+padding:14px;
+border-radius:15px;
+margin-top:10px;
+font-size:15px;
 }
 
 button{
@@ -249,26 +266,6 @@ color:#ff4444;
 color:orange;
 }
 
-.pulse{
-animation:pulse 1s infinite;
-}
-
-@keyframes pulse{
-
-0%{
-transform:scale(1);
-}
-
-50%{
-transform:scale(1.04);
-}
-
-100%{
-transform:scale(1);
-}
-
-}
-
 </style>
 
 </head>
@@ -288,7 +285,7 @@ Celso Ricardi
 </div>
 
 <div class="subtitle">
-Scanner Inteligente Multi Timeframe PRO
+Trader AI ELITE — Confluência Profissional
 </div>
 
 <div class="center">
@@ -306,12 +303,12 @@ ATUALIZAR AGORA
 </button>
 
 <div class="market">
-🟢 Yahoo Finance + Estocástico M1 M5 M15
+🟢 Sistema Multi Indicadores PRO
 </div>
 
 </div>
 
-<div class="signal pulse">
+<div class="signal">
 
 <div id="pair">
 AGUARDANDO
@@ -351,40 +348,40 @@ Entrada: --
 </div>
 
 <div class="extra-box">
-<div>RSI</div>
-<h2 id="rsiValue">--</h2>
-</div>
-
-<div class="extra-box">
-<div>MACD</div>
-<h2 id="macdValue">--</h2>
-</div>
-
-<div class="extra-box">
-<div>FILTRO</div>
-<h2 id="marketFilter">--</h2>
-</div>
-
-<div class="extra-box">
 <div>ALINHAMENTO</div>
 <h2 id="alignment">--</h2>
 </div>
 
-<div class="stochastic-grid">
+<div class="indicators">
 
-<div class="sto-box">
-<div>ESTOCÁSTICO M1</div>
-<h2 id="stoM1">--</h2>
+<div class="indicator-box">
+<div>EMA</div>
+<h2 id="emaStatus">--</h2>
 </div>
 
-<div class="sto-box">
-<div>ESTOCÁSTICO M5</div>
-<h2 id="stoM5">--</h2>
+<div class="indicator-box">
+<div>MACD</div>
+<h2 id="macdStatus">--</h2>
 </div>
 
-<div class="sto-box">
-<div>ESTOCÁSTICO M15</div>
-<h2 id="stoM15">--</h2>
+<div class="indicator-box">
+<div>ADX</div>
+<h2 id="adxStatus">--</h2>
+</div>
+
+<div class="indicator-box">
+<div>ATR</div>
+<h2 id="atrStatus">--</h2>
+</div>
+
+<div class="indicator-box">
+<div>RSI</div>
+<h2 id="rsiStatus">--</h2>
+</div>
+
+<div class="indicator-box">
+<div>STO MTF</div>
+<h2 id="stoStatus">--</h2>
 </div>
 
 </div>
@@ -516,20 +513,46 @@ return 100 - (
 
 function calculateMACD(data){
 
-const ema12 =
-calculateEMA(12,data);
-
-const ema26 =
+return calculateEMA(12,data)
+-
 calculateEMA(26,data);
-
-return ema12 - ema26;
 
 }
 
-function stochasticDirection(data){
+function calculateATR(data){
 
-const last =
-data[data.length-1];
+let total = 0;
+
+for(let i=1;i<15;i++){
+
+total += Math.abs(
+data[data.length-i]
+-
+data[data.length-i-1]
+);
+
+}
+
+return total / 14;
+
+}
+
+function calculateADX(data){
+
+const ema9 =
+calculateEMA(9,data);
+
+const ema21 =
+calculateEMA(21,data);
+
+const strength =
+Math.abs(ema9 - ema21);
+
+return strength * 10000;
+
+}
+
+function stochastic(data){
 
 const min =
 Math.min(...data.slice(-14));
@@ -537,22 +560,25 @@ Math.min(...data.slice(-14));
 const max =
 Math.max(...data.slice(-14));
 
-const k =
-((last - min) / (max - min)) * 100;
+const last =
+data[data.length-1];
 
-if(k > 55){
-
-return "🟢";
-
-}else if(k < 45){
-
-return "🔴";
-
-}else{
-
-return "🟡";
+return ((last - min)/(max - min))*100;
 
 }
+
+function candleConfirmation(data){
+
+const last =
+data[data.length-1];
+
+const prev =
+data[data.length-2];
+
+const move =
+Math.abs(last - prev);
+
+return move > 0.0003;
 
 }
 
@@ -629,7 +655,7 @@ v !== null &&
 v !== undefined
 );
 
-if(closes.length < 30){
+if(closes.length < 40){
 
 return null;
 
@@ -641,113 +667,128 @@ calculateEMA(9,closes);
 const ema21 =
 calculateEMA(21,closes);
 
-const rsi =
-calculateRSI(closes);
-
 const macd =
 calculateMACD(closes);
 
-const last =
-closes[closes.length-1];
+const rsi =
+calculateRSI(closes);
 
-const multiplier =
-symbol.includes("JPY")
-? 100
-: 10000;
+const atr =
+calculateATR(closes);
 
-const force =
-(
-Math.abs(ema9 - ema21)
-/
-last
-)
-*
-multiplier;
+const adx =
+calculateADX(closes);
 
-const stoM1 =
-stochasticDirection(
-closes.slice(-15)
-);
+const sto1 =
+stochastic(closes.slice(-15));
 
-const stoM5 =
-stochasticDirection(
-closes.slice(-25)
-);
+const sto5 =
+stochastic(closes.slice(-25));
 
-const stoM15 =
-stochasticDirection(
-closes.slice(-35)
-);
+const sto15 =
+stochastic(closes.slice(-35));
 
-let aligned = false;
-
-if(
-stoM1 === "🟢"
+const bullishSto =
+sto1 > 55
 &&
-stoM5 === "🟢"
+sto5 > 55
 &&
-stoM15 === "🟢"
-){
+sto15 > 55;
 
-aligned = true;
+const bearishSto =
+sto1 < 45
+&&
+sto5 < 45
+&&
+sto15 < 45;
+
+const candleOk =
+candleConfirmation(closes);
+
+let direction = null;
+let trend = null;
+
+let score = 0;
+
+if(ema9 > ema21){
+
+score += 15;
 
 }
 
-if(
-stoM1 === "🔴"
-&&
-stoM5 === "🔴"
-&&
-stoM15 === "🔴"
-){
+if(macd > 0){
 
-aligned = true;
+score += 15;
 
 }
 
-let direction;
-let trend;
+if(adx > 1){
+
+score += 20;
+
+}
+
+if(atr > 0.0004){
+
+score += 15;
+
+}
+
+if(rsi > 50 && rsi < 70){
+
+score += 10;
+
+}
+
+if(bullishSto){
+
+score += 20;
+
+}
+
+if(candleOk){
+
+score += 15;
+
+}
 
 if(
 ema9 > ema21
 &&
 macd > 0
 &&
-rsi < 70
+bullishSto
 &&
-stoM5 === "🟢"
+adx > 1
+&&
+candleOk
 ){
 
 direction = "CALL";
 trend = "ALTA";
 
-}else if(
+}
+
+if(
 ema9 < ema21
 &&
 macd < 0
 &&
-rsi > 30
+bearishSto
 &&
-stoM5 === "🔴"
+adx > 1
+&&
+candleOk
 ){
 
 direction = "PUT";
 trend = "BAIXA";
 
-}else{
-
-return null;
-
 }
 
-let score =
-(force * 10)
-+
-Math.abs(macd * 1000);
+if(!direction){
 
-if(aligned){
-
-score += 25;
+return null;
 
 }
 
@@ -762,14 +803,15 @@ symbol.replace("=X","")
 
 direction,
 trend,
-rsi,
-macd,
-force,
 score,
-aligned,
-stoM1,
-stoM5,
-stoM15
+ema9,
+ema21,
+macd,
+adx,
+atr,
+rsi,
+bullishSto,
+bearishSto
 
 };
 
@@ -798,7 +840,7 @@ function simulateResult(){
 
 const rand = Math.random();
 
-if(rand > 0.35){
+if(rand > 0.38){
 
 wins++;
 streak++;
@@ -920,14 +962,6 @@ results[0];
 
 lockedSignal = true;
 
-const probability =
-Math.min(
-99,
-Math.floor(
-70 + best.score
-)
-);
-
 document.getElementById("pair")
 .innerText =
 best.pair;
@@ -944,7 +978,11 @@ best.direction === "CALL"
 
 document.getElementById("accuracy")
 .innerText =
-probability + "%";
+Math.min(
+99,
+best.score
+)
++ "%";
 
 document.getElementById("trend")
 .innerText =
@@ -958,46 +996,55 @@ best.trend === "ALTA"
 
 document.getElementById("strength")
 .innerText =
-Math.floor(best.score)
-+ "%";
+best.score + "%";
 
 document.getElementById("risk")
 .innerText =
-best.aligned
+best.score >= 85
 ? "BAIXO"
-: "MÉDIO";
-
-document.getElementById("rsiValue")
-.innerText =
-Math.floor(best.rsi);
-
-document.getElementById("macdValue")
-.innerText =
-best.macd.toFixed(4);
-
-document.getElementById("marketFilter")
-.innerText =
-best.force > 1.2
-? "TENDÊNCIA FORTE"
-: "LATERAL";
+: best.score >= 70
+? "MÉDIO"
+: "ALTO";
 
 document.getElementById("alignment")
 .innerText =
-best.aligned
-? "🔥 ALINHADO"
-: "⚠️ CONFLITO";
+best.score >= 85
+? "🔥 FORTE"
+: "⚠️ MÉDIO";
 
-document.getElementById("stoM1")
+document.getElementById("emaStatus")
 .innerText =
-best.stoM1;
+best.ema9 > best.ema21
+? "🟢"
+: "🔴";
 
-document.getElementById("stoM5")
+document.getElementById("macdStatus")
 .innerText =
-best.stoM5;
+best.macd > 0
+? "🟢"
+: "🔴";
 
-document.getElementById("stoM15")
+document.getElementById("adxStatus")
 .innerText =
-best.stoM15;
+best.adx > 1
+? "🔥"
+: "⚠️";
+
+document.getElementById("atrStatus")
+.innerText =
+best.atr > 0.0004
+? "🟢"
+: "🔴";
+
+document.getElementById("rsiStatus")
+.innerText =
+Math.floor(best.rsi);
+
+document.getElementById("stoStatus")
+.innerText =
+best.bullishSto
+? "🟢"
+: "🔴";
 
 let rankingHTML = "";
 
@@ -1020,7 +1067,7 @@ ${item.pair}
 -
 ${item.direction}
 -
-${Math.floor(item.score)}%
+${item.score}%
 </div>
 `;
 
@@ -1049,4 +1096,5 @@ autoAnalyze();
 </script>
 
 </body>
+
 </html>
