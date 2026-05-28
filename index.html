@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Celso Trade AI — PREMIUM ONLY</title>
+<title>Celso Trade AI — PREMIUM PANEL</title>
 
 <style>
 
@@ -185,17 +185,62 @@ margin-top:10px;
 font-size:14px;
 }
 
+.stats{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+margin-top:20px;
+}
+
+.stat{
+background:#0a0a0a;
+padding:14px;
+border-radius:15px;
+text-align:center;
+}
+
+.stat div{
+font-size:10px;
+color:#666;
+font-weight:bold;
+}
+
+.stat h2{
+margin:5px 0 0 0;
+font-size:20px;
+}
+
+.controls{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-top:15px;
+}
+
 button{
 width:100%;
 padding:16px;
 border:none;
 border-radius:15px;
-background:#00ff99;
-color:#050505;
 font-size:18px;
 font-weight:bold;
-margin-top:15px;
 cursor:pointer;
+}
+
+.scan-btn{
+background:#00ff99;
+color:#050505;
+margin-top:15px;
+}
+
+.win-btn{
+background:#003d24;
+color:#00ff99;
+}
+
+.loss-btn{
+background:#3d0000;
+color:#ff4444;
 }
 
 .loading{
@@ -203,6 +248,19 @@ margin-top:15px;
 text-align:center;
 font-size:13px;
 color:#999;
+}
+
+.locked{
+background:#003d24;
+color:#00ff99;
+}
+
+.green{
+color:#00ff99;
+}
+
+.red{
+color:#ff4444;
 }
 
 </style>
@@ -224,7 +282,7 @@ Celso Trade AI
 </div>
 
 <div class="subtitle">
-PREMIUM ONLY — Multi Confluência Inteligente
+PREMIUM PANEL — Confluência Inteligente
 </div>
 
 <div class="center">
@@ -237,12 +295,12 @@ PROBABILIDADE IA
 --%
 </div>
 
-<button onclick="manualScan()">
+<button class="scan-btn" onclick="manualScan()">
 ATUALIZAR
 </button>
 
 <div class="market">
-🟢 Scanner Profissional 40 Pares
+🟢 40 PARES PREMIUM — MODO ELITE
 </div>
 
 </div>
@@ -250,11 +308,11 @@ ATUALIZAR
 <div class="signal">
 
 <div id="pair">
-AGUARDANDO MERCADO
+AGUARDANDO ENTRADA
 </div>
 
 <div id="direction" class="yellow">
-SEM ENTRADA
+SEM SINAL
 </div>
 
 <div class="entry" id="entry">
@@ -268,7 +326,7 @@ Entrada: --
 </div>
 
 <div class="premium" id="premiumStatus" style="background:#222;">
-⚠️ PROCURANDO ENTRADAS PREMIUM
+⚠️ Clique em ATUALIZAR para procurar entrada premium
 </div>
 
 <div class="status">
@@ -324,6 +382,37 @@ Entrada: --
 
 </div>
 
+<div class="stats">
+
+<div class="stat">
+<div>WINS</div>
+<h2 class="green" id="wins">0</h2>
+</div>
+
+<div class="stat">
+<div>LOSSES</div>
+<h2 class="red" id="losses">0</h2>
+</div>
+
+<div class="stat">
+<div>WINRATE</div>
+<h2 id="winrate">0%</h2>
+</div>
+
+</div>
+
+<div class="controls">
+
+<button class="win-btn" onclick="registerWin()">
+🟢 WIN
+</button>
+
+<button class="loss-btn" onclick="registerLoss()">
+🔴 LOSS
+</button>
+
+</div>
+
 <div class="ranking">
 
 <div style="font-size:13px;font-weight:bold;color:#00ff99;">
@@ -341,7 +430,7 @@ Entrada: --
 </div>
 
 <div class="loading" id="loading">
-Scanner pronto.
+Sistema pronto.
 </div>
 
 </div>
@@ -410,7 +499,8 @@ const pairs = [
 
 ];
 
-let lockedSignal = false;
+let wins = 0;
+let losses = 0;
 
 function updateClock(){
 
@@ -421,6 +511,42 @@ new Date().toLocaleTimeString("pt-BR");
 }
 
 setInterval(updateClock,1000);
+
+function updateStats(){
+
+const total = wins + losses;
+
+const rate =
+total === 0
+? 0
+: Math.floor((wins/total)*100);
+
+document.getElementById("wins")
+.innerText = wins;
+
+document.getElementById("losses")
+.innerText = losses;
+
+document.getElementById("winrate")
+.innerText = rate + "%";
+
+}
+
+function registerWin(){
+
+wins++;
+
+updateStats();
+
+}
+
+function registerLoss(){
+
+losses++;
+
+updateStats();
+
+}
 
 function EMA(period,data){
 
@@ -441,7 +567,7 @@ return ema;
 function RSI(data,period=14){
 
 let gains = 0;
-let losses = 0;
+let lossesCalc = 0;
 
 for(let i=1;i<=period;i++){
 
@@ -456,19 +582,19 @@ gains += diff;
 
 }else{
 
-losses += Math.abs(diff);
+lossesCalc += Math.abs(diff);
 
 }
 
 }
 
-if(losses === 0){
+if(lossesCalc === 0){
 
 return 100;
 
 }
 
-return 100 - (100/(1+(gains/losses)));
+return 100 - (100/(1+(gains/lossesCalc)));
 
 }
 
@@ -682,8 +808,7 @@ macd,
 adx,
 atr,
 rsi,
-bullishSto,
-bearishSto
+bullishSto
 
 };
 
@@ -697,15 +822,9 @@ return null;
 
 async function scanMarket(){
 
-if(lockedSignal){
-
-return;
-
-}
-
 document.getElementById("loading")
 .innerText =
-"🔎 Escaneando 40 pares premium...";
+"🔎 Escaneando mercado premium...";
 
 let results = [];
 
@@ -728,7 +847,7 @@ if(results.length === 0){
 
 document.getElementById("premiumStatus")
 .innerHTML =
-"⚠️ MERCADO SEM CONFLUÊNCIA";
+"⚠️ Mercado sem entrada premium";
 
 document.getElementById("loading")
 .innerText =
@@ -746,17 +865,15 @@ if(best.score < 90){
 
 document.getElementById("premiumStatus")
 .innerHTML =
-"⚠️ NENHUMA ENTRADA ELITE";
+"⚠️ Nenhuma entrada elite encontrada";
 
 document.getElementById("loading")
 .innerText =
-"Aguardando entrada premium.";
+"Aguardando entrada forte.";
 
 return;
 
 }
-
-lockedSignal = true;
 
 document.getElementById("pair")
 .innerText =
@@ -816,27 +933,19 @@ document.getElementById("rsi")
 .innerText =
 Math.floor(best.rsi);
 
-if(best.bullishSto){
-
 document.getElementById("sto")
 .innerText =
-"🟢🟢🟢";
-
-}else{
-
-document.getElementById("sto")
-.innerText =
-"🔴🔴🔴";
-
-}
+best.bullishSto
+? "🟢🟢🟢"
+: "🔴🔴🔴";
 
 document.getElementById("premiumStatus")
 .innerHTML =
 "🔥 ENTRADA PREMIUM DETECTADA";
 
 document.getElementById("premiumStatus")
-.style.background =
-"#003d24";
+.className =
+"premium locked";
 
 const next = nextM5();
 
@@ -884,7 +993,7 @@ rankingHTML;
 
 document.getElementById("loading")
 .innerText =
-"Scanner premium ativo.";
+"✅ Entrada travada até novo scan.";
 
 }
 
@@ -905,14 +1014,6 @@ document.getElementById("countdown")
 "🚀 ENTRAR";
 
 clearInterval(timer);
-
-setTimeout(()=>{
-
-lockedSignal = false;
-
-scanMarket();
-
-},20000);
 
 return;
 
@@ -938,15 +1039,11 @@ String(sec).padStart(2,"0");
 
 function manualScan(){
 
-if(!lockedSignal){
-
 scanMarket();
 
 }
 
-}
-
-scanMarket();
+updateStats();
 
 </script>
 
