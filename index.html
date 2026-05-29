@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Celso Ricardi Trade AI — AUTO RESULT</title>
+<title>Celso Ricardi Trader</title>
 
 <style>
 
@@ -31,7 +31,7 @@ box-shadow:0 0 25px rgba(0,255,153,0.08);
 }
 
 .logo{
-font-size:28px;
+font-size:30px;
 font-weight:bold;
 color:#00ff99;
 }
@@ -101,7 +101,7 @@ font-size:14px;
 }
 
 .countdown{
-font-size:34px;
+font-size:36px;
 font-weight:bold;
 margin-top:12px;
 color:#00ff99;
@@ -157,15 +157,6 @@ margin:5px 0 0 0;
 font-size:18px;
 }
 
-.premium{
-margin-top:15px;
-padding:15px;
-border-radius:15px;
-text-align:center;
-font-size:18px;
-font-weight:bold;
-}
-
 .market{
 margin-top:15px;
 text-align:center;
@@ -198,19 +189,6 @@ margin:5px 0 0 0;
 font-size:20px;
 }
 
-button{
-width:100%;
-padding:16px;
-border:none;
-border-radius:15px;
-font-size:18px;
-font-weight:bold;
-cursor:pointer;
-background:#00ff99;
-color:#050505;
-margin-top:15px;
-}
-
 .loading{
 margin-top:15px;
 text-align:center;
@@ -224,6 +202,16 @@ color:#00ff99;
 
 .red{
 color:#ff4444;
+}
+
+.premium{
+margin-top:15px;
+padding:15px;
+border-radius:15px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+background:#222;
 }
 
 </style>
@@ -241,11 +229,11 @@ color:#ff4444;
 <div class="card">
 
 <div class="logo">
-Celso Trade AI
+Celso Ricardi Trader
 </div>
 
 <div class="subtitle">
-AUTO RESULT — Resultado Automático
+STO MTF + ATR + ADX ENGINE
 </div>
 
 <div class="center">
@@ -258,12 +246,8 @@ PROBABILIDADE IA
 --%
 </div>
 
-<button onclick="manualScan()">
-ATUALIZAR
-</button>
-
 <div class="market">
-🟢 40 PARES PREMIUM — AUTO MONITOR
+🟢 AUTO SCANNER — 40 PARES PREMIUM
 </div>
 
 </div>
@@ -283,13 +267,13 @@ Entrada: --
 </div>
 
 <div class="countdown" id="countdown">
-⏳ AGUARDANDO
+⏳ ANALISANDO MERCADO
 </div>
 
 </div>
 
-<div class="premium" id="premiumStatus" style="background:#222;">
-⚠️ Clique em ATUALIZAR
+<div class="premium" id="premiumStatus">
+⚠️ AGUARDANDO CONFLUÊNCIA
 </div>
 
 <div class="status">
@@ -314,33 +298,33 @@ Entrada: --
 <div class="indicators">
 
 <div class="indicator">
-<div>EMA</div>
-<h2 id="ema">--</h2>
+<div>STO M1</div>
+<h2 id="sto1">🟡</h2>
 </div>
 
 <div class="indicator">
-<div>MACD</div>
-<h2 id="macd">--</h2>
+<div>STO M5</div>
+<h2 id="sto5">🟡</h2>
 </div>
 
 <div class="indicator">
-<div>ADX</div>
-<h2 id="adx">--</h2>
+<div>STO M15</div>
+<h2 id="sto15">🟡</h2>
 </div>
 
 <div class="indicator">
 <div>ATR</div>
-<h2 id="atr">--</h2>
+<h2 id="atr">🟡</h2>
 </div>
 
 <div class="indicator">
-<div>RSI</div>
-<h2 id="rsi">--</h2>
+<div>ADX</div>
+<h2 id="adx">🟡</h2>
 </div>
 
 <div class="indicator">
-<div>STO</div>
-<h2 id="sto">🟡🟡🟡</h2>
+<div>STATUS</div>
+<h2 id="statusSignal">⌛</h2>
 </div>
 
 </div>
@@ -365,7 +349,7 @@ Entrada: --
 </div>
 
 <div class="loading" id="loading">
-Sistema pronto.
+Sistema iniciado.
 </div>
 
 </div>
@@ -471,56 +455,6 @@ document.getElementById("winrate")
 
 }
 
-function EMA(period,data){
-
-const k = 2/(period+1);
-
-let ema = data[0];
-
-for(let i=1;i<data.length;i++){
-
-ema = data[i]*k + ema*(1-k);
-
-}
-
-return ema;
-
-}
-
-function RSI(data,period=14){
-
-let gains = 0;
-let lossesCalc = 0;
-
-for(let i=1;i<=period;i++){
-
-const diff =
-data[data.length-i]
--
-data[data.length-i-1];
-
-if(diff >= 0){
-
-gains += diff;
-
-}else{
-
-lossesCalc += Math.abs(diff);
-
-}
-
-}
-
-if(lossesCalc === 0){
-
-return 100;
-
-}
-
-return 100 - (100/(1+(gains/lossesCalc)));
-
-}
-
 function ATR(data){
 
 let total = 0;
@@ -554,14 +488,28 @@ return ((last-low)/(high-low))*100;
 
 }
 
+function EMA(period,data){
+
+const k = 2/(period+1);
+
+let ema = data[0];
+
+for(let i=1;i<data.length;i++){
+
+ema = data[i]*k + ema*(1-k);
+
+}
+
+return ema;
+
+}
+
 function nextM5(){
 
 const now = new Date();
 
 let next =
-Math.ceil(
-(now.getMinutes()+1)/5
-)*5;
+Math.ceil((now.getMinutes()+1)/5)*5;
 
 if(next >= 60){
 
@@ -640,77 +588,83 @@ data.chart.result[0]
 .indicators.quote[0].close
 .filter(v => v !== null);
 
+if(closes.length < 40){
+
+return null;
+
+}
+
+const stoM1 =
+stochastic(closes.slice(-15));
+
+const stoM5 =
+stochastic(closes.slice(-25));
+
+const stoM15 =
+stochastic(closes.slice(-35));
+
+const bullish =
+stoM1 > 60 &&
+stoM5 > 60 &&
+stoM15 > 60;
+
+const bearish =
+stoM1 < 40 &&
+stoM5 < 40 &&
+stoM15 < 40;
+
+const atr =
+ATR(closes);
+
 const ema9 = EMA(9,closes);
 const ema21 = EMA(21,closes);
-
-const macd =
-EMA(12,closes)
--
-EMA(26,closes);
-
-const rsi = RSI(closes);
-
-const atr = ATR(closes);
 
 const adx =
 Math.abs(ema9-ema21)*10000;
 
-const sto1 =
-stochastic(closes.slice(-15));
-
-const sto5 =
-stochastic(closes.slice(-25));
-
-const sto15 =
-stochastic(closes.slice(-35));
-
-const bullishSto =
-sto1 > 55 &&
-sto5 > 55 &&
-sto15 > 55;
-
-const bearishSto =
-sto1 < 45 &&
-sto5 < 45 &&
-sto15 < 45;
-
-let score = 0;
-
-if(ema9 > ema21) score += 15;
-if(macd > 0) score += 15;
-if(adx > 2) score += 20;
-if(atr > 0.0005) score += 15;
-if(rsi > 52 && rsi < 68) score += 10;
-if(bullishSto || bearishSto) score += 20;
-
-let direction = null;
-let trend = null;
-
 if(
-ema9 > ema21 &&
-macd > 0 &&
-bullishSto
+!(bullish || bearish)
 ){
-
-direction = "CALL";
-trend = "ALTA";
-
-}
-
-if(
-ema9 < ema21 &&
-macd < 0 &&
-bearishSto
-){
-
-direction = "PUT";
-trend = "BAIXA";
-
-}
-
-if(!direction){
 
 return null;
+
+}
+
+if(
+atr < 0.0005
+){
+
+return null;
+
+}
+
+if(
+adx < 2
+){
+
+return null;
+
+}
+
+let direction =
+bullish
+? "CALL"
+: "PUT";
+
+let trend =
+bullish
+? "ALTA"
+: "BAIXA";
+
+let score =
+Math.floor(
+85 +
+(adx*2)
+);
+
+if(score > 99){
+
+score = 99;
 
 }
 
@@ -726,13 +680,9 @@ symbol.replace("=X","")
 direction,
 trend,
 score,
-ema9,
-ema21,
-macd,
-adx,
 atr,
-rsi,
-bullishSto
+adx,
+bullish
 
 };
 
@@ -744,11 +694,11 @@ return null;
 
 }
 
-async function scanMarket(){
+async function autoScan(){
 
 document.getElementById("loading")
 .innerText =
-"🔎 Escaneando mercado premium...";
+"🔎 Escaneando oportunidades...";
 
 let results = [];
 
@@ -769,9 +719,17 @@ await new Promise(r=>setTimeout(r,120));
 
 if(results.length === 0){
 
-document.getElementById("loading")
+document.getElementById("premiumStatus")
+.innerHTML =
+"⚠️ SEM CONFLUÊNCIA";
+
+document.getElementById("countdown")
 .innerText =
-"Mercado fraco.";
+"⌛ AGUARDANDO";
+
+document.getElementById("statusSignal")
+.innerText =
+"❌";
 
 return;
 
@@ -814,23 +772,23 @@ document.getElementById("risk")
 .innerText =
 "BAIXO";
 
-document.getElementById("ema")
+document.getElementById("sto1")
 .innerText =
-best.ema9 > best.ema21
+best.bullish
 ? "🟢"
 : "🔴";
 
-document.getElementById("macd")
+document.getElementById("sto5")
 .innerText =
-best.macd > 0
+best.bullish
 ? "🟢"
 : "🔴";
 
-document.getElementById("adx")
+document.getElementById("sto15")
 .innerText =
-best.adx > 2
-? "🔥"
-: "⚠️";
+best.bullish
+? "🟢"
+: "🔴";
 
 document.getElementById("atr")
 .innerText =
@@ -838,19 +796,19 @@ best.atr > 0.0005
 ? "🟢"
 : "🔴";
 
-document.getElementById("rsi")
+document.getElementById("adx")
 .innerText =
-Math.floor(best.rsi);
+best.adx > 2
+? "🟢"
+: "🔴";
 
-document.getElementById("sto")
+document.getElementById("statusSignal")
 .innerText =
-best.bullishSto
-? "🟢🟢🟢"
-: "🔴🔴🔴";
+"🔥";
 
 document.getElementById("premiumStatus")
 .innerHTML =
-"🔥 ENTRADA PREMIUM";
+"🔥 CONFLUÊNCIA DETECTADA";
 
 const next = nextM5();
 
@@ -932,7 +890,8 @@ await getCurrentPrice(symbol);
 let win = false;
 
 if(
-currentDirection === "CALL" &&
+currentDirection === "CALL"
+&&
 finalPrice > entryPrice
 ){
 
@@ -941,7 +900,8 @@ win = true;
 }
 
 if(
-currentDirection === "PUT" &&
+currentDirection === "PUT"
+&&
 finalPrice < entryPrice
 ){
 
@@ -955,7 +915,7 @@ wins++;
 
 document.getElementById("premiumStatus")
 .innerHTML =
-"🟢 WIN AUTOMÁTICO";
+"🟢 WIN";
 
 }else{
 
@@ -963,7 +923,7 @@ losses++;
 
 document.getElementById("premiumStatus")
 .innerHTML =
-"🔴 LOSS AUTOMÁTICO";
+"🔴 LOSS";
 
 }
 
@@ -971,23 +931,38 @@ updateStats();
 
 document.getElementById("countdown")
 .innerText =
-"✔️ FINALIZADA";
+"⌛ NOVA BUSCA";
 
 document.getElementById("loading")
 .innerText =
-"✅ Clique em ATUALIZAR para nova oportunidade.";
+"🔄 Reiniciando scanner...";
+
+setTimeout(()=>{
+
+autoScan();
+
+},3000);
 
 },300000);
 
 }
 
-function manualScan(){
+updateStats();
 
-scanMarket();
+autoScan();
+
+setInterval(()=>{
+
+if(
+document.getElementById("countdown")
+.innerText === "⌛ AGUARDANDO"
+){
+
+autoScan();
 
 }
 
-updateStats();
+},20000);
 
 </script>
 
