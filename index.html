@@ -180,9 +180,10 @@ color:#050505;
 }
 
 .btn-enter{
-background:#222;
-color:white;
+background:#1e1e1e;
+color:#00ff99;
 display:none;
+border:1px solid #00ff99;
 }
 
 .market{
@@ -236,7 +237,7 @@ Celso Ricardi Trader
 </div>
 
 <div class="subtitle">
-STO MTF + ATR + ADX
+STO MTF + ATR + ADX ENGINE
 </div>
 
 <div class="center">
@@ -250,7 +251,7 @@ PROBABILIDADE IA
 </div>
 
 <div class="market">
-🟢 AUTO SCANNER PREMIUM
+🟢 IQ OPTION QUICK ENTRY
 </div>
 
 </div>
@@ -338,7 +339,7 @@ Entrada: --
 ATUALIZAR
 </button>
 
-<button class="btn-enter" id="enterBtn">
+<button class="btn-enter" id="enterBtn" onclick="openIQOption()">
 ENTRAR
 </button>
 
@@ -353,6 +354,9 @@ Sistema iniciado.
 </div>
 
 <script>
+
+let currentPair = "";
+let currentDirection = "";
 
 const pairs = [
 
@@ -666,6 +670,9 @@ results.sort((a,b)=>b.score-a.score);
 
 const best = results[0];
 
+currentPair = best.pair;
+currentDirection = best.direction;
+
 document.getElementById("pair")
 .innerText =
 best.pair;
@@ -802,6 +809,26 @@ String(min).padStart(2,"0")
 String(sec).padStart(2,"0");
 
 },1000);
+
+}
+
+function openIQOption(){
+
+const cleanPair =
+currentPair.replace("/","");
+
+navigator.clipboard.writeText(
+`${cleanPair} ${currentDirection}`
+);
+
+window.open(
+"https://iqoption.com/traderoom",
+"_blank"
+);
+
+alert(
+`ATIVO COPIADO:\n\n${cleanPair}\n${currentDirection}\n\nCole na busca da IQ Option.`
+);
 
 }
 
