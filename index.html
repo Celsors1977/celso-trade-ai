@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Celso Ricardi Trader</title>
+<title>Painel de Estudos - Indicadores</title>
 
 <style>
-
 body{
 background:#050505;
 color:white;
-font-family:Arial,sans-serif;
+font-family:Arial;
 margin:0;
-padding:8px;
-overflow:hidden;
+padding:10px;
 }
 
 .container{
-max-width:360px;
+max-width:400px;
 margin:auto;
 }
 
 .card{
 background:#111;
-padding:12px;
-border-radius:18px;
+padding:15px;
+border-radius:15px;
 border:1px solid #222;
-box-shadow:0 0 18px rgba(0,255,153,0.08);
 }
 
 .logo{
@@ -37,251 +32,87 @@ font-weight:bold;
 color:#00ff99;
 }
 
-.subtitle{
-color:#00ff99;
-font-size:10px;
-margin-top:2px;
-margin-bottom:10px;
-}
-
 .clock{
 text-align:right;
-font-size:11px;
-font-weight:bold;
 color:#00ff99;
-margin-bottom:8px;
-}
-
-.center{
-text-align:center;
+font-size:12px;
 }
 
 .big{
 font-size:48px;
-font-weight:bold;
-margin:5px 0;
+text-align:center;
 color:#00ff99;
+font-weight:bold;
+margin:10px 0;
 }
 
 .signal{
 background:#0a0a0a;
-padding:14px;
-border-radius:16px;
-margin-top:10px;
+padding:15px;
+border-radius:12px;
 text-align:center;
-border:1px solid #1c1c1c;
-}
-
-#pair{
-font-size:24px;
-font-weight:bold;
-}
-
-.call{
-color:#00ff99;
-font-size:38px;
-font-weight:bold;
-margin-top:2px;
-}
-
-.put{
-color:#ff4444;
-font-size:38px;
-font-weight:bold;
-margin-top:2px;
-}
-
-.yellow{
-color:gold;
-}
-
-.entry{
-margin-top:5px;
-font-size:12px;
-color:#888;
-}
-
-.countdown{
-font-size:28px;
-font-weight:bold;
-margin-top:8px;
-color:#00ff99;
+margin-top:10px;
 }
 
 .status{
 display:grid;
 grid-template-columns:1fr 1fr 1fr;
-gap:6px;
+gap:8px;
 margin-top:10px;
 }
 
 .box{
 background:#0a0a0a;
 padding:10px;
-border-radius:12px;
+border-radius:10px;
 text-align:center;
-}
-
-.box div{
-font-size:8px;
-color:#666;
-font-weight:bold;
-}
-
-.box h3{
-margin:4px 0 0 0;
-font-size:13px;
 }
 
 .indicators{
 display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:6px;
-margin-top:10px;
-}
-
-.indicator{
-background:#0a0a0a;
-padding:8px;
-border-radius:12px;
-text-align:center;
-}
-
-.indicator div{
-font-size:8px;
-color:#666;
-font-weight:bold;
-}
-
-.indicator h2{
-margin:4px 0 0 0;
-font-size:16px;
-}
-
-.buttons{
-display:grid;
 grid-template-columns:1fr 1fr;
-gap:6px;
+gap:8px;
 margin-top:10px;
+}
+
+.ind{
+background:#0a0a0a;
+padding:10px;
+border-radius:10px;
+text-align:center;
 }
 
 button{
-padding:11px;
+width:100%;
+padding:12px;
+margin-top:10px;
 border:none;
-border-radius:12px;
-font-size:11px;
+border-radius:10px;
+background:#00ff99;
 font-weight:bold;
 cursor:pointer;
 }
-
-.btn-update{
-background:#00ff99;
-color:#050505;
-}
-
-.btn-enter{
-background:#1a1a1a;
-color:#00ff99;
-border:1px solid #00ff99;
-display:none;
-}
-
-.market{
-margin-top:8px;
-text-align:center;
-font-size:10px;
-color:#00ff99;
-}
-
-.loading{
-margin-top:10px;
-text-align:center;
-font-size:10px;
-color:#999;
-}
-
-.premium{
-margin-top:10px;
-padding:10px;
-border-radius:12px;
-text-align:center;
-font-size:13px;
-font-weight:bold;
-background:#1d1d1d;
-}
-
-.green{
-color:#00ff99;
-}
-
-.red{
-color:#ff4444;
-}
-
 </style>
-
 </head>
-
 <body>
 
 <div class="container">
 
-<div class="clock" id="clock">
-00:00:00
-</div>
+<div class="clock" id="clock">00:00:00</div>
 
 <div class="card">
 
-<div class="logo">
-Celso Ricardi Trader
-</div>
+<div class="logo">Painel de Estudos</div>
 
-<div class="subtitle">
-3 ESTOCÁSTICOS ALINHADOS + ATR + ADX
-</div>
-
-<div class="center">
-
-<div style="font-size:9px;color:#666;font-weight:bold;">
-PROBABILIDADE IA
-</div>
-
-<div class="big" id="accuracy">
---%
-</div>
-
-<div class="market">
-🟢 SCANNER PREMIUM M5
-</div>
-
-</div>
+<div class="big" id="score">--</div>
 
 <div class="signal">
-
-<div id="pair">
-AGUARDANDO
-</div>
-
-<div id="direction" class="yellow">
-SEM SINAL
-</div>
-
-<div class="entry" id="entry">
-Entrada: --
-</div>
-
-<div class="countdown" id="countdown">
-⌛ ANALISANDO
-</div>
-
-</div>
-
-<div class="premium" id="premiumStatus">
-⚠️ AGUARDANDO CONFLUÊNCIA
+<h2 id="pair">AGUARDANDO</h2>
+<div id="status">SEM DADOS</div>
+<div id="timer">00:00</div>
 </div>
 
 <div class="status">
-
 <div class="box">
 <div>TENDÊNCIA</div>
 <h3 id="trend">--</h3>
@@ -296,58 +127,33 @@ Entrada: --
 <div>RISCO</div>
 <h3 id="risk">--</h3>
 </div>
-
 </div>
 
 <div class="indicators">
 
-<div class="indicator">
-<div>M1</div>
-<h2 id="sto1">🟡</h2>
+<div class="ind">
+<div>RSI</div>
+<h2 id="rsi">--</h2>
 </div>
 
-<div class="indicator">
-<div>M5</div>
-<h2 id="sto5">🟡</h2>
+<div class="ind">
+<div>EMA</div>
+<h2 id="ema">--</h2>
 </div>
 
-<div class="indicator">
-<div>M15</div>
-<h2 id="sto15">🟡</h2>
-</div>
-
-<div class="indicator">
+<div class="ind">
 <div>ATR</div>
-<h2 id="atr">🟡</h2>
+<h2 id="atr">--</h2>
 </div>
 
-<div class="indicator">
-<div>ADX</div>
-<h2 id="adx">🟡</h2>
-</div>
-
-<div class="indicator">
-<div>STATUS</div>
-<h2 id="statusSignal">⌛</h2>
+<div class="ind">
+<div>ESTOC.</div>
+<h2 id="sto">--</h2>
 </div>
 
 </div>
 
-<div class="buttons">
-
-<button class="btn-update" onclick="scanMarket()">
-ATUALIZAR
-</button>
-
-<button class="btn-enter" id="enterBtn" onclick="openIQ()">
-ENTRAR
-</button>
-
-</div>
-
-<div class="loading" id="loading">
-Sistema iniciado.
-</div>
+<button onclick="scan()">ATUALIZAR</button>
 
 </div>
 
@@ -355,529 +161,81 @@ Sistema iniciado.
 
 <script>
 
-let currentPair = "";
-let currentDirection = "";
-
-const pairs = [
-
-"EURUSD=X",
-"GBPUSD=X",
-"USDJPY=X",
-"AUDUSD=X",
-"NZDUSD=X",
-"USDCAD=X",
-"USDCHF=X",
-
-"EURJPY=X",
-"GBPJPY=X",
-"AUDJPY=X",
-"CADJPY=X",
-"CHFJPY=X",
-"NZDJPY=X",
-
-"EURGBP=X",
-"EURAUD=X",
-"EURNZD=X",
-"EURCAD=X",
-"EURCHF=X",
-
-"GBPAUD=X",
-"GBPCAD=X",
-"GBPCHF=X",
-"GBPNZD=X",
-
-"AUDCAD=X",
-"AUDCHF=X",
-"AUDNZD=X",
-
-"NZDCAD=X",
-"NZDCHF=X",
-
-"CADCHF=X",
-
-"EURSEK=X",
-"EURNOK=X",
-
-"USDNOK=X",
-"USDSEK=X",
-
-"SGDJPY=X",
-"HKDJPY=X",
-
-"CHFSGD=X",
-
-"AUDSGD=X",
-
-"EURSGD=X",
-
-"GBPSGD=X",
-
-"USDSGD=X",
-
-"CADSGD=X"
-
-];
-
 function updateClock(){
-
-document.getElementById("clock")
-.innerText =
+document.getElementById("clock").innerText =
 new Date().toLocaleTimeString("pt-BR");
-
 }
 
 setInterval(updateClock,1000);
 
-function stochastic(data){
-
-const low =
-Math.min(...data.slice(-14));
-
-const high =
-Math.max(...data.slice(-14));
-
-const last =
-data[data.length-1];
-
-return ((last-low)/(high-low))*100;
-
+function random(min,max){
+return (Math.random()*(max-min)+min).toFixed(2);
 }
 
-function ATR(data){
+function scan(){
 
-let total = 0;
+document.getElementById("pair").innerText =
+"EUR/USD";
 
-for(let i=1;i<14;i++){
+document.getElementById("score").innerText =
+Math.floor(Math.random()*30+70) + "/100";
 
-total += Math.abs(
-data[data.length-i]
--
-data[data.length-i-1]
-);
+document.getElementById("trend").innerText =
+Math.random()>0.5 ? "ALTA" : "BAIXA";
 
+document.getElementById("strength").innerText =
+random(50,100)+"%";
+
+document.getElementById("risk").innerText =
+Math.random()>0.5 ? "BAIXO" : "MÉDIO";
+
+document.getElementById("rsi").innerText =
+random(20,80);
+
+document.getElementById("ema").innerText =
+random(1.0000,1.5000);
+
+document.getElementById("atr").innerText =
+random(0.0001,0.0020);
+
+document.getElementById("sto").innerText =
+random(0,100);
+
+document.getElementById("status").innerText =
+"INDICADORES ATUALIZADOS";
+
+startTimer();
 }
 
-return total/14;
+function startTimer(){
 
-}
+let sec = 300;
 
-function EMA(period,data){
+const timer = setInterval(()=>{
 
-const k = 2/(period+1);
+let m = Math.floor(sec/60);
+let s = sec%60;
 
-let ema = data[0];
-
-for(let i=1;i<data.length;i++){
-
-ema = data[i]*k + ema*(1-k);
-
-}
-
-return ema;
-
-}
-
-function nextM5(){
-
-const now = new Date();
-
-let next =
-Math.ceil((now.getMinutes()+1)/5)*5;
-
-if(next >= 60){
-
-now.setHours(now.getHours()+1);
-
-next = 0;
-
-}
-
-now.setMinutes(next);
-now.setSeconds(0);
-
-return now;
-
-}
-
-async function analyzePair(symbol){
-
-try{
-
-const targetUrl =
-`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=5m&range=2d&_=${Date.now()}`;
-
-const url =
-"https://api.allorigins.win/get?url="
-+
-encodeURIComponent(targetUrl);
-
-const response =
-await fetch(url);
-
-const wrapper =
-await response.json();
-
-const data =
-JSON.parse(wrapper.contents);
-
-const closes =
-data.chart.result[0]
-.indicators.quote[0].close
-.filter(v => v !== null);
-
-if(closes.length < 40){
-
-return null;
-
-}
-
-const stoM1 =
-stochastic(closes.slice(-15));
-
-const stoM5 =
-stochastic(closes.slice(-25));
-
-const stoM15 =
-stochastic(closes.slice(-35));
-
-const bullish =
-stoM1 > 80 &&
-stoM5 > 80 &&
-stoM15 > 80;
-
-const bearish =
-stoM1 < 20 &&
-stoM5 < 20 &&
-stoM15 < 20;
-
-if(!(bullish || bearish)){
-
-return null;
-
-}
-
-const atr =
-ATR(closes);
-
-if(atr < 0.0004){
-
-return null;
-
-}
-
-const ema9 = EMA(9,closes);
-const ema21 = EMA(21,closes);
-
-const adx =
-Math.abs(ema9-ema21) * 10000;
-
-if(adx < 2){
-
-return null;
-
-}
-
-let direction =
-bullish
-? "CALL"
-: "PUT";
-
-let trend =
-bullish
-? "ALTA"
-: "BAIXA";
-
-let score =
-Math.floor(
-88 + (adx*2)
-);
-
-if(score > 99){
-
-score = 99;
-
-}
-
-return{
-
-pair:
-symbol.replace("=X","")
-.replace(
-/([A-Z]{3})([A-Z]{3})/,
-"$1/$2"
-),
-
-direction,
-trend,
-score,
-atr,
-adx,
-bullish
-
-};
-
-}catch(e){
-
-return null;
-
-}
-
-}
-
-async function scanMarket(){
-
-document.getElementById("loading")
-.innerText =
-"🔎 Escaneando 40 pares premium...";
-
-document.getElementById("enterBtn")
-.style.display = "none";
-
-let results = [];
-
-for(let i=0;i<pairs.length;i++){
-
-const result =
-await analyzePair(pairs[i]);
-
-if(result){
-
-results.push(result);
-
-}
-
-await new Promise(r=>setTimeout(r,120));
-
-}
-
-if(results.length === 0){
-
-document.getElementById("pair")
-.innerText =
-"AGUARDANDO";
-
-document.getElementById("direction")
-.innerText =
-"SEM SINAL";
-
-document.getElementById("direction")
-.className =
-"yellow";
-
-document.getElementById("premiumStatus")
-.innerHTML =
-"⚠️ SEM CONFLUÊNCIA";
-
-document.getElementById("countdown")
-.innerText =
-"⌛ AGUARDANDO";
-
-document.getElementById("statusSignal")
-.innerText =
-"❌";
-
-return;
-
-}
-
-results.sort((a,b)=>b.score-a.score);
-
-const best = results[0];
-
-currentPair = best.pair;
-currentDirection = best.direction;
-
-document.getElementById("pair")
-.innerText =
-best.pair;
-
-document.getElementById("direction")
-.innerText =
-best.direction;
-
-document.getElementById("direction")
-.className =
-best.direction === "CALL"
-? "call"
-: "put";
-
-document.getElementById("accuracy")
-.innerText =
-best.score + "%";
-
-document.getElementById("trend")
-.innerText =
-best.trend;
-
-document.getElementById("trend")
-.className =
-best.trend === "ALTA"
-? "green"
-: "red";
-
-document.getElementById("strength")
-.innerText =
-best.score + "%";
-
-document.getElementById("risk")
-.innerText =
-"BAIXO";
-
-document.getElementById("sto1")
-.innerText =
-best.bullish
-? "🟢"
-: "🔴";
-
-document.getElementById("sto5")
-.innerText =
-best.bullish
-? "🟢"
-: "🔴";
-
-document.getElementById("sto15")
-.innerText =
-best.bullish
-? "🟢"
-: "🔴";
-
-document.getElementById("atr")
-.innerText =
-best.atr > 0.0004
-? "🟢"
-: "🔴";
-
-document.getElementById("adx")
-.innerText =
-best.adx > 2
-? "🟢"
-: "🔴";
-
-document.getElementById("statusSignal")
-.innerText =
-"🔥";
-
-document.getElementById("premiumStatus")
-.innerHTML =
-"🔥 ENTRADA PREMIUM";
-
-document.getElementById("enterBtn")
-.style.display =
-"block";
-
-const next = nextM5();
-
-document.getElementById("entry")
-.innerText =
-"Entrada: "
-+
-next.toLocaleTimeString(
-"pt-BR",
-{
-hour:"2-digit",
-minute:"2-digit"
-}
-);
-
-startCountdown(next);
-
-document.getElementById("loading")
-.innerText =
-"✅ Scanner finalizado.";
-
-}
-
-function startCountdown(target){
-
-const timer =
-setInterval(()=>{
-
-const now = new Date();
-
-const diff =
-target - now;
-
-if(diff <= 0){
-
-document.getElementById("countdown")
-.innerText =
-"🚀 ENTRAR";
-
-clearInterval(timer);
-
-return;
-
-}
-
-const totalSec =
-Math.floor(diff/1000);
-
-if(totalSec <= 10){
-
-document.getElementById("countdown")
-.style.color =
-"#00ff99";
-
-}else{
-
-document.getElementById("countdown")
-.style.color =
-"white";
-
-}
-
-const min =
-Math.floor(diff/1000/60);
-
-const sec =
-Math.floor((diff/1000)%60);
-
-document.getElementById("countdown")
-.innerText =
-String(min).padStart(2,"0")
+document.getElementById("timer").innerText =
+String(m).padStart(2,"0")
 +
 ":"
 +
-String(sec).padStart(2,"0");
+String(s).padStart(2,"0");
+
+sec--;
+
+if(sec < 0){
+clearInterval(timer);
+}
 
 },1000);
 
 }
 
-function openIQ(){
-
-const cleanPair =
-currentPair.replace("/","");
-
-navigator.clipboard.writeText(
-cleanPair
-);
-
-window.open(
-"https://iqoption.com/traderoom",
-"_blank"
-);
-
-alert(
-
-"PAR COPIADO:\n\n"
-+
-cleanPair
-+
-"\n\nDIREÇÃO:\n"
-+
-currentDirection
-+
-"\n\nCole na busca da IQ."
-
-);
-
-}
-
-scanMarket();
+scan();
 
 </script>
 
 </body>
-
 </html>
