@@ -1,159 +1,201 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel de Estudos - Indicadores</title>
+
+<title>Celso Trade AI</title>
 
 <style>
+
 body{
-background:#050505;
-color:white;
-font-family:Arial;
 margin:0;
-padding:10px;
+background:#050505;
+font-family:Arial;
+color:white;
 }
 
 .container{
-max-width:400px;
+max-width:420px;
 margin:auto;
+padding:20px;
+}
+
+.logo{
+font-size:32px;
+font-weight:bold;
+color:#00ff99;
+margin-top:20px;
+}
+
+.subtitle{
+color:#888;
+margin-bottom:30px;
 }
 
 .card{
 background:#111;
-padding:15px;
-border-radius:15px;
+border-radius:25px;
+padding:20px;
+margin-bottom:20px;
 border:1px solid #222;
 }
 
-.logo{
-font-size:22px;
+.accuracy{
+font-size:55px;
 font-weight:bold;
-color:#00ff99;
-}
-
-.clock{
-text-align:right;
-color:#00ff99;
-font-size:12px;
-}
-
-.big{
-font-size:48px;
-text-align:center;
-color:#00ff99;
-font-weight:bold;
-margin:10px 0;
+margin:15px 0;
 }
 
 .signal{
-background:#0a0a0a;
-padding:15px;
-border-radius:12px;
-text-align:center;
-margin-top:10px;
+background:#0b0b0b;
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+}
+
+.call{
+font-size:30px;
+font-weight:bold;
+color:#00ff99;
 }
 
 .status{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:8px;
-margin-top:10px;
+display:flex;
+justify-content:space-between;
+margin-top:20px;
+gap:10px;
 }
 
-.box{
+.mini{
 background:#0a0a0a;
-padding:10px;
-border-radius:10px;
+padding:15px;
+border-radius:15px;
+width:100%;
 text-align:center;
 }
 
-.indicators{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
+.green{
+color:#00ff99;
+}
+
+.yellow{
+color:gold;
+}
+
+.history{
+display:flex;
+justify-content:space-between;
+background:#0b0b0b;
+padding:15px;
+border-radius:15px;
 margin-top:10px;
 }
 
-.ind{
-background:#0a0a0a;
-padding:10px;
-border-radius:10px;
-text-align:center;
+.win{
+color:#00ff99;
+font-weight:bold;
 }
 
 button{
 width:100%;
-padding:12px;
-margin-top:10px;
+padding:18px;
 border:none;
-border-radius:10px;
+border-radius:18px;
 background:#00ff99;
+font-size:18px;
 font-weight:bold;
+margin-top:20px;
 cursor:pointer;
 }
+
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-<div class="clock" id="clock">00:00:00</div>
+<div class="logo">
+Celso Trade AI
+</div>
+
+<div class="subtitle">
+Assistente pessoal de sinais com IA
+</div>
 
 <div class="card">
 
-<div class="logo">Painel de Estudos</div>
+<div>Probabilidade da IA</div>
 
-<div class="big" id="score">--</div>
+<div class="accuracy" id="accuracy">
+84%
+</div>
 
 <div class="signal">
-<h2 id="pair">AGUARDANDO</h2>
-<div id="status">SEM DADOS</div>
-<div id="timer">00:00</div>
+
+<div>Sinal sugerido</div>
+
+<h1 id="pair">
+EUR/USD
+</h1>
+
+<div class="call" id="direction">
+CALL
+</div>
+
 </div>
 
 <div class="status">
-<div class="box">
-<div>TENDÊNCIA</div>
-<h3 id="trend">--</h3>
+
+<div class="mini">
+<div>Tendência</div>
+<h3 class="green" id="trend">
+ALTA
+</h3>
 </div>
 
-<div class="box">
-<div>FORÇA</div>
-<h3 id="strength">--</h3>
+<div class="mini">
+<div>Força</div>
+<h3 id="strength">
+92%
+</h3>
 </div>
 
-<div class="box">
-<div>RISCO</div>
-<h3 id="risk">--</h3>
-</div>
-</div>
-
-<div class="indicators">
-
-<div class="ind">
-<div>RSI</div>
-<h2 id="rsi">--</h2>
-</div>
-
-<div class="ind">
-<div>EMA</div>
-<h2 id="ema">--</h2>
-</div>
-
-<div class="ind">
-<div>ATR</div>
-<h2 id="atr">--</h2>
-</div>
-
-<div class="ind">
-<div>ESTOC.</div>
-<h2 id="sto">--</h2>
+<div class="mini">
+<div>Risco</div>
+<h3 class="yellow">
+BAIXO
+</h3>
 </div>
 
 </div>
 
-<button onclick="scan()">ATUALIZAR</button>
+</div>
+
+<div class="card">
+
+<h2>Histórico</h2>
+
+<div class="history">
+<div>GBP/USD</div>
+<div class="win">WIN</div>
+</div>
+
+<div class="history">
+<div>EUR/JPY</div>
+<div class="win">WIN</div>
+</div>
+
+<div class="history">
+<div>AUD/USD</div>
+<div class="win">WIN</div>
+</div>
+
+<button onclick="startAI()">
+Iniciar análise IA
+</button>
 
 </div>
 
@@ -161,79 +203,63 @@ cursor:pointer;
 
 <script>
 
-function updateClock(){
-document.getElementById("clock").innerText =
-new Date().toLocaleTimeString("pt-BR");
+function startAI(){
+
+const pairs = [
+'EUR/USD',
+'GBP/USD',
+'USD/JPY',
+'AUD/USD',
+'EUR/JPY'
+];
+
+const actions = [
+'CALL',
+'PUT'
+];
+
+const trends = [
+'ALTA',
+'BAIXA'
+];
+
+const pair =
+pairs[Math.floor(Math.random()*pairs.length)];
+
+const action =
+actions[Math.floor(Math.random()*actions.length)];
+
+const trend =
+trends[Math.floor(Math.random()*trends.length)];
+
+const probability =
+Math.floor(Math.random()*15)+80;
+
+const strength =
+Math.floor(Math.random()*10)+90;
+
+document.getElementById('pair').innerText = pair;
+
+document.getElementById('direction').innerText = action;
+
+document.getElementById('accuracy').innerText =
+probability + '%';
+
+document.getElementById('trend').innerText = trend;
+
+document.getElementById('strength').innerText =
+strength + '%';
+
+if(action === 'CALL'){
+document.getElementById('direction').style.color =
+'#00ff99';
+}
+else{
+document.getElementById('direction').style.color =
+'#ff4444';
 }
 
-setInterval(updateClock,1000);
-
-function random(min,max){
-return (Math.random()*(max-min)+min).toFixed(2);
 }
-
-function scan(){
-
-document.getElementById("pair").innerText =
-"EUR/USD";
-
-document.getElementById("score").innerText =
-Math.floor(Math.random()*30+70) + "/100";
-
-document.getElementById("trend").innerText =
-Math.random()>0.5 ? "ALTA" : "BAIXA";
-
-document.getElementById("strength").innerText =
-random(50,100)+"%";
-
-document.getElementById("risk").innerText =
-Math.random()>0.5 ? "BAIXO" : "MÉDIO";
-
-document.getElementById("rsi").innerText =
-random(20,80);
-
-document.getElementById("ema").innerText =
-random(1.0000,1.5000);
-
-document.getElementById("atr").innerText =
-random(0.0001,0.0020);
-
-document.getElementById("sto").innerText =
-random(0,100);
-
-document.getElementById("status").innerText =
-"INDICADORES ATUALIZADOS";
-
-startTimer();
-}
-
-function startTimer(){
-
-let sec = 300;
-
-const timer = setInterval(()=>{
-
-let m = Math.floor(sec/60);
-let s = sec%60;
-
-document.getElementById("timer").innerText =
-String(m).padStart(2,"0")
-+
-":"
-+
-String(s).padStart(2,"0");
-
-sec--;
-
-if(sec < 0){
-clearInterval(timer);
-}
-
-},1000);
-
-}
-
-scan();
 
 </script>
 
