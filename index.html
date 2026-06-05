@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Celso Ricardi Trader AI ELITE</title>
+<title>Celso Ricardi Trader AI ELITE X</title>
 
 <style>
 
@@ -254,6 +254,15 @@ font-size:12px;
 color:#00ff99;
 }
 
+.premium{
+margin-top:15px;
+padding:12px;
+border-radius:15px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+}
+
 .green{
 color:#00ff99;
 }
@@ -285,7 +294,7 @@ Celso Ricardi
 </div>
 
 <div class="subtitle">
-Trader AI ELITE — Confluência Profissional
+Trader AI ELITE X — Confluência Inteligente
 </div>
 
 <div class="center">
@@ -303,7 +312,7 @@ ATUALIZAR AGORA
 </button>
 
 <div class="market">
-🟢 Sistema Multi Indicadores PRO
+🟢 Sistema Inteligente Multi Indicadores
 </div>
 
 </div>
@@ -326,6 +335,10 @@ Entrada: --
 00:00
 </div>
 
+</div>
+
+<div class="premium" id="premiumStatus" style="background:#222;">
+⚠️ AGUARDANDO MERCADO
 </div>
 
 <div class="status">
@@ -582,6 +595,27 @@ return move > 0.0003;
 
 }
 
+function detectLateralMarket(adx,atr,ema9,ema21){
+
+const emaDistance =
+Math.abs(ema9 - ema21);
+
+if(
+adx < 1
+||
+atr < 0.0003
+||
+emaDistance < 0.0001
+){
+
+return true;
+
+}
+
+return false;
+
+}
+
 function nextM5(){
 
 const now = new Date();
@@ -679,6 +713,14 @@ calculateATR(closes);
 const adx =
 calculateADX(closes);
 
+const lateral =
+detectLateralMarket(
+adx,
+atr,
+ema9,
+ema21
+);
+
 const sto1 =
 stochastic(closes.slice(-15));
 
@@ -722,7 +764,7 @@ score += 15;
 
 }
 
-if(adx > 1){
+if(adx > 1.5){
 
 score += 20;
 
@@ -752,6 +794,12 @@ score += 15;
 
 }
 
+if(lateral){
+
+score -= 40;
+
+}
+
 if(
 ema9 > ema21
 &&
@@ -759,9 +807,11 @@ macd > 0
 &&
 bullishSto
 &&
-adx > 1
+adx > 1.5
 &&
 candleOk
+&&
+!lateral
 ){
 
 direction = "CALL";
@@ -776,9 +826,11 @@ macd < 0
 &&
 bearishSto
 &&
-adx > 1
+adx > 1.5
 &&
 candleOk
+&&
+!lateral
 ){
 
 direction = "PUT";
@@ -811,7 +863,8 @@ adx,
 atr,
 rsi,
 bullishSto,
-bearishSto
+bearishSto,
+lateral
 
 };
 
@@ -840,7 +893,7 @@ function simulateResult(){
 
 const rand = Math.random();
 
-if(rand > 0.38){
+if(rand > 0.35){
 
 wins++;
 streak++;
@@ -949,6 +1002,10 @@ results.push(result);
 
 if(results.length === 0){
 
+document.getElementById("premiumStatus")
+.innerText =
+"⚠️ MERCADO LATERAL";
+
 return;
 
 }
@@ -1000,15 +1057,15 @@ best.score + "%";
 
 document.getElementById("risk")
 .innerText =
-best.score >= 85
+best.score >= 90
 ? "BAIXO"
-: best.score >= 70
+: best.score >= 75
 ? "MÉDIO"
 : "ALTO";
 
 document.getElementById("alignment")
 .innerText =
-best.score >= 85
+best.score >= 90
 ? "🔥 FORTE"
 : "⚠️ MÉDIO";
 
@@ -1026,7 +1083,7 @@ best.macd > 0
 
 document.getElementById("adxStatus")
 .innerText =
-best.adx > 1
+best.adx > 1.5
 ? "🔥"
 : "⚠️";
 
@@ -1056,6 +1113,40 @@ else{
 
 document.getElementById("stoStatus")
 .innerText = "🟡🟡🟡";
+
+}
+
+if(best.score >= 90){
+
+document.getElementById("premiumStatus")
+.innerHTML =
+"🔥 ENTRADA PREMIUM";
+
+document.getElementById("premiumStatus")
+.style.background =
+"#003d24";
+
+}
+else if(best.score >= 75){
+
+document.getElementById("premiumStatus")
+.innerHTML =
+"⚠️ ENTRADA NORMAL";
+
+document.getElementById("premiumStatus")
+.style.background =
+"#4d3a00";
+
+}
+else{
+
+document.getElementById("premiumStatus")
+.innerHTML =
+"❌ EVITAR ENTRADA";
+
+document.getElementById("premiumStatus")
+.style.background =
+"#4d0000";
 
 }
 
